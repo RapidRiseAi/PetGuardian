@@ -103,6 +103,7 @@
       border-color: rgba(176,141,87,0.55);
     }
     .btn:hover{ transform: translateY(-1px); }
+    .btn:disabled{ opacity: 0.5; cursor: not-allowed; transform: none; }
 
     input[type="range"]{
       height: 26px;
@@ -143,42 +144,6 @@
       box-shadow: 0 10px 22px rgba(0,0,0,0.45);
     }
 
-    .scroll-x{
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding-bottom: 10px;
-      scroll-snap-type: x mandatory;
-    }
-    .scroll-x::-webkit-scrollbar{ height: 8px; }
-    .scroll-x::-webkit-scrollbar-thumb{ background: rgba(243,231,211,0.15); border-radius: 999px; }
-    .snap{ scroll-snap-align: start; }
-
-    .staff-card{
-      min-width: 280px;
-      border-radius: 22px;
-      border: 1px solid rgba(176,141,87,0.24);
-      background: rgba(11,42,30,0.52);
-      padding: 14px;
-      text-align: left;
-      transition: all .16s ease;
-      color: var(--pg-champ);
-    }
-    .staff-card .title{ color: var(--pg-muted); font-size: 12px; margin-top: 2px; }
-    .staff-card .bio{ color: rgba(203,191,174,0.95); margin-top: 10px; font-size: 13px; line-height: 1.35; }
-    .staff-card.selected{
-      background: var(--pg-active-bg);
-      border-color: rgba(176,141,87,0.70);
-      color: var(--pg-active-text);
-    }
-    .staff-card.selected .title,
-    .staff-card.selected .bio{
-      color: rgba(11,42,30,0.86);
-    }
-
-    #modalWrap{ background: rgba(0,0,0,0.68); }
-    .modal-box{ max-height: calc(100vh - 64px); overflow-y: auto; }
-
     .pill{
       display:inline-flex;
       align-items:center;
@@ -193,11 +158,49 @@
 
     .muted{ color: var(--pg-muted); }
     .thin-line{ height:1px; background: rgba(176,141,87,0.22); }
+
+    #modalWrap, #staffModalWrap{ background: rgba(0,0,0,0.68); }
+    .modal-box{ max-height: calc(100vh - 64px); overflow-y: auto; }
+
+    /* Staff modal cards */
+    .staff-grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    @media (min-width: 640px){
+      .staff-grid{ grid-template-columns: 1fr 1fr; }
+    }
+    .staff-modal-card{
+      border-radius: 22px;
+      border: 1px solid rgba(176,141,87,0.24);
+      background: rgba(11,42,30,0.52);
+      padding: 14px;
+      text-align: left;
+      transition: all .16s ease;
+      color: var(--pg-champ);
+    }
+    .staff-modal-card:hover{
+      border-color: rgba(176,141,87,0.55);
+      transform: translateY(-1px);
+    }
+    .staff-modal-card.selected{
+      background: var(--pg-active-bg);
+      border-color: rgba(176,141,87,0.70);
+      color: var(--pg-active-text);
+    }
+    .staff-modal-card.selected .muted{ color: rgba(11,42,30,0.82); }
+
+    .lux-panel{
+      background: rgba(11,42,30,0.38);
+      border: 1px solid rgba(176,141,87,0.20);
+      border-radius: 18px;
+    }
   </style>
 </head>
 
 <body class="min-h-screen bg-premium">
-  <div class="max-w-6xl mx-auto p-4 sm:p-8">
+  <div class="max-w-[1280px] mx-auto p-4 sm:p-8">
     <div class="rounded-[28px] p-5 sm:p-7 glass">
 
       <div class="flex items-center justify-between gap-4 flex-wrap">
@@ -222,9 +225,11 @@
 
       <div class="mt-5 thin-line"></div>
 
+      <!-- PC LANDSCAPE LAYOUT -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-5">
 
-        <div class="lg:col-span-7 space-y-4">
+        <!-- LEFT: Controls -->
+        <div class="lg:col-span-8 space-y-4">
 
           <div class="card rounded-[24px] p-4">
             <div class="text-sm font-semibold">Base stay type</div>
@@ -235,7 +240,7 @@
                 <div class="flex items-center gap-2">
                   <span>🕒</span><span class="font-semibold">Day Visits</span>
                 </div>
-                <div class="sub">Hourly care</div>
+                <div class="sub">Hourly care (you set hours)</div>
               </button>
 
               <button class="seg-btn" data-pkg="night" type="button">
@@ -257,7 +262,7 @@
               <div class="flex items-center justify-between">
                 <div>
                   <div class="text-sm font-semibold">Hours per day</div>
-                  <div class="text-xs muted">For day visits only.</div>
+                  <div class="text-xs muted">Only used for Day Visits.</div>
                 </div>
                 <div class="text-sm"><span class="muted">Hours:</span> <span id="hoursOut" class="font-semibold">4</span></div>
               </div>
@@ -265,17 +270,23 @@
             </div>
           </div>
 
+          <!-- Dates + Pets on desktop: side-by-side -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             <div class="card rounded-[24px] p-4">
               <div class="text-sm font-semibold">Dates and zone</div>
               <div class="text-xs muted mt-1">Peak dates and long-stay discounts are calculated automatically.</div>
 
-              <label class="block mt-3 text-xs muted">Start date</label>
-              <input id="startDate" type="date" class="input mt-1">
-
-              <label class="block mt-3 text-xs muted">End date</label>
-              <input id="endDate" type="date" class="input mt-1">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                <div>
+                  <label class="block text-xs muted">Start date</label>
+                  <input id="startDate" type="date" class="input mt-1">
+                </div>
+                <div>
+                  <label class="block text-xs muted">End date</label>
+                  <input id="endDate" type="date" class="input mt-1">
+                </div>
+              </div>
 
               <div class="mt-3 text-sm">
                 <span class="muted">Days:</span> <span id="daysOut" class="font-semibold">1</span>
@@ -309,11 +320,10 @@
                 </div>
               </div>
 
-              <div class="mt-4 rounded-2xl p-3"
-                   style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
+              <div class="mt-4 rounded-2xl p-3 lux-panel">
                 <div class="flex items-center justify-between gap-3">
                   <div>
-                    <div class="text-sm font-semibold">Food supplies for sitter use?</div>
+                    <div class="text-sm font-semibold">Food supplies allowed for sitter use?</div>
                     <div class="text-xs muted mt-1">If allowed, deduct <b>R50</b> per day.</div>
                   </div>
                   <label class="inline-flex items-center gap-2 text-sm">
@@ -328,17 +338,15 @@
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-                <label class="flex items-start justify-between gap-3 rounded-2xl p-3"
-                       style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
+                <label class="flex items-start justify-between gap-3 rounded-2xl p-3 lux-panel">
                   <div>
                     <div class="text-sm font-semibold">Do you have a puppy?</div>
-                    <div class="text-xs muted mt-1">Extra routine, supervision, and cleanup.</div>
+                    <div class="text-xs muted mt-1">Extra supervision, routine, and cleanup.</div>
                   </div>
                   <input id="puppy" type="checkbox" class="accent-white mt-1">
                 </label>
 
-                <label class="flex items-start justify-between gap-3 rounded-2xl p-3"
-                       style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
+                <label class="flex items-start justify-between gap-3 rounded-2xl p-3 lux-panel">
                   <div>
                     <div class="text-sm font-semibold">Oral meds needed?</div>
                     <div class="text-xs muted mt-1">We administer meds per your instructions.</div>
@@ -346,6 +354,35 @@
                   <input id="meds" type="checkbox" class="accent-white mt-1">
                 </label>
               </div>
+
+              <!-- Sitter selection lives here now -->
+              <div class="mt-4 rounded-2xl p-3 lux-panel">
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <div class="text-sm font-semibold">Sitter selection</div>
+                    <div id="staffStatus" class="text-xs muted mt-1">Checking availability…</div>
+                  </div>
+                  <button id="chooseSitterBtn" class="btn btn-primary" type="button" disabled>Choose sitter</button>
+                </div>
+
+                <div id="selectedSitterPreview" class="mt-3 hidden">
+                  <div class="flex items-center gap-3">
+                    <img id="selPhoto" class="w-14 h-14 rounded-2xl object-cover border"
+                         style="border-color: rgba(176,141,87,0.28); background: rgba(0,0,0,0.2);"/>
+                    <div class="min-w-0">
+                      <div id="selName" class="font-semibold font-lux truncate"></div>
+                      <div id="selTitle" class="text-xs muted mt-1"></div>
+                      <div class="text-xs muted mt-1">Rating: <span id="selRating" class="font-semibold"></span></div>
+                    </div>
+                  </div>
+                  <div id="selBio" class="text-xs muted mt-3 leading-relaxed"></div>
+                </div>
+
+                <div id="noSitterNote" class="text-xs muted mt-3">
+                  If you do not select a sitter, your request cannot be submitted.
+                </div>
+              </div>
+
             </div>
           </div>
 
@@ -369,7 +406,7 @@
                 <div class="flex items-center justify-between">
                   <div>
                     <div class="text-sm font-semibold">Check-ins per day</div>
-                    <div class="text-xs muted">Short visit: feed, water, toilet check, quick play.</div>
+                    <div class="text-xs muted">Short visit for feed, water, toilet check, quick play.</div>
                   </div>
                   <div class="text-sm"><span class="muted">Qty:</span> <span id="checkinsOut" class="font-semibold">0</span></div>
                 </div>
@@ -381,7 +418,7 @@
                 <div class="flex items-center justify-between">
                   <div>
                     <div class="text-sm font-semibold">Walk time per day</div>
-                    <div class="text-xs muted">Single slider. Charged at <b>R60 per hour</b> (R5 per 5 minutes).</div>
+                    <div class="text-xs muted">Single slider in 5 minute steps. Priced at <b>R60 per hour</b>.</div>
                   </div>
                   <div class="text-sm">
                     <span class="muted">Minutes:</span> <span id="walkMinOut" class="font-semibold">0</span>
@@ -391,8 +428,7 @@
                 <input id="walkMinutes" type="range" min="0" max="180" step="5" value="0" class="mt-2">
               </div>
 
-              <label class="flex items-start justify-between gap-3 rounded-2xl p-3"
-                     style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
+              <label class="flex items-start justify-between gap-3 rounded-2xl p-3 lux-panel">
                 <div>
                   <div class="text-sm font-semibold">Home care pack</div>
                   <div class="text-xs muted mt-1">Bins, lights, basic tidy, quick checks.</div>
@@ -404,34 +440,25 @@
                 <div>
                   <label class="block text-xs muted">Key trips (one-time)</label>
                   <input id="keys" type="number" min="0" value="0" class="input mt-1">
+                  <div class="text-xs muted mt-1">Drop-off or pickup keys.</div>
                 </div>
                 <div>
                   <label class="block text-xs muted">Pet taxi (one-time)</label>
                   <input id="taxi" type="number" min="0" value="0" class="input mt-1">
+                  <div class="text-xs muted mt-1">Vet run or transport.</div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div class="card rounded-[24px] p-4">
-            <div class="flex items-start justify-between gap-3">
-              <div>
-                <div class="text-sm font-semibold">Available sitters</div>
-                <div class="text-xs muted mt-1">Select who you want. Availability updates based on your dates and stay type.</div>
+              <div class="md:col-span-2 text-xs muted leading-relaxed">
+                You will receive the final invoice after screening and confirming sitter availability.
               </div>
-              <div id="staffStatus" class="text-xs muted">Loading…</div>
-            </div>
-
-            <div id="staffCarousel" class="scroll-x mt-4"></div>
-
-            <div id="staffEmpty" class="mt-3 hidden text-sm muted">
-              No staff available for these dates. Try different dates or stay type.
             </div>
           </div>
 
         </div>
 
-        <div class="lg:col-span-5">
+        <!-- RIGHT: Totals, sticky on desktop -->
+        <div class="lg:col-span-4">
           <div class="card rounded-[24px] p-5 lg:sticky lg:top-6">
             <div class="text-sm font-semibold">Total estimate</div>
             <div id="totalOut" class="text-4xl font-lux mt-2">R0</div>
@@ -527,12 +554,39 @@
     </div>
   </div>
 
+  <!-- Staff Selection Modal -->
+  <div id="staffModalWrap" class="fixed inset-0 hidden overflow-y-auto">
+    <div class="max-w-4xl mx-auto p-4 sm:p-8 pb-24">
+      <div class="rounded-[24px] p-5 sm:p-6 glass modal-box">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="text-xs muted">Choose sitter</div>
+            <div class="text-xl font-lux font-semibold mt-1">Available sitters</div>
+            <div class="text-xs mt-2 muted">
+              Pick who you want for these dates. Once you submit, that sitter is blocked for your date range.
+            </div>
+          </div>
+          <button id="closeStaffModal" class="btn btn-ghost">Close</button>
+        </div>
+
+        <div class="mt-4 thin-line"></div>
+
+        <div id="staffModalStatus" class="text-xs muted mt-4">Loading…</div>
+        <div id="staffGrid" class="staff-grid mt-3"></div>
+
+        <div id="staffModalEmpty" class="hidden text-sm muted mt-4">
+          No sitters available for these dates. Try different dates or a different stay type.
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script>
   const CONFIG = {
     businessName: "PetGuardian Care",
     depositPercent: 0.50,
 
-    // IMPORTANT: keep your live Apps Script URL here
+    // Keep your Apps Script URL here
     apiBaseUrl: "https://script.google.com/macros/s/AKfycbzfqeIQFLpa155Gf-454kbaSQUEw9RpiqISwnPbSkfYPV-aU6LZlbTbkG5jv-sHe6jp/exec",
     apiKey: ""
   };
@@ -546,8 +600,7 @@
     add: {
       updatePackPerDay: 50,
       checkin: 50,
-
-      // Walks are derived from minutes: R5 per 5 minutes => R1 per minute
+      // Walks derived from minutes: R60 per hour => R1 per minute
       walkPerMinute: 1,
 
       medsPerDay: 50,
@@ -560,11 +613,12 @@
       petTaxi: 150
     },
 
-    longStay: { blockDays: 10, factor: 0.9 } // compounding every 10 days
+    longStay: { blockDays: 10, factor: 0.9 }
   };
 
   let pkg = "day";
   let selectedStaff = null;
+  let availableStaff = [];
   let lastAvailabilityReqId = 0;
 
   const el = (id) => document.getElementById(id);
@@ -572,6 +626,12 @@
   function money(n){
     const v = Math.round(Number(n) || 0);
     return "R" + v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  function escapeHtml(str) {
+    return String(str || "").replace(/[&<>"']/g, (m) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
   }
 
   function daysBetween(start, end) {
@@ -583,8 +643,7 @@
   }
 
   function isPeakDate(dateObj){
-    // Peak: June 1 to July 31, and Dec 1 to Jan 15 (cross-year)
-    const m = dateObj.getMonth(); // 0=Jan
+    const m = dateObj.getMonth(); // 0 Jan
     const d = dateObj.getDate();
     if (m === 5 || m === 6) return true; // Jun, Jul
     if (m === 11) return true;           // Dec
@@ -609,8 +668,6 @@
     const blocks = Math.floor(days / blockDays);
     const rem = days % blockDays;
     if (blocks === 0) return days;
-
-    // geometric series: blockDays + blockDays*factor + ... + blockDays*factor^(blocks-1)
     const series = blockDays * (1 - Math.pow(factor, blocks)) / (1 - factor);
     return series + rem * Math.pow(factor, blocks);
   }
@@ -639,19 +696,29 @@
     el("hoursWrap").classList.toggle("hidden", pkg !== "day");
   }
 
-  function escapeHtml(str) {
-    return String(str || "").replace(/[&<>"']/g, (m) => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[m]));
-  }
-
   // JSONP callbacks
   window.pgAvailabilityCallback = function(payload) {
     if (!payload || payload.reqId != lastAvailabilityReqId) return;
-    const list = payload.staff || [];
-    renderStaffCarousel(list);
-    el("staffStatus").textContent = list.length ? "Select a sitter" : "None available";
-    el("staffEmpty").classList.toggle("hidden", list.length !== 0);
+
+    availableStaff = payload.staff || [];
+
+    if (!availableStaff.length) {
+      el("staffStatus").textContent = "No sitters available for these dates";
+      el("chooseSitterBtn").disabled = true;
+      // Clear selection if it is no longer valid
+      selectedStaff = null;
+      renderSelectedSitterPreview();
+      return;
+    }
+
+    el("staffStatus").textContent = "Sitters available. Choose your sitter.";
+    el("chooseSitterBtn").disabled = false;
+
+    // If selected sitter is not in list anymore, clear it
+    if (selectedStaff && !availableStaff.some(s => String(s.id) === String(selectedStaff.id))) {
+      selectedStaff = null;
+    }
+    renderSelectedSitterPreview();
   };
 
   window.pgBookingCallback = function(payload) {
@@ -677,7 +744,6 @@
   };
 
   function applyPricingFromSheet(p){
-    // Helper
     const num = (v, fallback) => {
       const n = Number(v);
       return Number.isFinite(n) ? n : fallback;
@@ -734,7 +800,8 @@
       el("staffStatus").textContent = "API not connected";
       return;
     }
-    el("staffStatus").textContent = "Checking…";
+    el("staffStatus").textContent = "Checking availability…";
+    el("chooseSitterBtn").disabled = true;
 
     const start = el("startDate").value;
     const end = el("endDate").value;
@@ -763,46 +830,17 @@
     document.body.appendChild(script);
   }
 
-  function renderStaffCarousel(staffList) {
-    const wrap = el("staffCarousel");
-    wrap.innerHTML = "";
-    selectedStaff = null;
+  function renderSelectedSitterPreview(){
+    const has = !!selectedStaff;
+    el("selectedSitterPreview").classList.toggle("hidden", !has);
 
-    staffList.forEach((s) => {
-      const card = document.createElement("button");
-      card.type = "button";
-      card.className = "snap staff-card";
+    if (!has) return;
 
-      card.innerHTML = `
-        <div class="flex items-center gap-3">
-          <img src="${escapeHtml(s.photoUrl || '')}" alt="${escapeHtml(s.name || 'Sitter')}"
-               class="w-14 h-14 rounded-2xl object-cover border"
-               style="border-color: rgba(176,141,87,0.28); background: rgba(0,0,0,0.2);">
-          <div class="min-w-0">
-            <div class="font-semibold font-lux truncate">${escapeHtml(s.name || "Sitter")}</div>
-            <div class="title">${escapeHtml(s.title || "PetGuardian Care Sitter")}</div>
-          </div>
-        </div>
-
-        <div class="bio">${escapeHtml(s.bio || "Professional sitter")}</div>
-
-        <div class="mt-3 flex items-center justify-between text-xs" style="color: rgba(203,191,174,0.95);">
-          <div>Rating: <span class="font-semibold">${escapeHtml(String(s.rating || "5.0"))}</span></div>
-          <div class="px-2 py-1 rounded-full"
-               style="border: 1px solid rgba(176,141,87,0.22); background: rgba(18,54,41,0.55);">
-            Select
-          </div>
-        </div>
-      `;
-
-      card.addEventListener("click", () => {
-        [...wrap.children].forEach((c) => c.classList.remove("selected"));
-        card.classList.add("selected");
-        selectedStaff = s;
-      });
-
-      wrap.appendChild(card);
-    });
+    el("selPhoto").src = selectedStaff.photoUrl || "";
+    el("selName").textContent = selectedStaff.name || "";
+    el("selTitle").textContent = selectedStaff.title || "PetGuardian Care Sitter";
+    el("selRating").textContent = String(selectedStaff.rating || "5.0");
+    el("selBio").textContent = selectedStaff.bio || "";
   }
 
   function calc() {
@@ -817,10 +855,10 @@
     const peakApplied = bookingHasPeak(start, end);
     const peakMult = peakApplied ? PRICES.peakMultiplier : 1;
 
-    el("peakNote").textContent = peakApplied ? `(peak pricing applied)` : ``;
+    el("peakNote").textContent = peakApplied ? "(peak pricing applied)" : "";
     el("peakAppliedOut").textContent = peakApplied
-      ? `Peak dates detected in your booking range (June-July or Dec to 15 Jan).`
-      : `No peak dates detected in your booking range.`;
+      ? "Peak dates detected in your booking range (June to July, or Dec to 15 Jan)."
+      : "No peak dates detected in your booking range.";
 
     // Long-stay is automatic, always on
     const wDays = weightedDays(days);
@@ -843,7 +881,7 @@
     const walkMin = parseInt(el("walkMinutes").value || "0", 10);
     el("walkMinOut").textContent = walkMin;
 
-    const walkCostPerDay = walkMin * PRICES.add.walkPerMinute; // R1 per minute
+    const walkCostPerDay = walkMin * PRICES.add.walkPerMinute;
     el("walkCostOut").textContent = money(walkCostPerDay);
 
     const meds = el("meds").checked;
@@ -917,8 +955,13 @@
 
   function openModal() {
     const pricing = calc();
-    const staffText = selectedStaff ? `${selectedStaff.name} (selected)` : "Not selected yet";
 
+    if (!selectedStaff && availableStaff.length) {
+      alert("Please choose a sitter before requesting a booking.");
+      return;
+    }
+
+    const staffText = selectedStaff ? `${selectedStaff.name} (selected)` : "Not selected";
     el("modalSummary").innerHTML =
       `Package: <b>${escapeHtml(pkgLabel())}</b><br>` +
       `Dates: <b>${escapeHtml(pricing.inputs.start)}</b> to <b>${escapeHtml(pricing.inputs.end)}</b> (${pricing.days} days)<br>` +
@@ -934,31 +977,27 @@
     el("modalWrap").classList.remove("hidden");
   }
 
-  function closeModal() {
-    el("modalWrap").classList.add("hidden");
-  }
+  function closeModal() { el("modalWrap").classList.add("hidden"); }
 
   function validateBookingForm() {
     const name = el("custName").value.trim();
     const phone = el("custPhone").value.trim();
     const email = el("custEmail").value.trim();
     const hp = el("hpField").value.trim();
+
     if (hp) return { ok: false, msg: "Blocked." };
     if (!name) return { ok: false, msg: "Enter your name." };
     if (!phone) return { ok: false, msg: "Enter your phone number." };
     if (!email || !email.includes("@")) return { ok: false, msg: "Enter a valid email." };
+
+    if (availableStaff.length && !selectedStaff) return { ok: false, msg: "Choose a sitter before submitting." };
+
     return { ok: true };
   }
 
   async function submitBooking() {
     const v = validateBookingForm();
     if (!v.ok) { el("submitStatus").textContent = v.msg; return; }
-
-    const hasCarouselOptions = el("staffCarousel").children.length > 0;
-    if (hasCarouselOptions && !selectedStaff) {
-      el("submitStatus").textContent = "Select a sitter before submitting.";
-      return;
-    }
 
     const pricing = calc();
     const notes = el("custNotes").value.trim().slice(0, 800);
@@ -1037,6 +1076,66 @@ Note: Final price confirmed after screening and availability.`;
     }
   }
 
+  function openStaffModal(){
+    el("staffModalWrap").classList.remove("hidden");
+    renderStaffModal();
+  }
+  function closeStaffModal(){
+    el("staffModalWrap").classList.add("hidden");
+  }
+
+  function renderStaffModal(){
+    el("staffGrid").innerHTML = "";
+    el("staffModalEmpty").classList.add("hidden");
+
+    if (!availableStaff.length){
+      el("staffModalStatus").textContent = "No sitters available.";
+      el("staffModalEmpty").classList.remove("hidden");
+      return;
+    }
+
+    el("staffModalStatus").textContent = "Select your sitter.";
+
+    availableStaff.forEach((s) => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "staff-modal-card";
+      if (selectedStaff && String(selectedStaff.id) === String(s.id)) {
+        card.classList.add("selected");
+      }
+
+      const img = escapeHtml(s.photoUrl || "");
+      const name = escapeHtml(s.name || "Sitter");
+      const title = escapeHtml(s.title || "PetGuardian Care Sitter");
+      const bio = escapeHtml(s.bio || "Professional sitter");
+      const rating = escapeHtml(String(s.rating || "5.0"));
+
+      card.innerHTML = `
+        <div class="flex items-start gap-3">
+          <img src="${img}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border"
+               style="border-color: rgba(176,141,87,0.28); background: rgba(0,0,0,0.2);" />
+          <div class="min-w-0">
+            <div class="font-lux font-semibold text-lg truncate">${name}</div>
+            <div class="text-xs muted mt-1">${title}</div>
+            <div class="text-xs muted mt-2">Rating: <span class="font-semibold">${rating}</span></div>
+          </div>
+        </div>
+        <div class="text-sm mt-3 leading-relaxed">${bio}</div>
+        <div class="mt-4 flex items-center justify-end">
+          <div class="btn btn-primary" style="padding:8px 12px;">Select</div>
+        </div>
+      `;
+
+      card.addEventListener("click", () => {
+        selectedStaff = s;
+        renderSelectedSitterPreview();
+        closeStaffModal();
+      });
+
+      el("staffGrid").appendChild(card);
+    });
+  }
+
   function attach() {
     const today = new Date();
     const yyyy = today.getFullYear();
@@ -1069,8 +1168,12 @@ Note: Final price confirmed after screening and availability.`;
     el("modalWrap").addEventListener("click", (e) => { if (e.target === el("modalWrap")) closeModal(); });
     el("submitBooking").addEventListener("click", submitBooking);
 
+    el("chooseSitterBtn").addEventListener("click", openStaffModal);
+    el("closeStaffModal").addEventListener("click", closeStaffModal);
+    el("staffModalWrap").addEventListener("click", (e) => { if (e.target === el("staffModalWrap")) closeStaffModal(); });
+
     setPkgUI();
-    fetchPricing();     // load sheet prices first
+    fetchPricing();
     calc();
     fetchAvailability();
   }
