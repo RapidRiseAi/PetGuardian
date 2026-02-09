@@ -82,7 +82,6 @@
       outline: none;
     }
 
-    /* Carousel scroll */
     .scroll-x{
       display: flex;
       gap: 12px;
@@ -132,7 +131,6 @@
         </div>
       </div>
 
-      <!-- Package selection -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
         <button class="pkgBtn rounded-2xl p-3 border transition" data-pkg="day">
           <div class="font-semibold">Day-only</div>
@@ -148,7 +146,6 @@
         </button>
       </div>
 
-      <!-- Inputs -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
         <div class="rounded-3xl p-4 card">
           <h2 class="font-semibold font-display">Dates and Zone</h2>
@@ -213,7 +210,6 @@
             </div>
           </div>
 
-          <!-- Food supplies option -->
           <div class="mt-4 rounded-2xl p-3 border"
                style="border-color: rgba(176,141,87,0.22); background: rgba(11,42,30,0.40);">
             <div class="flex items-center justify-between gap-3 text-sm">
@@ -237,7 +233,6 @@
         </div>
       </div>
 
-      <!-- Add-ons -->
       <div class="rounded-3xl p-4 border mt-4"
            style="background: rgba(18,54,41,0.55); border-color: var(--pg-border);">
         <h2 class="font-semibold font-display">Add-ons</h2>
@@ -317,7 +312,6 @@
         </div>
       </div>
 
-      <!-- Staff availability carousel -->
       <div class="rounded-3xl p-4 card mt-4">
         <div class="flex items-center justify-between gap-3">
           <div>
@@ -336,7 +330,6 @@
         </div>
       </div>
 
-      <!-- Outputs -->
       <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div class="rounded-3xl p-4 border"
              style="background: rgba(11,42,30,0.45); border-color: var(--pg-border);">
@@ -375,10 +368,10 @@
     </div>
   </div>
 
-  <!-- Booking Modal -->
-  <div id="modalWrap" class="fixed inset-0 hidden" style="background: rgba(0,0,0,0.65);">
-    <div class="max-w-xl mx-auto p-4 sm:p-8">
-      <div class="rounded-3xl p-5 sm:p-6 glass">
+  <!-- Booking Modal (scroll fix included) -->
+  <div id="modalWrap" class="fixed inset-0 hidden overflow-y-auto" style="background: rgba(0,0,0,0.65);">
+    <div class="max-w-xl mx-auto p-4 sm:p-8 pb-24">
+      <div class="rounded-3xl p-5 sm:p-6 glass" style="max-height: calc(100vh - 64px); overflow-y: auto;">
         <div class="flex items-start justify-between gap-3">
           <div>
             <div class="text-xs" style="color: var(--pg-stone);">Request Booking</div>
@@ -413,7 +406,6 @@
             <textarea id="custNotes" rows="3" class="w-full mt-1 input" placeholder="Routine, meds, temperament, gate access, etc."></textarea>
           </div>
 
-          <!-- Honeypot (spam trap) -->
           <div class="hidden">
             <label>Website</label>
             <input id="hpField" class="w-full mt-1 input" placeholder="Leave blank">
@@ -442,26 +434,17 @@
   </div>
 
 <script>
-  // =========================
-  // CONFIG
-  // =========================
   const CONFIG = {
     businessName: "PetGuardian Care",
     depositPercent: 0.50,
-
-    // Paste your Apps Script Web App URL here (after you deploy it)
     apiBaseUrl: "https://script.google.com/macros/s/AKfycbzfqeIQFLpa155Gf-454kbaSQUEw9RpiqISwnPbSkfYPV-aU6LZlbTbkG5jv-sHe6jp/exec",
-
-    // If you implement the script "apiKey" check, paste it here. Note: public pages cannot hide secrets.
     apiKey: ""
   };
 
-  // Pricing constants (client-side estimate)
   const PRICES = {
     base: { dayHourly: 40, night: 150, fullDay: 320 },
     travelPerDay: { sabie: 0, wr: 30, nel: 60 },
     peakMultiplier: 1.15,
-
     add: {
       updatePackPerDay: 50,
       checkin: 50,
@@ -477,15 +460,11 @@
       keyTrip: 50,
       petTaxi: 150
     },
-
     longStay: { blockDays: 10, factor: 0.9 }
   };
 
-  // =========================
-  // Helpers
-  // =========================
   let pkg = "day";
-  let selectedStaff = null; // {id,name,email,...} from availability endpoint
+  let selectedStaff = null;
   let lastAvailabilityReqId = 0;
 
   const el = (id) => document.getElementById(id);
@@ -523,39 +502,37 @@
     return el("zone").selectedOptions[0].textContent;
   }
 
-  // =========================
-  // UI states
-  // =========================
   function setPkgUI() {
     document.querySelectorAll(".pkgBtn").forEach(b => {
       const active = b.dataset.pkg === pkg;
-
-      // Active: slightly transparent white (champagne), black text
       b.style.background = active ? "rgba(243,231,211,0.86)" : "rgba(11,42,30,0.55)";
       b.style.borderColor = active ? "rgba(176,141,87,0.70)" : "rgba(176,141,87,0.28)";
       b.style.color = active ? "#0B2A1E" : "var(--pg-champ)";
       b.style.backdropFilter = active ? "blur(8px)" : "none";
     });
-
     el("hoursWrap").classList.toggle("hidden", pkg !== "day");
   }
 
-  // =========================
-  // Availability (JSONP to avoid CORS headaches)
-  // =========================
   window.pgAvailabilityCallback = function(payload) {
-    // Ignore stale responses
-    if (!payload || payload.reqId !== lastAvailabilityReqId) return;
-
+    if (!payload || payload.reqId != lastAvailabilityReqId) return;
     const list = payload.staff || [];
     renderStaffCarousel(list);
-
     el("staffStatus").textContent = list.length ? "Select a sitter" : "None available";
     el("staffEmpty").classList.toggle("hidden", list.length !== 0);
   };
 
+  window.pgBookingCallback = function(payload) {
+    if (!payload || payload.ok !== true) {
+      el("submitStatus").textContent = (payload && payload.error) ? payload.error : "Booking failed. Please try again.";
+      return;
+    }
+    el("submitStatus").textContent =
+      "Request sent. Check your email for the invoice/estimate. If you do not receive it, WhatsApp us with your name and dates.";
+    setTimeout(() => closeModal(), 1600);
+  };
+
   function fetchAvailability() {
-    if (!CONFIG.apiBaseUrl || CONFIG.apiBaseUrl.startsWith("PASTE_")) {
+    if (!CONFIG.apiBaseUrl) {
       el("staffStatus").textContent = "API not connected yet";
       return;
     }
@@ -569,7 +546,6 @@
     lastAvailabilityReqId += 1;
     const reqId = lastAvailabilityReqId;
 
-    // Remove any previous JSONP script tag
     const old = document.getElementById("jsonpAvail");
     if (old) old.remove();
 
@@ -585,9 +561,7 @@
     const script = document.createElement("script");
     script.id = "jsonpAvail";
     script.src = url.toString();
-    script.onerror = () => {
-      el("staffStatus").textContent = "Could not load availability";
-    };
+    script.onerror = () => el("staffStatus").textContent = "Could not load availability";
     document.body.appendChild(script);
   }
 
@@ -631,7 +605,6 @@
       `;
 
       card.addEventListener("click", () => {
-        // clear old selection styling
         [...wrap.children].forEach((c) => {
           c.style.background = "rgba(11,42,30,0.55)";
           c.style.borderColor = "rgba(176,141,87,0.24)";
@@ -654,9 +627,6 @@
     }[m]));
   }
 
-  // =========================
-  // Pricing calculation
-  // =========================
   function calc() {
     const start = el("startDate").value;
     const end = el("endDate").value;
@@ -667,7 +637,6 @@
     const travel = PRICES.travelPerDay[zone];
 
     const peakMult = el("peak").checked ? PRICES.peakMultiplier : 1;
-
     const applyLong = el("longStay").checked;
     const wDays = applyLong ? weightedDays(days) : days;
 
@@ -701,7 +670,6 @@
     if (pkg === "night") basePerDay = PRICES.base.night;
     if (pkg === "full") basePerDay = PRICES.base.fullDay;
 
-    // Check-in fuel rule
     const checkinUnit = PRICES.add.checkin + (travel > 0 ? travel : 0);
 
     const addOnsPerDay =
@@ -730,7 +698,6 @@
     const deposit = total * CONFIG.depositPercent;
     const balance = total - deposit;
 
-    // Display
     el("totalOut").textContent = money(total);
     el("depositOut").textContent = money(deposit);
     el("balanceOut").textContent = money(balance);
@@ -744,8 +711,7 @@
       : "";
 
     return {
-      total, deposit, balance, days, wDays, zone, travel, peakMult, basePerDay,
-      addOnsPerDay, oneTime,
+      total, deposit, balance, days, wDays,
       inputs: {
         pkg,
         start, end,
@@ -761,12 +727,8 @@
     };
   }
 
-  // =========================
-  // Modal and submission
-  // =========================
   function openModal() {
     const pricing = calc();
-
     const staffText = selectedStaff ? `${selectedStaff.name} (selected)` : "Not selected yet";
     el("modalSummary").innerHTML =
       `Package: <b>${pkgLabel()}</b><br>` +
@@ -776,7 +738,6 @@
       `Total: <b>${money(pricing.total)}</b><br>` +
       `Deposit (50%): <b>${money(pricing.deposit)}</b><br>` +
       `Balance: <b>${money(pricing.balance)}</b>`;
-
     el("submitStatus").textContent = "";
     el("modalWrap").classList.remove("hidden");
   }
@@ -790,35 +751,27 @@
     const phone = el("custPhone").value.trim();
     const email = el("custEmail").value.trim();
     const hp = el("hpField").value.trim();
-
-    if (hp) return { ok: false, msg: "Blocked." }; // bots
+    if (hp) return { ok: false, msg: "Blocked." };
     if (!name) return { ok: false, msg: "Enter your name." };
     if (!phone) return { ok: false, msg: "Enter your phone number." };
     if (!email || !email.includes("@")) return { ok: false, msg: "Enter a valid email." };
-
     return { ok: true };
   }
 
   async function submitBooking() {
     const v = validateBookingForm();
-    if (!v.ok) {
-      el("submitStatus").textContent = v.msg;
-      return;
-    }
+    if (!v.ok) { el("submitStatus").textContent = v.msg; return; }
 
-    // Require staff selection if any available staff is shown
     const hasCarouselOptions = el("staffCarousel").children.length > 0;
     if (hasCarouselOptions && !selectedStaff) {
       el("submitStatus").textContent = "Select a sitter before submitting.";
       return;
     }
 
-    if (!CONFIG.apiBaseUrl || CONFIG.apiBaseUrl.startsWith("PASTE_")) {
-      el("submitStatus").textContent = "API not connected yet. Deploy Apps Script and paste the URL into CONFIG.";
-      return;
-    }
-
     const pricing = calc();
+    const notes = el("custNotes").value.trim().slice(0, 800);
+
+    el("submitStatus").textContent = "Sending…";
 
     const payload = {
       action: "booking",
@@ -829,7 +782,7 @@
       customerPhone: el("custPhone").value.trim(),
       customerEmail: el("custEmail").value.trim(),
       customerAddress: el("custAddress").value.trim(),
-      customerNotes: el("custNotes").value.trim(),
+      customerNotes: notes,
 
       sitterId: selectedStaff ? (selectedStaff.id || "") : "",
       sitterName: selectedStaff ? (selectedStaff.name || "") : "",
@@ -849,31 +802,21 @@
       selectionsJson: JSON.stringify(pricing.inputs)
     };
 
-    // URL-encoded send (no CORS reading required)
-    const params = new URLSearchParams(payload);
+    const old = document.getElementById("jsonpBook");
+    if (old) old.remove();
 
-    el("submitStatus").textContent = "Sending…";
+    const url = new URL(CONFIG.apiBaseUrl);
+    Object.entries(payload).forEach(([k, v]) => url.searchParams.set(k, String(v)));
+    url.searchParams.set("reqId", String(Date.now()));
+    url.searchParams.set("callback", "pgBookingCallback");
 
-    try {
-      // Prefer sendBeacon
-      const ok = navigator.sendBeacon && navigator.sendBeacon(CONFIG.apiBaseUrl, params);
-      if (!ok) {
-        await fetch(CONFIG.apiBaseUrl, { method: "POST", mode: "no-cors", body: params });
-      }
-
-      el("submitStatus").textContent =
-        "Request sent. Check your email for the invoice/estimate. If you do not receive it, WhatsApp us with your name and dates.";
-
-      // Auto close after short delay
-      setTimeout(() => closeModal(), 1600);
-    } catch (err) {
-      el("submitStatus").textContent = "Could not send. Please try again or contact us.";
-    }
+    const script = document.createElement("script");
+    script.id = "jsonpBook";
+    script.src = url.toString();
+    script.onerror = () => el("submitStatus").textContent = "Could not send. Please try again.";
+    document.body.appendChild(script);
   }
 
-  // =========================
-  // Quote copy
-  // =========================
   async function copyQuote() {
     const pricing = calc();
     const staffLine = selectedStaff ? `Sitter: ${selectedStaff.name}` : `Sitter: Not selected`;
@@ -899,11 +842,7 @@ Note: Final price confirmed after screening and availability.`;
     }
   }
 
-  // =========================
-  // Attach listeners
-  // =========================
   function attach() {
-    // Date defaults
     const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth()+1).padStart(2,"0");
@@ -926,17 +865,13 @@ Note: Final price confirmed after screening and availability.`;
       "meds","highcare","homecare","keys","taxi","hours","foodSupplies"
     ].forEach(id => el(id).addEventListener("input", () => {
       calc();
-      // Update availability when core booking details change
       if (["startDate","endDate","zone"].includes(id)) fetchAvailability();
     }));
 
     el("copyBtn").addEventListener("click", copyQuote);
-
     el("requestBtn").addEventListener("click", openModal);
     el("closeModal").addEventListener("click", closeModal);
-    el("modalWrap").addEventListener("click", (e) => {
-      if (e.target === el("modalWrap")) closeModal();
-    });
+    el("modalWrap").addEventListener("click", (e) => { if (e.target === el("modalWrap")) closeModal(); });
     el("submitBooking").addEventListener("click", submitBooking);
 
     setPkgUI();
@@ -948,5 +883,3 @@ Note: Final price confirmed after screening and availability.`;
 </script>
 </body>
 </html>
-
-
