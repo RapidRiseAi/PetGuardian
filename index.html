@@ -19,6 +19,10 @@
       --pg-stone:  #CBBFAE;
       --pg-brass:  #B08D57;
       --pg-border: rgba(176,141,87,0.26);
+
+      --pg-ink: #0B2A1E; /* dark text used on light selections */
+      --pg-select-bg: rgba(243,231,211,0.70); /* translucent champagne */
+      --pg-select-border: rgba(176,141,87,0.75);
     }
 
     body{ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
@@ -82,6 +86,25 @@
       outline: none;
     }
 
+    /* Package buttons */
+    .pkgBtn{
+      background: rgba(11,42,30,0.55);
+      border-color: rgba(176,141,87,0.28);
+      color: var(--pg-champ);
+      backdrop-filter: none;
+    }
+    .pkgBtn .sub{ color: var(--pg-stone); }
+    .pkgBtn.is-active{
+      background: var(--pg-select-bg);
+      border-color: var(--pg-select-border);
+      color: var(--pg-ink);
+      backdrop-filter: blur(8px);
+    }
+    .pkgBtn.is-active .sub{
+      color: rgba(11,42,30,0.70);
+    }
+
+    /* Staff carousel */
     .scroll-x{
       display: flex;
       gap: 12px;
@@ -92,6 +115,21 @@
     .scroll-x::-webkit-scrollbar{ height: 8px; }
     .scroll-x::-webkit-scrollbar-thumb{ background: rgba(243,231,211,0.15); border-radius: 999px; }
     .snap{ scroll-snap-align: start; }
+
+    .staffCard{
+      background: rgba(11,42,30,0.55);
+      border-color: rgba(176,141,87,0.24);
+      color: var(--pg-champ);
+    }
+    .staffCard .sub{ color: var(--pg-stone); }
+    .staffCard.is-selected{
+      background: var(--pg-select-bg);
+      border-color: var(--pg-select-border);
+      color: var(--pg-ink);
+    }
+    .staffCard.is-selected .sub{
+      color: rgba(11,42,30,0.70);
+    }
   </style>
 </head>
 
@@ -115,6 +153,9 @@
           <p class="mt-2" style="color: rgba(203,191,174,0.95);">
             Choose a base stay type, then add only what you need.
           </p>
+          <p id="pricingStatus" class="text-xs mt-2" style="color: rgba(203,191,174,0.9);">
+            Loading pricing…
+          </p>
         </div>
 
         <div class="flex gap-2">
@@ -134,15 +175,15 @@
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
         <button class="pkgBtn rounded-2xl p-3 border transition" data-pkg="day">
           <div class="font-semibold">Day-only</div>
-          <div class="text-xs mt-1" style="color: var(--pg-stone);">Hourly base</div>
+          <div class="text-xs mt-1 sub">Hourly base</div>
         </button>
         <button class="pkgBtn rounded-2xl p-3 border transition" data-pkg="night">
           <div class="font-semibold">Overnight</div>
-          <div class="text-xs mt-1" style="color: var(--pg-stone);">6pm to 6am</div>
+          <div class="text-xs mt-1 sub">6pm to 6am</div>
         </button>
         <button class="pkgBtn rounded-2xl p-3 border transition" data-pkg="full">
           <div class="font-semibold">Full-time</div>
-          <div class="text-xs mt-1" style="color: var(--pg-stone);">24h presence</div>
+          <div class="text-xs mt-1 sub">24h presence</div>
         </button>
       </div>
 
@@ -166,26 +207,6 @@
             <option value="wr">White River (Zone B)</option>
             <option value="nel">Nelspruit (Zone C)</option>
           </select>
-
-          <div class="mt-3 flex items-center justify-between text-sm">
-            <span style="color: var(--pg-stone);">Peak dates?</span>
-            <label class="inline-flex items-center gap-2 cursor-pointer">
-              <input id="peak" type="checkbox" class="accent-white">
-              <span style="color: var(--pg-champ);">Yes</span>
-            </label>
-          </div>
-
-          <div class="mt-3 flex items-center justify-between text-sm">
-            <span style="color: var(--pg-stone);">Long-stay discount?</span>
-            <label class="inline-flex items-center gap-2 cursor-pointer">
-              <input id="longStay" type="checkbox" class="accent-white" checked>
-              <span style="color: var(--pg-champ);">Yes</span>
-            </label>
-          </div>
-
-          <div class="mt-3 text-xs leading-relaxed" style="color: rgba(203,191,174,0.9);">
-            Discount compounds every 10 days (10 percent less per block).
-          </div>
         </div>
 
         <div class="rounded-3xl p-4 card">
@@ -368,7 +389,7 @@
     </div>
   </div>
 
-  <!-- Booking Modal (scroll fix included) -->
+  <!-- Booking Modal -->
   <div id="modalWrap" class="fixed inset-0 hidden overflow-y-auto" style="background: rgba(0,0,0,0.65);">
     <div class="max-w-xl mx-auto p-4 sm:p-8 pb-24">
       <div class="rounded-3xl p-5 sm:p-6 glass" style="max-height: calc(100vh - 64px); overflow-y: auto;">
@@ -441,7 +462,8 @@
     apiKey: ""
   };
 
-  const PRICES = {
+  // Fallback defaults (will be overridden by Pricing sheet if action=pricing works)
+  let PRICES = {
     base: { dayHourly: 40, night: 150, fullDay: 320 },
     travelPerDay: { sabie: 0, wr: 30, nel: 60 },
     peakMultiplier: 1.15,
@@ -504,15 +526,39 @@
 
   function setPkgUI() {
     document.querySelectorAll(".pkgBtn").forEach(b => {
-      const active = b.dataset.pkg === pkg;
-      b.style.background = active ? "rgba(243,231,211,0.86)" : "rgba(11,42,30,0.55)";
-      b.style.borderColor = active ? "rgba(176,141,87,0.70)" : "rgba(176,141,87,0.28)";
-      b.style.color = active ? "#0B2A1E" : "var(--pg-champ)";
-      b.style.backdropFilter = active ? "blur(8px)" : "none";
+      b.classList.toggle("is-active", b.dataset.pkg === pkg);
     });
     el("hoursWrap").classList.toggle("hidden", pkg !== "day");
   }
 
+  // ---------- Pricing load (from Pricing sheet) ----------
+  window.pgPricingCallback = function(payload) {
+    if (!payload || payload.ok !== true || !payload.pricing) {
+      el("pricingStatus").textContent = "Pricing loaded (defaults)";
+      return;
+    }
+    PRICES = payload.pricing;
+    el("pricingStatus").textContent = "Pricing loaded (from sheet)";
+    calc();
+  };
+
+  function loadPricing() {
+    const old = document.getElementById("jsonpPricing");
+    if (old) old.remove();
+
+    const url = new URL(CONFIG.apiBaseUrl);
+    url.searchParams.set("action", "pricing");
+    url.searchParams.set("reqId", String(Date.now()));
+    url.searchParams.set("callback", "pgPricingCallback");
+
+    const script = document.createElement("script");
+    script.id = "jsonpPricing";
+    script.src = url.toString();
+    script.onerror = () => el("pricingStatus").textContent = "Pricing loaded (defaults)";
+    document.body.appendChild(script);
+  }
+
+  // ---------- Availability ----------
   window.pgAvailabilityCallback = function(payload) {
     if (!payload || payload.reqId != lastAvailabilityReqId) return;
     const list = payload.staff || [];
@@ -521,22 +567,7 @@
     el("staffEmpty").classList.toggle("hidden", list.length !== 0);
   };
 
-  window.pgBookingCallback = function(payload) {
-    if (!payload || payload.ok !== true) {
-      el("submitStatus").textContent = (payload && payload.error) ? payload.error : "Booking failed. Please try again.";
-      return;
-    }
-    el("submitStatus").textContent =
-      "Request sent. Check your email for the invoice/estimate. If you do not receive it, WhatsApp us with your name and dates.";
-    setTimeout(() => closeModal(), 1600);
-  };
-
   function fetchAvailability() {
-    if (!CONFIG.apiBaseUrl) {
-      el("staffStatus").textContent = "API not connected yet";
-      return;
-    }
-
     el("staffStatus").textContent = "Checking…";
 
     const start = el("startDate").value;
@@ -573,10 +604,7 @@
     staffList.forEach((s) => {
       const card = document.createElement("button");
       card.type = "button";
-      card.className = "snap rounded-3xl p-3 border text-left min-w-[260px] transition";
-      card.style.background = "rgba(11,42,30,0.55)";
-      card.style.borderColor = "rgba(176,141,87,0.24)";
-      card.style.color = "var(--pg-champ)";
+      card.className = "staffCard snap rounded-3xl p-3 border text-left min-w-[260px] transition";
 
       card.innerHTML = `
         <div class="flex items-center gap-3">
@@ -585,18 +613,16 @@
                style="border-color: rgba(176,141,87,0.28); background: rgba(0,0,0,0.2);">
           <div class="min-w-0">
             <div class="font-semibold font-display truncate">${escapeHtml(s.name || "Sitter")}</div>
-            <div class="text-xs mt-1" style="color: var(--pg-stone);">
-              ${escapeHtml(s.title || "PetGuardian Care Sitter")}
-            </div>
+            <div class="text-xs mt-1 sub">${escapeHtml(s.title || "PetGuardian Care Sitter")}</div>
           </div>
         </div>
 
-        <div class="text-sm mt-3" style="color: rgba(203,191,174,0.95); line-height: 1.45;">
+        <div class="text-sm mt-3" style="line-height: 1.45;">
           ${escapeHtml(s.bio || "Professional sitter")}
         </div>
 
-        <div class="mt-3 flex items-center justify-between text-xs" style="color: rgba(203,191,174,0.95);">
-          <div>Rating: <span class="font-semibold" style="color: var(--pg-champ);">${escapeHtml(String(s.rating || "5.0"))}</span></div>
+        <div class="mt-3 flex items-center justify-between text-xs">
+          <div>Rating: <span class="font-semibold">${escapeHtml(String(s.rating || "5.0"))}</span></div>
           <div class="px-2 py-1 rounded-full"
                style="border: 1px solid rgba(176,141,87,0.22); background: rgba(18,54,41,0.55);">
             Select
@@ -605,15 +631,8 @@
       `;
 
       card.addEventListener("click", () => {
-        [...wrap.children].forEach((c) => {
-          c.style.background = "rgba(11,42,30,0.55)";
-          c.style.borderColor = "rgba(176,141,87,0.24)";
-          c.style.color = "var(--pg-champ)";
-        });
-
-        card.style.background = "rgba(243,231,211,0.86)";
-        card.style.borderColor = "rgba(176,141,87,0.70)";
-        card.style.color = "#0B2A1E";
+        [...wrap.children].forEach((c) => c.classList.remove("is-selected"));
+        card.classList.add("is-selected");
         selectedStaff = s;
       });
 
@@ -627,6 +646,7 @@
     }[m]));
   }
 
+  // ---------- Pricing calculation ----------
   function calc() {
     const start = el("startDate").value;
     const end = el("endDate").value;
@@ -634,11 +654,7 @@
     el("daysOut").textContent = days;
 
     const zone = el("zone").value;
-    const travel = PRICES.travelPerDay[zone];
-
-    const peakMult = el("peak").checked ? PRICES.peakMultiplier : 1;
-    const applyLong = el("longStay").checked;
-    const wDays = applyLong ? weightedDays(days) : days;
+    const travel = PRICES.travelPerDay[zone] || 0;
 
     const dogs = Math.max(0, parseInt(el("dogs").value || "0", 10));
     const cats = Math.max(0, parseInt(el("cats").value || "0", 10));
@@ -666,34 +682,37 @@
     const taxi = Math.max(0, parseInt(el("taxi").value || "0", 10));
 
     let basePerDay = 0;
-    if (pkg === "day") basePerDay = hours * PRICES.base.dayHourly;
-    if (pkg === "night") basePerDay = PRICES.base.night;
-    if (pkg === "full") basePerDay = PRICES.base.fullDay;
+    if (pkg === "day") basePerDay = hours * (PRICES.base.dayHourly || 0);
+    if (pkg === "night") basePerDay = (PRICES.base.night || 0);
+    if (pkg === "full") basePerDay = (PRICES.base.fullDay || 0);
 
-    const checkinUnit = PRICES.add.checkin + (travel > 0 ? travel : 0);
+    // Check-in fuel rule: if travel fee exists, each check-in includes travel fee too
+    const checkinUnit = (PRICES.add.checkin || 0) + (travel > 0 ? travel : 0);
 
     const addOnsPerDay =
-      (updates * PRICES.add.updatePackPerDay) +
+      (updates * (PRICES.add.updatePackPerDay || 0)) +
       (checkins * checkinUnit) +
-      (w15 * PRICES.add.walk15) +
-      (w30 * PRICES.add.walk30) +
-      (w60 * PRICES.add.walk60) +
-      (meds ? PRICES.add.medsPerDay : 0) +
-      (highcare ? PRICES.add.highcarePerDay : 0) +
-      (homecare ? PRICES.add.homecarePerDay : 0) +
-      (foodAllowed ? -PRICES.add.foodSuppliesCreditPerDay : 0) +
-      (extraDogs * PRICES.add.extraDogPerDay) +
-      (extraCats * PRICES.add.extraCatPerDay) +
+      (w15 * (PRICES.add.walk15 || 0)) +
+      (w30 * (PRICES.add.walk30 || 0)) +
+      (w60 * (PRICES.add.walk60 || 0)) +
+      (meds ? (PRICES.add.medsPerDay || 0) : 0) +
+      (highcare ? (PRICES.add.highcarePerDay || 0) : 0) +
+      (homecare ? (PRICES.add.homecarePerDay || 0) : 0) +
+      (foodAllowed ? -(PRICES.add.foodSuppliesCreditPerDay || 0) : 0) +
+      (extraDogs * (PRICES.add.extraDogPerDay || 0)) +
+      (extraCats * (PRICES.add.extraCatPerDay || 0)) +
       travel;
 
-    const oneTime = (keys * PRICES.add.keyTrip) + (taxi * PRICES.add.petTaxi);
+    const oneTime = (keys * (PRICES.add.keyTrip || 0)) + (taxi * (PRICES.add.petTaxi || 0));
 
-    const dailyAfterPeak = (basePerDay + addOnsPerDay) * peakMult;
-    const stayTotal = dailyAfterPeak * wDays;
-    const total = stayTotal + oneTime;
+    // Long-stay compounding discount always applied (as you requested earlier)
+    const wDays = weightedDays(days);
 
-    const noDiscountTotal = dailyAfterPeak * days + oneTime;
-    const discountAmt = applyLong ? (noDiscountTotal - total) : 0;
+    const daily = basePerDay + addOnsPerDay;
+    const total = (daily * wDays) + oneTime;
+
+    const noDiscountTotal = (daily * days) + oneTime;
+    const discountAmt = (noDiscountTotal - total);
 
     const deposit = total * CONFIG.depositPercent;
     const balance = total - deposit;
@@ -702,13 +721,11 @@
     el("depositOut").textContent = money(deposit);
     el("balanceOut").textContent = money(balance);
 
-    el("baseOut").textContent = money((basePerDay * peakMult) * wDays);
-    el("addonsOut").textContent = money((addOnsPerDay * peakMult) * wDays);
+    el("baseOut").textContent = money(basePerDay * wDays);
+    el("addonsOut").textContent = money(addOnsPerDay * wDays);
     el("oneTimeOut").textContent = money(oneTime);
 
-    el("discountOut").textContent = applyLong
-      ? `Long-stay discount applied: ${money(discountAmt)}`
-      : "";
+    el("discountOut").textContent = discountAmt > 0.5 ? `Long-stay discount applied: ${money(discountAmt)}` : "";
 
     return {
       total, deposit, balance, days, wDays,
@@ -720,16 +737,16 @@
         updates, checkins, w15, w30, w60,
         meds, highcare, homecare,
         foodAllowed,
-        keys, taxi,
-        longStay: applyLong,
-        peak: el("peak").checked
+        keys, taxi
       }
     };
   }
 
+  // ---------- Modal and submission ----------
   function openModal() {
     const pricing = calc();
     const staffText = selectedStaff ? `${selectedStaff.name} (selected)` : "Not selected yet";
+
     el("modalSummary").innerHTML =
       `Package: <b>${pkgLabel()}</b><br>` +
       `Dates: <b>${pricing.inputs.start}</b> to <b>${pricing.inputs.end}</b> (${pricing.days} days)<br>` +
@@ -738,6 +755,7 @@
       `Total: <b>${money(pricing.total)}</b><br>` +
       `Deposit (50%): <b>${money(pricing.deposit)}</b><br>` +
       `Balance: <b>${money(pricing.balance)}</b>`;
+
     el("submitStatus").textContent = "";
     el("modalWrap").classList.remove("hidden");
   }
@@ -751,14 +769,29 @@
     const phone = el("custPhone").value.trim();
     const email = el("custEmail").value.trim();
     const hp = el("hpField").value.trim();
+
     if (hp) return { ok: false, msg: "Blocked." };
     if (!name) return { ok: false, msg: "Enter your name." };
     if (!phone) return { ok: false, msg: "Enter your phone number." };
     if (!email || !email.includes("@")) return { ok: false, msg: "Enter a valid email." };
+
     return { ok: true };
   }
 
-  async function submitBooking() {
+  window.pgBookingCallback = function(payload) {
+    if (!payload || payload.ok !== true) {
+      el("submitStatus").textContent = (payload && payload.error) ? payload.error : "Booking failed. Please try again.";
+      return;
+    }
+
+    el("submitStatus").textContent = "Request sent. Check your email for the invoice/estimate.";
+    setTimeout(() => {
+      closeModal();
+      fetchAvailability(); // refresh so the sitter disappears (auto BUSY row added)
+    }, 900);
+  };
+
+  function submitBooking() {
     const v = validateBookingForm();
     if (!v.ok) { el("submitStatus").textContent = v.msg; return; }
 
@@ -799,7 +832,10 @@
       deposit: String(Math.round(pricing.deposit)),
       balance: String(Math.round(pricing.balance)),
 
-      selectionsJson: JSON.stringify(pricing.inputs)
+      selectionsJson: JSON.stringify(pricing.inputs),
+
+      reqId: String(Date.now()),
+      callback: "pgBookingCallback"
     };
 
     const old = document.getElementById("jsonpBook");
@@ -807,8 +843,6 @@
 
     const url = new URL(CONFIG.apiBaseUrl);
     Object.entries(payload).forEach(([k, v]) => url.searchParams.set(k, String(v)));
-    url.searchParams.set("reqId", String(Date.now()));
-    url.searchParams.set("callback", "pgBookingCallback");
 
     const script = document.createElement("script");
     script.id = "jsonpBook";
@@ -860,7 +894,7 @@ Note: Final price confirmed after screening and availability.`;
     });
 
     [
-      "startDate","endDate","zone","dogs","cats","peak","longStay",
+      "startDate","endDate","zone","dogs","cats",
       "updates","checkins","walk15","walk30","walk60",
       "meds","highcare","homecare","keys","taxi","hours","foodSupplies"
     ].forEach(id => el(id).addEventListener("input", () => {
@@ -875,6 +909,7 @@ Note: Final price confirmed after screening and availability.`;
     el("submitBooking").addEventListener("click", submitBooking);
 
     setPkgUI();
+    loadPricing();
     calc();
     fetchAvailability();
   }
