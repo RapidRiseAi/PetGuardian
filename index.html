@@ -4,53 +4,140 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PetGuardian Care | Pricing Calculator</title>
+
+  <!-- Tailwind (kept because your current file uses it in a few places) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
 
   <style>
+    /* =========================================================
+      CONFIG (EASY EDIT)
+      Change only these values to adjust brand look quickly.
+    ========================================================== */
     :root{
+      /* Core palette (mockup) */
       --pg-forest:#0B2A1E;
       --pg-pine:#123629;
       --pg-champ:#F3E7D3;
       --pg-stone:#CBBFAE;
       --pg-brass:#B08D57;
 
+      /* Tech accent (subtle, premium) */
+      --pg-tech:#7FE7D5;
+
+      /* Surfaces */
       --pg-glass: rgba(18,54,41,0.60);
       --pg-card: rgba(10,40,28,0.56);
       --pg-border: rgba(176,141,87,0.26);
       --pg-muted: rgba(203,191,174,0.92);
 
-      --pg-active-bg: rgba(243,231,211,0.58); /* transparent champagne */
-      --pg-active-text: #0B2A1E;             /* black text */
+      /* Active states */
+      --pg-active-bg: rgba(243,231,211,0.58);
+      --pg-active-text: #0B2A1E;
+
+      /* Layout targets */
+      --pg-radius-xl: 28px;
+      --pg-radius-lg: 24px;
+      --pg-radius-md: 18px;
+      --pg-shadow: 0 22px 70px rgba(0,0,0,0.45);
+
+      /* Focus ring */
+      --pg-focus: 0 0 0 3px rgba(127,231,213,0.18), 0 0 0 1px rgba(127,231,213,0.45);
     }
 
-    body{ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-    .font-lux{ font-family: Cinzel, Inter, system-ui, sans-serif; letter-spacing: 0.2px; }
-
-    .bg-premium{
-      background:
-        radial-gradient(1000px 600px at 20% 0%, rgba(176,141,87,0.20), transparent 60%),
-        radial-gradient(900px 600px at 95% 20%, rgba(243,231,211,0.10), transparent 55%),
-        radial-gradient(900px 900px at 40% 120%, rgba(18,54,41,0.55), transparent 60%),
-        linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.55)),
-        var(--pg-forest);
+    body{
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color: var(--pg-champ);
+      background: var(--pg-forest);
+      overflow-x: hidden;
     }
 
+    .font-lux{
+      font-family: Cinzel, Inter, system-ui, sans-serif;
+      letter-spacing: 0.2px;
+    }
+
+    /* Premium background with subtle grain and vignette, no image needed */
+    .bg-premium{
+      position: relative;
+      background:
+        radial-gradient(1100px 680px at 18% 0%, rgba(176,141,87,0.22), transparent 60%),
+        radial-gradient(980px 640px at 92% 18%, rgba(243,231,211,0.10), transparent 55%),
+        radial-gradient(980px 980px at 50% 120%, rgba(18,54,41,0.60), transparent 60%),
+        linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.58)),
+        var(--pg-forest);
+    }
+    .bg-premium::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      opacity: 0.10;
+      mix-blend-mode: overlay;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.22) 0 1px, transparent 2px),
+        radial-gradient(circle at 70% 40%, rgba(255,255,255,0.18) 0 1px, transparent 2px),
+        radial-gradient(circle at 40% 80%, rgba(255,255,255,0.16) 0 1px, transparent 2px);
+      background-size: 120px 120px, 160px 160px, 200px 200px;
+    }
+    .bg-premium::after{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      pointer-events:none;
+      background: radial-gradient(1200px 700px at 50% 20%, transparent 40%, rgba(0,0,0,0.65) 100%);
+      opacity: 0.55;
+    }
+
+    /* Shell */
+    .shell{
+      position: relative;
+      z-index: 1;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 18px 16px;
+    }
+    @media (min-width: 640px){
+      .shell{ padding: 28px 24px; }
+    }
+
+    /* Glass container */
     .glass{
       background: rgba(18,54,41,0.62);
       border: 1px solid var(--pg-border);
       backdrop-filter: blur(14px);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+      box-shadow: var(--pg-shadow);
+      border-radius: var(--pg-radius-xl);
     }
+
     .card{
       background: var(--pg-card);
       border: 1px solid var(--pg-border);
+      border-radius: var(--pg-radius-lg);
     }
 
+    .thin-line{ height:1px; background: rgba(176,141,87,0.22); }
+
+    .muted{ color: var(--pg-muted); }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:6px 10px;
+      font-size: 12px;
+      border: 1px solid rgba(176,141,87,0.35);
+      background: rgba(11,42,30,0.55);
+      color: var(--pg-stone);
+      white-space: nowrap;
+    }
+
+    /* Inputs */
     .input{
       background: rgba(11,42,30,0.55);
       border: 1px solid rgba(176,141,87,0.22);
@@ -59,9 +146,46 @@
       padding: 10px 12px;
       outline: none;
       width: 100%;
+      transition: box-shadow .15s ease, border-color .15s ease, transform .15s ease;
     }
     .input::placeholder{ color: rgba(203,191,174,0.65); }
+    .input:focus{
+      box-shadow: var(--pg-focus);
+      border-color: rgba(127,231,213,0.55);
+    }
 
+    /* Checkbox accent */
+    input[type="checkbox"]{
+      accent-color: var(--pg-brass);
+    }
+
+    /* Buttons */
+    .btn{
+      border-radius: 16px;
+      padding: 10px 14px;
+      font-weight: 800;
+      border: 1px solid rgba(176,141,87,0.45);
+      transition: transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease;
+      user-select:none;
+    }
+    .btn:focus{ outline: none; box-shadow: var(--pg-focus); }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn-primary{
+      background: rgba(243,231,211,0.92);
+      color: var(--pg-active-text);
+    }
+    .btn-ghost{
+      background: rgba(11,42,30,0.22);
+      color: var(--pg-champ);
+      border-color: rgba(176,141,87,0.55);
+    }
+    .btn-dark{
+      background: rgba(11,42,30,0.40);
+      color: var(--pg-champ);
+      border-color: rgba(176,141,87,0.32);
+    }
+
+    /* Segmented cards */
     .seg{
       display:grid;
       grid-template-columns: repeat(3, minmax(0,1fr));
@@ -74,10 +198,11 @@
       padding: 14px 14px;
       text-align: left;
       transition: all .18s ease;
+      color: var(--pg-champ);
       position: relative;
       overflow: hidden;
-      color: var(--pg-champ);
     }
+    .seg-btn:focus{ outline:none; box-shadow: var(--pg-focus); }
     .seg-btn .sub{ color: var(--pg-muted); font-size: 12px; margin-top: 3px; }
     .seg-btn.active{
       background: var(--pg-active-bg);
@@ -86,24 +211,7 @@
     }
     .seg-btn.active .sub{ color: rgba(11,42,30,0.82); }
 
-    .btn{
-      border-radius: 16px;
-      padding: 10px 14px;
-      font-weight: 700;
-      border: 1px solid rgba(176,141,87,0.45);
-      transition: all .18s ease;
-    }
-    .btn-primary{
-      background: rgba(243,231,211,0.92);
-      color: var(--pg-active-text);
-    }
-    .btn-ghost{
-      background: rgba(11,42,30,0.22);
-      color: var(--pg-champ);
-      border-color: rgba(176,141,87,0.55);
-    }
-    .btn:hover{ transform: translateY(-1px); }
-
+    /* Range slider */
     input[type="range"]{
       height: 26px;
       -webkit-appearance: none;
@@ -143,78 +251,113 @@
       box-shadow: 0 10px 22px rgba(0,0,0,0.45);
     }
 
-    .scroll-x{
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding-bottom: 10px;
-      scroll-snap-type: x mandatory;
+    /* Desktop fit (reduce vertical bloat while staying premium) */
+    @media (min-width: 1024px){
+      .tight-pad{ padding: 14px; }
+      .tight-gap{ gap: 14px; }
+      .title-xl{ font-size: 34px; line-height: 1.1; }
     }
-    .scroll-x::-webkit-scrollbar{ height: 8px; }
-    .scroll-x::-webkit-scrollbar-thumb{ background: rgba(243,231,211,0.15); border-radius: 999px; }
-    .snap{ scroll-snap-align: start; }
 
-    .staff-card{
-      min-width: 280px;
+    /* Sticky quote panel */
+    .sticky-panel{
+      position: sticky;
+      top: 18px;
+    }
+
+    /* Modals */
+    .overlay{
+      background: rgba(0,0,0,0.70);
+      backdrop-filter: blur(6px);
+    }
+    .modal{
+      border-radius: var(--pg-radius-xl);
+      background: rgba(18,54,41,0.72);
+      border: 1px solid rgba(176,141,87,0.30);
+      box-shadow: 0 26px 90px rgba(0,0,0,0.55);
+    }
+    .modal-scroll{
+      max-height: calc(100vh - 90px);
+      overflow-y: auto;
+    }
+
+    /* Sitter cards in modal */
+    .sitter-grid{
+      display:grid;
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+      gap: 12px;
+    }
+    @media (min-width: 640px){
+      .sitter-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1024px){
+      .sitter-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    .sitter-tile{
       border-radius: 22px;
       border: 1px solid rgba(176,141,87,0.24);
       background: rgba(11,42,30,0.52);
-      padding: 14px;
-      text-align: left;
-      transition: all .16s ease;
-      color: var(--pg-champ);
+      padding: 12px;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease;
+      text-align:left;
     }
-    .staff-card .title{ color: var(--pg-muted); font-size: 12px; margin-top: 2px; }
-    .staff-card .bio{ color: rgba(203,191,174,0.95); margin-top: 10px; font-size: 13px; line-height: 1.35; }
-    .staff-card.selected{
+    .sitter-tile:hover{
+      transform: translateY(-2px);
+      border-color: rgba(176,141,87,0.55);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+    }
+    .sitter-tile.selected{
       background: var(--pg-active-bg);
-      border-color: rgba(176,141,87,0.70);
+      border-color: rgba(176,141,87,0.75);
       color: var(--pg-active-text);
     }
-    .staff-card.selected .title,
-    .staff-card.selected .bio{
-      color: rgba(11,42,30,0.86);
-    }
-
-    #modalWrap{ background: rgba(0,0,0,0.68); }
-    .modal-box{ max-height: calc(100vh - 64px); overflow-y: auto; }
-
-    .pill{
+    .badge{
       display:inline-flex;
       align-items:center;
-      gap:8px;
-      border-radius:999px;
-      padding:6px 10px;
+      gap:6px;
       font-size: 12px;
-      border: 1px solid rgba(176,141,87,0.35);
-      background: rgba(11,42,30,0.55);
-      color: var(--pg-stone);
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(176,141,87,0.30);
+      background: rgba(11,42,30,0.45);
+      color: rgba(203,191,174,0.95);
+    }
+    .sitter-tile.selected .badge{
+      border-color: rgba(11,42,30,0.20);
+      background: rgba(11,42,30,0.10);
+      color: rgba(11,42,30,0.82);
     }
 
-    .muted{ color: var(--pg-muted); }
-    .thin-line{ height:1px; background: rgba(176,141,87,0.22); }
+    /* Hide the old carousel visually (we keep it in DOM for functionality checks) */
+    #staffCarousel{ display:none; }
   </style>
 </head>
 
 <body class="min-h-screen bg-premium">
-  <div class="max-w-6xl mx-auto p-4 sm:p-8">
-    <div class="rounded-[28px] p-5 sm:p-7 glass">
+  <div class="shell">
+    <div class="glass p-5 sm:p-7">
 
+      <!-- Top bar -->
       <div class="flex items-center justify-between gap-4 flex-wrap">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl flex items-center justify-center"
-               style="border:1px solid rgba(176,141,87,0.35); background: rgba(11,42,30,0.55);">
-            <span style="color: var(--pg-brass); font-size:18px;">🐾</span>
+          <div class="w-11 h-11 rounded-2xl flex items-center justify-center"
+               style="border:1px solid rgba(176,141,87,0.35); background: rgba(11,42,30,0.55); overflow:hidden;">
+            <img src="logo.png" alt="PetGuardian Care" class="w-full h-full object-cover" onerror="this.style.display='none'">
           </div>
+
           <div>
-            <div class="pill">PetGuardian Care <span style="color: var(--pg-brass);">•</span> Premium Pricing</div>
-            <div class="text-2xl sm:text-3xl font-lux mt-2">Get a care cost estimate</div>
-            <div class="text-sm mt-1 muted">Start with a base stay, then select only what you need.</div>
+            <div class="pill">
+              PetGuardian Care
+              <span style="color: var(--pg-brass);">•</span>
+              Care Estimate
+            </div>
+            <div class="title-xl text-2xl sm:text-3xl font-lux mt-2">Get a care cost estimate</div>
+            <div class="text-sm mt-1 muted">Transparent pricing, verified sitters, secure booking.</div>
             <div id="pricingStatus" class="text-xs mt-2 muted">Pricing: loading from sheet…</div>
           </div>
         </div>
 
-        <div class="flex gap-2">
+        <div class="flex items-center gap-2">
+          <button id="howBtn" class="btn btn-dark">How pricing works</button>
           <button id="copyBtn" class="btn btn-primary">Copy Quote</button>
           <button id="requestBtn" class="btn btn-ghost">Request Booking</button>
         </div>
@@ -222,13 +365,21 @@
 
       <div class="mt-5 thin-line"></div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-5">
+      <!-- Main grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-5 tight-gap">
 
-        <div class="lg:col-span-7 space-y-4">
+        <!-- Left -->
+        <div class="lg:col-span-8 space-y-4">
 
-          <div class="card rounded-[24px] p-4">
-            <div class="text-sm font-semibold">Base stay type</div>
-            <div class="text-xs muted mt-1">This is the starting cost. Add-ons apply on top.</div>
+          <!-- Stay type -->
+          <div class="card p-4 tight-pad">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="text-sm font-semibold">1) Choose your stay type</div>
+                <div class="text-xs muted mt-1">Base cost starts here. Add-ons apply on top.</div>
+              </div>
+              <div class="text-xs muted mt-1">Luxury-grade transparency</div>
+            </div>
 
             <div class="seg mt-3">
               <button class="seg-btn" data-pkg="day" type="button">
@@ -257,7 +408,7 @@
               <div class="flex items-center justify-between">
                 <div>
                   <div class="text-sm font-semibold">Hours per day</div>
-                  <div class="text-xs muted">For day visits only.</div>
+                  <div class="text-xs muted">Day visits only.</div>
                 </div>
                 <div class="text-sm"><span class="muted">Hours:</span> <span id="hoursOut" class="font-semibold">4</span></div>
               </div>
@@ -265,17 +416,24 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- 2x2 card grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 tight-gap">
 
-            <div class="card rounded-[24px] p-4">
-              <div class="text-sm font-semibold">Dates and zone</div>
-              <div class="text-xs muted mt-1">Peak dates and long-stay discounts are calculated automatically.</div>
+            <!-- Dates -->
+            <div class="card p-4 tight-pad">
+              <div class="text-sm font-semibold">2) When and where</div>
+              <div class="text-xs muted mt-1">Peak dates and long-stay discounts apply automatically.</div>
 
-              <label class="block mt-3 text-xs muted">Start date</label>
-              <input id="startDate" type="date" class="input mt-1">
-
-              <label class="block mt-3 text-xs muted">End date</label>
-              <input id="endDate" type="date" class="input mt-1">
+              <div class="grid grid-cols-2 gap-3 mt-3">
+                <div>
+                  <label class="block text-xs muted">Start date</label>
+                  <input id="startDate" type="date" class="input mt-1">
+                </div>
+                <div>
+                  <label class="block text-xs muted">End date</label>
+                  <input id="endDate" type="date" class="input mt-1">
+                </div>
+              </div>
 
               <div class="mt-3 text-sm">
                 <span class="muted">Days:</span> <span id="daysOut" class="font-semibold">1</span>
@@ -294,9 +452,10 @@
               </div>
             </div>
 
-            <div class="card rounded-[24px] p-4">
-              <div class="text-sm font-semibold">Pets and options</div>
-              <div class="text-xs muted mt-1">First pet is included. Extra pets add a daily care fee.</div>
+            <!-- Pets -->
+            <div class="card p-4 tight-pad">
+              <div class="text-sm font-semibold">3) Pets and care options</div>
+              <div class="text-xs muted mt-1">First pet included. Extra pets add a daily fee.</div>
 
               <div class="grid grid-cols-2 gap-3 mt-3">
                 <div>
@@ -309,131 +468,150 @@
                 </div>
               </div>
 
-              <div class="mt-4 rounded-2xl p-3"
+              <div class="mt-3 rounded-2xl p-3"
                    style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
                 <div class="flex items-center justify-between gap-3">
                   <div>
-                    <div class="text-sm font-semibold">Food supplies for sitter use?</div>
-                    <div class="text-xs muted mt-1">If allowed, deduct <b>R50</b> per day.</div>
+                    <div class="text-sm font-semibold">Food supplies allowed</div>
+                    <div class="text-xs muted mt-1">Deduct <b>R50</b> per day if allowed.</div>
                   </div>
                   <label class="inline-flex items-center gap-2 text-sm">
-                    <input id="foodSupplies" type="checkbox" class="accent-white">
+                    <input id="foodSupplies" type="checkbox">
                     <span>Allowed</span>
                   </label>
                 </div>
 
                 <div id="foodNote" class="mt-2 text-xs muted leading-relaxed hidden">
-                  Please store off-limits items separately or clearly label containers/cupboards. Send photos before the booking starts.
+                  Store off-limits items separately or label cupboards. Send photos before the booking starts.
                 </div>
               </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+              <div class="grid grid-cols-2 gap-3 mt-3">
                 <label class="flex items-start justify-between gap-3 rounded-2xl p-3"
                        style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
                   <div>
-                    <div class="text-sm font-semibold">Do you have a puppy?</div>
-                    <div class="text-xs muted mt-1">Extra routine, supervision, and cleanup.</div>
+                    <div class="text-sm font-semibold">Puppy care</div>
+                    <div class="text-xs muted mt-1">Extra supervision and cleanup.</div>
                   </div>
-                  <input id="puppy" type="checkbox" class="accent-white mt-1">
+                  <input id="puppy" type="checkbox" class="mt-1">
                 </label>
 
                 <label class="flex items-start justify-between gap-3 rounded-2xl p-3"
                        style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
                   <div>
-                    <div class="text-sm font-semibold">Oral meds needed?</div>
-                    <div class="text-xs muted mt-1">We administer meds per your instructions.</div>
+                    <div class="text-sm font-semibold">Oral meds</div>
+                    <div class="text-xs muted mt-1">We follow your instructions.</div>
                   </div>
-                  <input id="meds" type="checkbox" class="accent-white mt-1">
+                  <input id="meds" type="checkbox" class="mt-1">
                 </label>
               </div>
             </div>
-          </div>
 
-          <div class="card rounded-[24px] p-4">
-            <div class="text-sm font-semibold">Add-ons</div>
-            <div class="text-xs muted mt-1">Add only what you want. Everything is calculated per day unless stated otherwise.</div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <div>
-                <div class="flex items-center justify-between">
-                  <div>
-                    <div class="text-sm font-semibold">Daily update packs</div>
-                    <div class="text-xs muted">Photos plus a short written log.</div>
-                  </div>
-                  <div class="text-sm"><span class="muted">Qty:</span> <span id="updatesOut" class="font-semibold">0</span></div>
+            <!-- Add-ons -->
+            <div class="card p-4 tight-pad">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <div class="text-sm font-semibold">4) Add-ons</div>
+                  <div class="text-xs muted mt-1">Only what you need. Calculated per day unless stated.</div>
                 </div>
-                <input id="updates" type="range" min="0" max="2" step="1" value="0" class="mt-2">
+                <div class="text-xs muted mt-1">Transparent totals</div>
               </div>
 
-              <div>
-                <div class="flex items-center justify-between">
+              <div class="grid grid-cols-2 gap-4 mt-3">
+                <div>
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <div class="text-sm font-semibold">Daily updates</div>
+                      <div class="text-xs muted">Photos + short log</div>
+                    </div>
+                    <div class="text-sm"><span class="muted">Qty:</span> <span id="updatesOut" class="font-semibold">0</span></div>
+                  </div>
+                  <input id="updates" type="range" min="0" max="2" step="1" value="0" class="mt-2">
+                </div>
+
+                <div>
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <div class="text-sm font-semibold">Check-ins/day</div>
+                      <div class="text-xs muted">Short visit</div>
+                    </div>
+                    <div class="text-sm"><span class="muted">Qty:</span> <span id="checkinsOut" class="font-semibold">0</span></div>
+                  </div>
+                  <input id="checkins" type="range" min="0" max="3" step="1" value="0" class="mt-2">
+                </div>
+
+                <div class="col-span-2">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <div class="text-sm font-semibold">Walk time/day</div>
+                      <div class="text-xs muted">R60 per hour (R5 per 5 min)</div>
+                    </div>
+                    <div class="text-sm">
+                      <span class="muted">Min:</span> <span id="walkMinOut" class="font-semibold">0</span>
+                      <span class="muted ml-3">Cost/day:</span> <span id="walkCostOut" class="font-semibold">R0</span>
+                    </div>
+                  </div>
+                  <input id="walkMinutes" type="range" min="0" max="180" step="5" value="0" class="mt-2">
+                </div>
+
+                <label class="col-span-2 flex items-start justify-between gap-3 rounded-2xl p-3"
+                       style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
                   <div>
-                    <div class="text-sm font-semibold">Check-ins per day</div>
-                    <div class="text-xs muted">Short visit: feed, water, toilet check, quick play.</div>
+                    <div class="text-sm font-semibold">Home care pack</div>
+                    <div class="text-xs muted mt-1">Bins, lights, tidy, quick checks</div>
                   </div>
-                  <div class="text-sm"><span class="muted">Qty:</span> <span id="checkinsOut" class="font-semibold">0</span></div>
-                </div>
-                <input id="checkins" type="range" min="0" max="3" step="1" value="0" class="mt-2">
-                <div class="text-xs muted mt-1">If your zone has travel fees, each check-in includes fuel cost.</div>
-              </div>
+                  <input id="homecare" type="checkbox" class="mt-1">
+                </label>
 
-              <div class="md:col-span-2">
-                <div class="flex items-center justify-between">
+                <div class="grid grid-cols-2 gap-3 col-span-2">
                   <div>
-                    <div class="text-sm font-semibold">Walk time per day</div>
-                    <div class="text-xs muted">Single slider. Charged at <b>R60 per hour</b> (R5 per 5 minutes).</div>
+                    <label class="block text-xs muted">Key trips (one-time)</label>
+                    <input id="keys" type="number" min="0" value="0" class="input mt-1">
                   </div>
-                  <div class="text-sm">
-                    <span class="muted">Minutes:</span> <span id="walkMinOut" class="font-semibold">0</span>
-                    <span class="muted ml-3">Cost/day:</span> <span id="walkCostOut" class="font-semibold">R0</span>
+                  <div>
+                    <label class="block text-xs muted">Pet taxi (one-time)</label>
+                    <input id="taxi" type="number" min="0" value="0" class="input mt-1">
                   </div>
-                </div>
-                <input id="walkMinutes" type="range" min="0" max="180" step="5" value="0" class="mt-2">
-              </div>
-
-              <label class="flex items-start justify-between gap-3 rounded-2xl p-3"
-                     style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
-                <div>
-                  <div class="text-sm font-semibold">Home care pack</div>
-                  <div class="text-xs muted mt-1">Bins, lights, basic tidy, quick checks.</div>
-                </div>
-                <input id="homecare" type="checkbox" class="accent-white mt-1">
-              </label>
-
-              <div class="grid grid-cols-2 gap-3">
-                <div>
-                  <label class="block text-xs muted">Key trips (one-time)</label>
-                  <input id="keys" type="number" min="0" value="0" class="input mt-1">
-                </div>
-                <div>
-                  <label class="block text-xs muted">Pet taxi (one-time)</label>
-                  <input id="taxi" type="number" min="0" value="0" class="input mt-1">
                 </div>
               </div>
             </div>
-          </div>
 
-          <div class="card rounded-[24px] p-4">
-            <div class="flex items-start justify-between gap-3">
-              <div>
-                <div class="text-sm font-semibold">Available sitters</div>
-                <div class="text-xs muted mt-1">Select who you want. Availability updates based on your dates and stay type.</div>
+            <!-- Sitter selection (replaces the scroll list, now luxury modal) -->
+            <div class="card p-4 tight-pad">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <div class="text-sm font-semibold">5) Select your sitter</div>
+                  <div class="text-xs muted mt-1">Verified selection required to submit a request.</div>
+                </div>
+                <div id="staffStatus" class="text-xs muted mt-1">Loading…</div>
               </div>
-              <div id="staffStatus" class="text-xs muted">Loading…</div>
+
+              <div id="selectedSitterPanel" class="mt-3 rounded-2xl p-3"
+                   style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
+                <div class="flex items-center justify-between gap-3">
+                  <div class="min-w-0">
+                    <div class="text-sm font-semibold">No sitter selected</div>
+                    <div class="text-xs muted mt-1">Choose a sitter to continue.</div>
+                  </div>
+                  <button id="chooseSitterBtn" class="btn btn-primary">Choose sitter</button>
+                </div>
+              </div>
+
+              <div id="staffEmpty" class="mt-3 hidden text-sm muted">
+                No sitters available for these dates. Try different dates or stay type.
+              </div>
+
+              <!-- Keep this in DOM (your existing JS checks children length). Hidden by CSS. -->
+              <div id="staffCarousel" class="mt-3"></div>
             </div>
 
-            <div id="staffCarousel" class="scroll-x mt-4"></div>
-
-            <div id="staffEmpty" class="mt-3 hidden text-sm muted">
-              No staff available for these dates. Try different dates or stay type.
-            </div>
           </div>
-
         </div>
 
-        <div class="lg:col-span-5">
-          <div class="card rounded-[24px] p-5 lg:sticky lg:top-6">
-            <div class="text-sm font-semibold">Total estimate</div>
+        <!-- Right -->
+        <div class="lg:col-span-4">
+          <div class="card p-5 sticky-panel">
+            <div class="text-sm font-semibold">Your care quote</div>
             <div id="totalOut" class="text-4xl font-lux mt-2">R0</div>
 
             <div class="mt-4 thin-line"></div>
@@ -459,25 +637,98 @@
             </div>
 
             <div class="mt-4 text-xs muted leading-relaxed">
-              Final price is confirmed after screening and availability.
+              Final price is confirmed after screening and sitter availability.
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 
-  <!-- Booking Modal -->
-  <div id="modalWrap" class="fixed inset-0 hidden overflow-y-auto">
+  <!-- SITTER MODAL -->
+  <div id="sitterModalWrap" class="fixed inset-0 hidden overlay">
+    <div class="max-w-6xl mx-auto p-4 sm:p-8">
+      <div class="modal modal-scroll p-5 sm:p-6">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="text-xs muted">Select your sitter</div>
+            <div class="text-xl font-lux font-semibold mt-1">Available sitters</div>
+            <div class="text-xs mt-2 muted">Larger profiles, clearer trust, better choice.</div>
+          </div>
+          <button id="closeSitterModal" class="btn btn-ghost">Close</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+          <div class="md:col-span-2">
+            <input id="sitterSearch" class="input" placeholder="Search sitter name...">
+          </div>
+          <div>
+            <select id="sitterSort" class="input">
+              <option value="rating">Sort: Highest rated</option>
+              <option value="name">Sort: Name A-Z</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="sitterGrid" class="sitter-grid mt-4"></div>
+
+        <div id="sitterModalEmpty" class="hidden mt-4 text-sm muted">
+          No sitters found for these dates.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRICING RULES MODAL -->
+  <div id="howModalWrap" class="fixed inset-0 hidden overlay">
+    <div class="max-w-2xl mx-auto p-4 sm:p-8">
+      <div class="modal modal-scroll p-5 sm:p-6">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="text-xs muted">Pricing transparency</div>
+            <div class="text-xl font-lux font-semibold mt-1">How pricing works</div>
+            <div class="text-xs mt-2 muted">No surprises. Your total is calculated from these rules.</div>
+          </div>
+          <button id="closeHowModal" class="btn btn-ghost">Close</button>
+        </div>
+
+        <div class="mt-4 space-y-3 text-sm">
+          <div class="rounded-2xl p-3" style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
+            <div class="font-semibold">Peak dates</div>
+            <div class="text-xs muted mt-1">Peak multiplier applies if any day falls in peak range.</div>
+            <ul class="mt-2 text-xs muted list-disc pl-5">
+              <li>June 1 to July 31</li>
+              <li>December 1 to January 15</li>
+            </ul>
+          </div>
+
+          <div class="rounded-2xl p-3" style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
+            <div class="font-semibold">Long-stay discount</div>
+            <div class="text-xs muted mt-1">Applied automatically in blocks (compounds per block).</div>
+            <div class="text-xs muted mt-2">
+              Example: 10 days at 100%, next 10 days at 90%, next 10 days at 81%, and so on.
+            </div>
+          </div>
+
+          <div class="rounded-2xl p-3" style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
+            <div class="font-semibold">Deposit</div>
+            <div class="text-xs muted mt-1">50% deposit secures your booking. Remaining 50% due after service.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking Modal (your existing one, kept the same) -->
+  <div id="modalWrap" class="fixed inset-0 hidden overflow-y-auto overlay">
     <div class="max-w-xl mx-auto p-4 sm:p-8 pb-24">
-      <div class="rounded-[24px] p-5 sm:p-6 glass modal-box">
+      <div class="modal p-5 sm:p-6 modal-scroll">
         <div class="flex items-start justify-between gap-3">
           <div>
             <div class="text-xs muted">Request Booking</div>
             <div class="text-xl font-lux font-semibold mt-1">Your details</div>
             <div class="text-xs mt-2 muted">
-              We will email an invoice/estimate. Deposit required is 50%.
+              We will email an invoice or estimate. Deposit required is 50%.
             </div>
           </div>
           <button id="closeModal" class="btn btn-ghost">Close</button>
@@ -528,6 +779,9 @@
   </div>
 
 <script>
+  /* =========================================================
+    CONFIG (EASY EDIT)
+  ========================================================== */
   const CONFIG = {
     businessName: "PetGuardian Care",
     depositPercent: 0.50,
@@ -547,7 +801,7 @@
       updatePackPerDay: 50,
       checkin: 50,
 
-      // Walks are derived from minutes: R5 per 5 minutes => R1 per minute
+      // Walks derived from minutes: R5 per 5 minutes => R1 per minute
       walkPerMinute: 1,
 
       medsPerDay: 50,
@@ -560,12 +814,13 @@
       petTaxi: 150
     },
 
-    longStay: { blockDays: 10, factor: 0.9 } // compounding every 10 days
+    longStay: { blockDays: 10, factor: 0.9 } // compounding every block
   };
 
   let pkg = "day";
   let selectedStaff = null;
   let lastAvailabilityReqId = 0;
+  let staffListCache = [];
 
   const el = (id) => document.getElementById(id);
 
@@ -645,11 +900,161 @@
     }[m]));
   }
 
-  // JSONP callbacks
+  /* =========================================================
+    SITTER UI (MODAL + SELECTED PANEL)
+  ========================================================== */
+  function openSitterModal(){
+    el("sitterModalWrap").classList.remove("hidden");
+    el("sitterSearch").focus();
+  }
+  function closeSitterModal(){
+    el("sitterModalWrap").classList.add("hidden");
+  }
+
+  function updateSelectedSitterPanel(){
+    const panel = el("selectedSitterPanel");
+
+    if (!staffListCache.length){
+      panel.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <div class="min-w-0">
+            <div class="text-sm font-semibold">No sitters available</div>
+            <div class="text-xs muted mt-1">Try different dates or stay type.</div>
+          </div>
+          <button id="chooseSitterBtn" class="btn btn-ghost" type="button">Choose sitter</button>
+        </div>
+      `;
+      const btn = document.getElementById("chooseSitterBtn");
+      if (btn) btn.addEventListener("click", openSitterModal);
+      return;
+    }
+
+    if (!selectedStaff){
+      panel.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <div class="min-w-0">
+            <div class="text-sm font-semibold">No sitter selected</div>
+            <div class="text-xs muted mt-1">Choose a sitter to continue.</div>
+          </div>
+          <button id="chooseSitterBtn" class="btn btn-primary" type="button">Choose sitter</button>
+        </div>
+      `;
+      const btn = document.getElementById("chooseSitterBtn");
+      if (btn) btn.addEventListener("click", openSitterModal);
+      return;
+    }
+
+    panel.innerHTML = `
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <img src="${escapeHtml(selectedStaff.photoUrl || "")}" alt="${escapeHtml(selectedStaff.name || "Sitter")}"
+               class="w-14 h-14 rounded-2xl object-cover border"
+               style="border-color: rgba(176,141,87,0.28); background: rgba(0,0,0,0.2);">
+          <div class="min-w-0">
+            <div class="text-sm font-semibold font-lux truncate">${escapeHtml(selectedStaff.name || "Sitter")}</div>
+            <div class="text-xs muted truncate">${escapeHtml(selectedStaff.title || "PetGuardian Care Sitter")}</div>
+            <div class="text-xs mt-1" style="color: rgba(203,191,174,0.95);">
+              Rating: <span class="font-semibold">${escapeHtml(String(selectedStaff.rating || "5.0"))}</span>
+            </div>
+          </div>
+        </div>
+        <button id="changeSitterBtn" class="btn btn-ghost" type="button">Change</button>
+      </div>
+      <div class="text-xs muted mt-3 leading-relaxed">${escapeHtml(selectedStaff.bio || "")}</div>
+    `;
+
+    const btn = document.getElementById("changeSitterBtn");
+    if (btn) btn.addEventListener("click", openSitterModal);
+  }
+
+  function selectSitterById(id){
+    const found = staffListCache.find(s => String(s.id) === String(id));
+    if (!found) return;
+    selectedStaff = found;
+    renderSitterModal(staffListCache);
+    updateSelectedSitterPanel();
+  }
+
+  function renderSitterModal(list){
+    const grid = el("sitterGrid");
+    const empty = el("sitterModalEmpty");
+    const q = (el("sitterSearch").value || "").trim().toLowerCase();
+    const sort = el("sitterSort").value;
+
+    let filtered = list.filter(s => {
+      const name = String(s.name || "").toLowerCase();
+      return !q || name.includes(q);
+    });
+
+    if (sort === "name"){
+      filtered.sort((a,b) => String(a.name||"").localeCompare(String(b.name||"")));
+    } else {
+      filtered.sort((a,b) => (parseFloat(b.rating)||0) - (parseFloat(a.rating)||0));
+    }
+
+    grid.innerHTML = "";
+    empty.classList.toggle("hidden", filtered.length !== 0);
+
+    filtered.forEach((s) => {
+      const tile = document.createElement("button");
+      tile.type = "button";
+      tile.className = "sitter-tile";
+      if (selectedStaff && String(selectedStaff.id) === String(s.id)) tile.classList.add("selected");
+
+      tile.innerHTML = `
+        <div class="aspect-[4/5] rounded-2xl overflow-hidden border"
+             style="border-color: rgba(176,141,87,0.22); background: rgba(0,0,0,0.2);">
+          <img src="${escapeHtml(s.photoUrl || "")}" alt="${escapeHtml(s.name || "Sitter")}"
+               class="w-full h-full object-cover">
+        </div>
+
+        <div class="mt-3">
+          <div class="font-lux font-semibold truncate">${escapeHtml(s.name || "Sitter")}</div>
+          <div class="text-xs muted truncate mt-1">${escapeHtml(s.title || "PetGuardian Care Sitter")}</div>
+          <div class="text-xs mt-2" style="color: rgba(203,191,174,0.95);">
+            Rating: <span class="font-semibold">${escapeHtml(String(s.rating || "5.0"))}</span>
+          </div>
+          <div class="text-xs muted mt-2 leading-relaxed" style="min-height: 48px;">
+            ${escapeHtml(s.bio || "Professional sitter")}
+          </div>
+
+          <div class="mt-3 flex items-center justify-between">
+            <span class="badge">Verified</span>
+            <span class="badge">Select</span>
+          </div>
+        </div>
+      `;
+
+      tile.addEventListener("click", () => {
+        selectedStaff = s;
+        updateSelectedSitterPanel();
+        renderSitterModal(staffListCache);
+        closeSitterModal();
+      });
+
+      grid.appendChild(tile);
+    });
+  }
+
+  /* =========================================================
+    JSONP callbacks (unchanged functionality)
+  ========================================================== */
   window.pgAvailabilityCallback = function(payload) {
     if (!payload || payload.reqId != lastAvailabilityReqId) return;
     const list = payload.staff || [];
-    renderStaffCarousel(list);
+
+    staffListCache = list.slice();
+
+    // preserve selection if still available
+    if (selectedStaff) {
+      const stillThere = staffListCache.find(s => String(s.id) === String(selectedStaff.id));
+      if (!stillThere) selectedStaff = null;
+    }
+
+    renderStaffCarousel(list);   // kept for internal checks
+    renderSitterModal(list);
+    updateSelectedSitterPanel();
+
     el("staffStatus").textContent = list.length ? "Select a sitter" : "None available";
     el("staffEmpty").classList.toggle("hidden", list.length !== 0);
   };
@@ -660,7 +1065,7 @@
       return;
     }
     el("submitStatus").textContent =
-      "Request sent. Check your email for the invoice/estimate. If you do not receive it, WhatsApp us with your name and dates.";
+      "Request sent. Check your email for the invoice or estimate. If you do not receive it, WhatsApp us with your name and dates.";
     setTimeout(() => closeModal(), 1600);
   };
 
@@ -677,7 +1082,6 @@
   };
 
   function applyPricingFromSheet(p){
-    // Helper
     const num = (v, fallback) => {
       const n = Number(v);
       return Number.isFinite(n) ? n : fallback;
@@ -763,44 +1167,13 @@
     document.body.appendChild(script);
   }
 
+  /* Keep this for your existing logic checks, hidden in UI */
   function renderStaffCarousel(staffList) {
     const wrap = el("staffCarousel");
     wrap.innerHTML = "";
-    selectedStaff = null;
-
     staffList.forEach((s) => {
-      const card = document.createElement("button");
-      card.type = "button";
-      card.className = "snap staff-card";
-
-      card.innerHTML = `
-        <div class="flex items-center gap-3">
-          <img src="${escapeHtml(s.photoUrl || '')}" alt="${escapeHtml(s.name || 'Sitter')}"
-               class="w-14 h-14 rounded-2xl object-cover border"
-               style="border-color: rgba(176,141,87,0.28); background: rgba(0,0,0,0.2);">
-          <div class="min-w-0">
-            <div class="font-semibold font-lux truncate">${escapeHtml(s.name || "Sitter")}</div>
-            <div class="title">${escapeHtml(s.title || "PetGuardian Care Sitter")}</div>
-          </div>
-        </div>
-
-        <div class="bio">${escapeHtml(s.bio || "Professional sitter")}</div>
-
-        <div class="mt-3 flex items-center justify-between text-xs" style="color: rgba(203,191,174,0.95);">
-          <div>Rating: <span class="font-semibold">${escapeHtml(String(s.rating || "5.0"))}</span></div>
-          <div class="px-2 py-1 rounded-full"
-               style="border: 1px solid rgba(176,141,87,0.22); background: rgba(18,54,41,0.55);">
-            Select
-          </div>
-        </div>
-      `;
-
-      card.addEventListener("click", () => {
-        [...wrap.children].forEach((c) => c.classList.remove("selected"));
-        card.classList.add("selected");
-        selectedStaff = s;
-      });
-
+      const card = document.createElement("div");
+      card.innerHTML = `<span>${escapeHtml(s.name || "")}</span>`;
       wrap.appendChild(card);
     });
   }
@@ -822,7 +1195,6 @@
       ? `Peak dates detected in your booking range (June-July or Dec to 15 Jan).`
       : `No peak dates detected in your booking range.`;
 
-    // Long-stay is automatic, always on
     const wDays = weightedDays(days);
 
     const dogs = Math.max(0, parseInt(el("dogs").value || "0", 10));
@@ -843,7 +1215,7 @@
     const walkMin = parseInt(el("walkMinutes").value || "0", 10);
     el("walkMinOut").textContent = walkMin;
 
-    const walkCostPerDay = walkMin * PRICES.add.walkPerMinute; // R1 per minute
+    const walkCostPerDay = walkMin * PRICES.add.walkPerMinute;
     el("walkCostOut").textContent = money(walkCostPerDay);
 
     const meds = el("meds").checked;
@@ -1037,6 +1409,9 @@ Note: Final price confirmed after screening and availability.`;
     }
   }
 
+  function openHowModal(){ el("howModalWrap").classList.remove("hidden"); }
+  function closeHowModal(){ el("howModalWrap").classList.add("hidden"); }
+
   function attach() {
     const today = new Date();
     const yyyy = today.getFullYear();
@@ -1069,10 +1444,23 @@ Note: Final price confirmed after screening and availability.`;
     el("modalWrap").addEventListener("click", (e) => { if (e.target === el("modalWrap")) closeModal(); });
     el("submitBooking").addEventListener("click", submitBooking);
 
+    // Sitter modal events
+    el("chooseSitterBtn").addEventListener("click", openSitterModal);
+    el("closeSitterModal").addEventListener("click", closeSitterModal);
+    el("sitterModalWrap").addEventListener("click", (e) => { if (e.target === el("sitterModalWrap")) closeSitterModal(); });
+    el("sitterSearch").addEventListener("input", () => renderSitterModal(staffListCache));
+    el("sitterSort").addEventListener("input", () => renderSitterModal(staffListCache));
+
+    // Pricing rules modal events
+    el("howBtn").addEventListener("click", openHowModal);
+    el("closeHowModal").addEventListener("click", closeHowModal);
+    el("howModalWrap").addEventListener("click", (e) => { if (e.target === el("howModalWrap")) closeHowModal(); });
+
     setPkgUI();
-    fetchPricing();     // load sheet prices first
+    fetchPricing();
     calc();
     fetchAvailability();
+    updateSelectedSitterPanel();
   }
 
   attach();
