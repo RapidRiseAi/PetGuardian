@@ -3,10 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PetGuardian Care | Pricing Calculator</title>
-
-  <!-- Tailwind (kept because your current file uses it in a few places) -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>PetGuardian Care | Care Estimate</title>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,208 +13,283 @@
   <style>
     /* =========================================================
       CONFIG (EASY EDIT)
-      Change only these values to adjust brand look quickly.
+      These are style-only variables.
+      Pricing, URLs, logic are in JS CONFIG further below.
     ========================================================== */
     :root{
-      /* Core palette (mockup) */
-      --pg-forest:#0B2A1E;
-      --pg-pine:#123629;
+      --pg-forest:#071C14;
+      --pg-pine:#0B2A1E;
+      --pg-deep:#0A241A;
+
       --pg-champ:#F3E7D3;
       --pg-stone:#CBBFAE;
       --pg-brass:#B08D57;
 
-      /* Tech accent (subtle, premium) */
-      --pg-tech:#7FE7D5;
-
-      /* Surfaces */
-      --pg-glass: rgba(18,54,41,0.60);
-      --pg-card: rgba(10,40,28,0.56);
       --pg-border: rgba(176,141,87,0.26);
+      --pg-border-strong: rgba(176,141,87,0.45);
+
+      --pg-card: rgba(10,36,26,0.72);
+      --pg-card-2: rgba(8,28,20,0.78);
+
       --pg-muted: rgba(203,191,174,0.92);
 
-      /* Active states */
-      --pg-active-bg: rgba(243,231,211,0.58);
-      --pg-active-text: #0B2A1E;
-
-      /* Layout targets */
       --pg-radius-xl: 28px;
-      --pg-radius-lg: 24px;
-      --pg-radius-md: 18px;
-      --pg-shadow: 0 22px 70px rgba(0,0,0,0.45);
+      --pg-radius-lg: 22px;
+      --pg-radius-md: 16px;
 
-      /* Focus ring */
-      --pg-focus: 0 0 0 3px rgba(127,231,213,0.18), 0 0 0 1px rgba(127,231,213,0.45);
+      --pg-shadow: 0 22px 70px rgba(0,0,0,0.52);
+
+      /* Optional background image (set via JS if CONFIG.brandBgImage provided) */
+      --pg-bg-image: none;
+
+      /* SVG noise texture (stronger than before, still tasteful) */
+      --pg-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
     }
 
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
     body{
+      margin:0;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color: var(--pg-champ);
       background: var(--pg-forest);
-      overflow-x: hidden;
+      overflow-x:hidden;
+    }
+    .font-lux{ font-family: Cinzel, Inter, system-ui, sans-serif; letter-spacing: .2px; }
+
+    /* Desktop: true landscape, no page scroll */
+    @media (min-width: 1024px){
+      body{ overflow:hidden; }
     }
 
-    .font-lux{
-      font-family: Cinzel, Inter, system-ui, sans-serif;
-      letter-spacing: 0.2px;
-    }
-
-    /* Premium background with subtle grain and vignette, no image needed */
+    /* Premium background */
     .bg-premium{
       position: relative;
+      min-height: 100vh;
       background:
-        radial-gradient(1100px 680px at 18% 0%, rgba(176,141,87,0.22), transparent 60%),
+        var(--pg-bg-image),
+        radial-gradient(1100px 680px at 18% 0%, rgba(176,141,87,0.24), transparent 60%),
         radial-gradient(980px 640px at 92% 18%, rgba(243,231,211,0.10), transparent 55%),
-        radial-gradient(980px 980px at 50% 120%, rgba(18,54,41,0.60), transparent 60%),
-        linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.58)),
+        radial-gradient(980px 980px at 50% 115%, rgba(11,42,30,0.62), transparent 60%),
+        linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.66)),
         var(--pg-forest);
+      background-size: cover;
+      background-position: center;
     }
     .bg-premium::before{
       content:"";
       position:absolute;
       inset:0;
       pointer-events:none;
-      opacity: 0.10;
+      opacity: 0.55;
       mix-blend-mode: overlay;
-      background-image:
-        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.22) 0 1px, transparent 2px),
-        radial-gradient(circle at 70% 40%, rgba(255,255,255,0.18) 0 1px, transparent 2px),
-        radial-gradient(circle at 40% 80%, rgba(255,255,255,0.16) 0 1px, transparent 2px);
-      background-size: 120px 120px, 160px 160px, 200px 200px;
+      background-image: var(--pg-noise);
+      background-size: 240px 240px;
     }
     .bg-premium::after{
       content:"";
       position:absolute;
       inset:-1px;
       pointer-events:none;
-      background: radial-gradient(1200px 700px at 50% 20%, transparent 40%, rgba(0,0,0,0.65) 100%);
-      opacity: 0.55;
+      background: radial-gradient(1200px 720px at 50% 16%, transparent 38%, rgba(0,0,0,0.75) 100%);
+      opacity: 0.70;
     }
 
-    /* Shell */
     .shell{
-      position: relative;
-      z-index: 1;
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 18px 16px;
-    }
-    @media (min-width: 640px){
-      .shell{ padding: 28px 24px; }
+      position:relative;
+      z-index:1;
+      padding: 18px;
+      height: 100vh;
+      display:flex;
+      align-items: stretch;
+      justify-content: center;
     }
 
-    /* Glass container */
     .glass{
-      background: rgba(18,54,41,0.62);
-      border: 1px solid var(--pg-border);
-      backdrop-filter: blur(14px);
-      box-shadow: var(--pg-shadow);
+      width: min(1260px, 100%);
       border-radius: var(--pg-radius-xl);
-    }
-
-    .card{
-      background: var(--pg-card);
       border: 1px solid var(--pg-border);
-      border-radius: var(--pg-radius-lg);
+      background: rgba(11,42,30,0.58);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--pg-shadow);
+      display:flex;
+      flex-direction: column;
+      overflow:hidden;
     }
 
-    .thin-line{ height:1px; background: rgba(176,141,87,0.22); }
-
-    .muted{ color: var(--pg-muted); }
-
+    .topbar{
+      padding: 16px 18px;
+      display:flex;
+      align-items:flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px; min-width: 320px;
+    }
+    .logo{
+      width: 46px; height:46px;
+      border-radius: 18px;
+      border: 1px solid var(--pg-border);
+      background: rgba(8,28,20,0.65);
+      overflow:hidden;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .logo img{ width:100%; height:100%; object-fit: cover; display:block; }
     .pill{
       display:inline-flex;
       align-items:center;
-      gap:8px;
+      gap:10px;
       border-radius:999px;
       padding:6px 10px;
       font-size: 12px;
       border: 1px solid rgba(176,141,87,0.35);
-      background: rgba(11,42,30,0.55);
+      background: rgba(8,28,20,0.55);
       color: var(--pg-stone);
       white-space: nowrap;
     }
-
-    /* Inputs */
-    .input{
-      background: rgba(11,42,30,0.55);
-      border: 1px solid rgba(176,141,87,0.22);
-      color: var(--pg-champ);
-      border-radius: 16px;
-      padding: 10px 12px;
-      outline: none;
-      width: 100%;
-      transition: box-shadow .15s ease, border-color .15s ease, transform .15s ease;
+    .title{
+      margin-top: 8px;
+      font-size: 30px;
+      line-height: 1.08;
+      font-weight: 700;
     }
-    .input::placeholder{ color: rgba(203,191,174,0.65); }
-    .input:focus{
-      box-shadow: var(--pg-focus);
-      border-color: rgba(127,231,213,0.55);
+    .sub{
+      margin-top: 4px;
+      font-size: 13px;
+      color: var(--pg-muted);
     }
 
-    /* Checkbox accent */
-    input[type="checkbox"]{
-      accent-color: var(--pg-brass);
-    }
-
-    /* Buttons */
+    .actions{ display:flex; align-items:center; gap:10px; flex-wrap: wrap; }
     .btn{
       border-radius: 16px;
       padding: 10px 14px;
       font-weight: 800;
       border: 1px solid rgba(176,141,87,0.45);
+      background: rgba(8,28,20,0.18);
+      color: var(--pg-champ);
+      cursor:pointer;
       transition: transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease;
       user-select:none;
     }
-    .btn:focus{ outline: none; box-shadow: var(--pg-focus); }
     .btn:hover{ transform: translateY(-1px); }
+    .btn:focus{ outline:none; box-shadow: 0 0 0 3px rgba(176,141,87,0.18), 0 0 0 1px rgba(176,141,87,0.55); }
     .btn-primary{
-      background: rgba(243,231,211,0.92);
-      color: var(--pg-active-text);
+      background: rgba(243,231,211,0.94);
+      color: #081B13;
+      border-color: rgba(243,231,211,0.55);
     }
     .btn-ghost{
-      background: rgba(11,42,30,0.22);
-      color: var(--pg-champ);
+      background: rgba(8,28,20,0.35);
       border-color: rgba(176,141,87,0.55);
     }
-    .btn-dark{
-      background: rgba(11,42,30,0.40);
-      color: var(--pg-champ);
-      border-color: rgba(176,141,87,0.32);
+
+    .divider{ height:1px; background: rgba(176,141,87,0.18); }
+
+    /* MAIN LAYOUT (landscape, no scroll) */
+    .main{
+      flex:1;
+      min-height: 0;
+      padding: 14px 18px 18px;
+      display:grid;
+      grid-template-columns: 1fr 380px;
+      gap: 16px;
+    }
+    @media (max-width: 1023px){
+      .shell{ height:auto; padding: 14px; }
+      .glass{ height:auto; }
+      .main{ grid-template-columns: 1fr; }
+      body{ overflow:auto; }
     }
 
-    /* Segmented cards */
+    .left{
+      min-height: 0;
+      display:grid;
+      grid-template-rows: auto 1fr;
+      gap: 14px;
+    }
+
+    .grid2x2{
+      min-height: 0;
+      display:grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 1023px){
+      .grid2x2{ grid-template-columns: 1fr; grid-template-rows: auto; }
+    }
+
+    .card{
+      border-radius: var(--pg-radius-lg);
+      border: 1px solid var(--pg-border);
+      background: var(--pg-card);
+      padding: 14px;
+      overflow:hidden;
+    }
+    .card-title{
+      font-weight: 800;
+      font-size: 14px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .muted{ color: var(--pg-muted); }
+    .tiny{ font-size: 12px; color: var(--pg-muted); }
+
+    .input, select, textarea{
+      width:100%;
+      border-radius: 14px;
+      padding: 10px 12px;
+      background: rgba(8,28,20,0.55);
+      border: 1px solid rgba(176,141,87,0.22);
+      color: var(--pg-champ);
+      outline:none;
+      transition: box-shadow .15s ease, border-color .15s ease;
+      font-family: inherit;
+    }
+    .input:focus, select:focus, textarea:focus{
+      border-color: rgba(176,141,87,0.62);
+      box-shadow: 0 0 0 3px rgba(176,141,87,0.16);
+    }
+
+    /* Stay type segments */
     .seg{
       display:grid;
       grid-template-columns: repeat(3, minmax(0,1fr));
       gap: 10px;
+      margin-top: 12px;
+    }
+    @media (max-width: 1023px){
+      .seg{ grid-template-columns: 1fr; }
     }
     .seg-btn{
       border: 1px solid rgba(176,141,87,0.28);
-      background: rgba(11,42,30,0.45);
+      background: rgba(8,28,20,0.40);
       border-radius: 18px;
-      padding: 14px 14px;
+      padding: 12px 12px;
       text-align: left;
+      cursor:pointer;
       transition: all .18s ease;
       color: var(--pg-champ);
-      position: relative;
-      overflow: hidden;
     }
-    .seg-btn:focus{ outline:none; box-shadow: var(--pg-focus); }
-    .seg-btn .sub{ color: var(--pg-muted); font-size: 12px; margin-top: 3px; }
     .seg-btn.active{
-      background: var(--pg-active-bg);
+      background: rgba(243,231,211,0.86);
+      color: #081B13;
       border-color: rgba(176,141,87,0.70);
-      color: var(--pg-active-text);
     }
-    .seg-btn.active .sub{ color: rgba(11,42,30,0.82); }
+    .seg-sub{ margin-top: 4px; font-size: 12px; color: var(--pg-muted); }
+    .seg-btn.active .seg-sub{ color: rgba(8,27,19,0.75); }
 
     /* Range slider */
     input[type="range"]{
       height: 26px;
-      -webkit-appearance: none;
       appearance: none;
       background: transparent;
       width: 100%;
+      margin-top: 8px;
     }
     input[type="range"]::-webkit-slider-runnable-track{
       height: 7px;
@@ -226,7 +298,6 @@
       border: 1px solid rgba(176,141,87,0.30);
     }
     input[type="range"]::-webkit-slider-thumb{
-      -webkit-appearance: none;
       appearance: none;
       width: 18px;
       height: 18px;
@@ -236,562 +307,641 @@
       margin-top: -7px;
       box-shadow: 0 10px 22px rgba(0,0,0,0.45);
     }
-    input[type="range"]::-moz-range-track{
-      height: 7px;
-      border-radius: 999px;
-      background: rgba(243,231,211,0.16);
-      border: 1px solid rgba(176,141,87,0.30);
-    }
-    input[type="range"]::-moz-range-thumb{
-      width: 18px;
-      height: 18px;
-      border-radius: 999px;
-      background: var(--pg-brass);
-      border: 2px solid rgba(243,231,211,0.95);
-      box-shadow: 0 10px 22px rgba(0,0,0,0.45);
-    }
 
-    /* Desktop fit (reduce vertical bloat while staying premium) */
-    @media (min-width: 1024px){
-      .tight-pad{ padding: 14px; }
-      .tight-gap{ gap: 14px; }
-      .title-xl{ font-size: 34px; line-height: 1.1; }
-    }
-
-    /* Sticky quote panel */
-    .sticky-panel{
-      position: sticky;
-      top: 18px;
-    }
-
-    /* Modals */
-    .overlay{
-      background: rgba(0,0,0,0.70);
-      backdrop-filter: blur(6px);
-    }
-    .modal{
-      border-radius: var(--pg-radius-xl);
-      background: rgba(18,54,41,0.72);
-      border: 1px solid rgba(176,141,87,0.30);
-      box-shadow: 0 26px 90px rgba(0,0,0,0.55);
-    }
-    .modal-scroll{
-      max-height: calc(100vh - 90px);
-      overflow-y: auto;
-    }
-
-    /* Sitter cards in modal */
-    .sitter-grid{
-      display:grid;
-      grid-template-columns: repeat(1, minmax(0, 1fr));
+    /* Quote panel */
+    .quote{
+      border-radius: var(--pg-radius-lg);
+      border: 1px solid var(--pg-border);
+      background: var(--pg-card-2);
+      padding: 16px;
+      display:flex;
+      flex-direction: column;
       gap: 12px;
     }
-    @media (min-width: 640px){
-      .sitter-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .quote-total{
+      font-size: 44px;
+      line-height: 1;
+      margin-top: 4px;
     }
-    @media (min-width: 1024px){
-      .sitter-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .line{ height:1px; background: rgba(176,141,87,0.18); margin: 6px 0; }
+    .row{
+      display:flex; align-items:center; justify-content: space-between; gap: 10px;
+      font-size: 13px;
     }
-    .sitter-tile{
-      border-radius: 22px;
-      border: 1px solid rgba(176,141,87,0.24);
-      background: rgba(11,42,30,0.52);
+    .row strong{ font-size: 13px; }
+
+    .depositBox{
+      margin-top: 8px;
+      border-radius: 18px;
+      border: 1px solid rgba(176,141,87,0.20);
+      background: rgba(243,231,211,0.12);
       padding: 12px;
-      transition: transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease;
-      text-align:left;
     }
-    .sitter-tile:hover{
-      transform: translateY(-2px);
-      border-color: rgba(176,141,87,0.55);
-      box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+    .depositAmt{ font-size: 22px; font-weight: 900; margin-top: 4px; }
+
+    /* Quick actions card */
+    .qa{
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
     }
-    .sitter-tile.selected{
-      background: var(--pg-active-bg);
-      border-color: rgba(176,141,87,0.75);
-      color: var(--pg-active-text);
+    .qa-buttons{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
-    .badge{
-      display:inline-flex;
+    .selectedSitter{
+      margin-top: 8px;
+      border-radius: 18px;
+      border: 1px solid rgba(176,141,87,0.20);
+      background: rgba(8,28,20,0.35);
+      padding: 10px;
+      display:flex;
       align-items:center;
-      gap:6px;
-      font-size: 12px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(176,141,87,0.30);
-      background: rgba(11,42,30,0.45);
-      color: rgba(203,191,174,0.95);
+      justify-content: space-between;
+      gap: 10px;
     }
-    .sitter-tile.selected .badge{
-      border-color: rgba(11,42,30,0.20);
-      background: rgba(11,42,30,0.10);
-      color: rgba(11,42,30,0.82);
+    .selLeft{ display:flex; align-items:center; gap: 10px; min-width: 0; }
+    .avatar{
+      width: 46px; height:46px;
+      border-radius: 16px;
+      border: 1px solid rgba(176,141,87,0.22);
+      background: rgba(0,0,0,0.22);
+      overflow:hidden;
+      flex: 0 0 auto;
+    }
+    .avatar img{ width:100%; height:100%; object-fit: cover; display:block; }
+    .selText{ min-width: 0; }
+    .selName{ font-weight: 900; font-size: 13px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
+    .selMeta{ font-size: 12px; color: var(--pg-muted); white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
+
+    /* =========================
+      MODALS (solid, not transparent)
+    ========================== */
+    .overlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      display:none;
+      z-index: 9999;
+      padding: 18px;
+    }
+    .overlay.open{ display:flex; align-items:center; justify-content:center; }
+    .modal{
+      width: min(1100px, 100%);
+      border-radius: var(--pg-radius-xl);
+      border: 1px solid var(--pg-border-strong);
+      background: #071C14; /* solid */
+      box-shadow: 0 30px 110px rgba(0,0,0,0.70);
+      overflow:hidden;
+    }
+    .modalHeader{
+      padding: 14px 16px;
+      display:flex;
+      align-items:flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      background: linear-gradient(180deg, rgba(176,141,87,0.10), transparent);
+      border-bottom: 1px solid rgba(176,141,87,0.18);
+    }
+    .modalBody{
+      padding: 14px 16px 16px;
+      max-height: calc(100vh - 160px);
+      overflow:auto;
     }
 
-    /* Hide the old carousel visually (we keep it in DOM for functionality checks) */
+    /* Add-ons modal layout */
+    .addonsGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 900px){
+      .addonsGrid{ grid-template-columns: 1fr; }
+    }
+    .addonBlock{
+      border-radius: 18px;
+      border: 1px solid rgba(176,141,87,0.20);
+      background: rgba(8,28,20,0.55);
+      padding: 12px;
+    }
+
+    /* =========================
+      SITTER CAROUSEL (3 cards, modern)
+      Coverflow style: center is primary, sides secondary
+    ========================== */
+    .carouselWrap{
+      margin-top: 8px;
+      border-radius: 22px;
+      border: 1px solid rgba(176,141,87,0.22);
+      background: rgba(8,28,20,0.45);
+      padding: 14px;
+    }
+    .carouselStage{
+      position: relative;
+      height: 420px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    @media (max-width: 700px){
+      .carouselStage{ height: 520px; }
+    }
+
+    .sCard{
+      position:absolute;
+      width: 310px;
+      border-radius: 22px;
+      border: 1px solid rgba(176,141,87,0.22);
+      background: rgba(10,36,26,0.92);
+      box-shadow: 0 22px 70px rgba(0,0,0,0.55);
+      overflow:hidden;
+      transform-origin: center;
+      transition: transform .28s ease, opacity .28s ease, filter .28s ease;
+      cursor:pointer;
+    }
+    .sCard .img{
+      aspect-ratio: 4 / 5;
+      width:100%;
+      background: rgba(0,0,0,0.22);
+      border-bottom: 1px solid rgba(176,141,87,0.18);
+      overflow:hidden;
+    }
+    .sCard .img img{ width:100%; height:100%; object-fit: cover; display:block; }
+    .sCard .pad{ padding: 12px; }
+    .sName{ font-weight: 900; }
+    .sTitle{ font-size: 12px; color: var(--pg-muted); margin-top: 2px; }
+    .sBio{ font-size: 12px; color: rgba(203,191,174,0.95); margin-top: 10px; line-height: 1.35; min-height: 48px; }
+    .badgeRow{ display:flex; gap:8px; flex-wrap: wrap; margin-top: 10px; }
+    .badge{
+      font-size: 11px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(176,141,87,0.22);
+      background: rgba(8,28,20,0.45);
+      color: rgba(203,191,174,0.95);
+      white-space: nowrap;
+    }
+
+    .carouselNav{
+      display:flex;
+      align-items:center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .dotRow{ display:flex; gap: 8px; justify-content:center; margin-top: 10px; }
+    .dot{
+      width: 7px; height: 7px;
+      border-radius: 999px;
+      background: rgba(243,231,211,0.22);
+      border: 1px solid rgba(176,141,87,0.20);
+    }
+    .dot.active{
+      background: rgba(176,141,87,0.88);
+      border-color: rgba(176,141,87,0.55);
+    }
+
+    /* Hidden legacy element kept for existing checks */
     #staffCarousel{ display:none; }
   </style>
 </head>
 
-<body class="min-h-screen bg-premium">
+<body class="bg-premium">
   <div class="shell">
-    <div class="glass p-5 sm:p-7">
+    <div class="glass">
 
-      <!-- Top bar -->
-      <div class="flex items-center justify-between gap-4 flex-wrap">
-        <div class="flex items-center gap-3">
-          <div class="w-11 h-11 rounded-2xl flex items-center justify-center"
-               style="border:1px solid rgba(176,141,87,0.35); background: rgba(11,42,30,0.55); overflow:hidden;">
-            <img src="logo.png" alt="PetGuardian Care" class="w-full h-full object-cover" onerror="this.style.display='none'">
+      <!-- TOP BAR -->
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo">
+            <img src="logo.png" alt="PetGuardian Care" onerror="this.style.display='none'">
           </div>
-
           <div>
-            <div class="pill">
-              PetGuardian Care
-              <span style="color: var(--pg-brass);">•</span>
-              Care Estimate
-            </div>
-            <div class="title-xl text-2xl sm:text-3xl font-lux mt-2">Get a care cost estimate</div>
-            <div class="text-sm mt-1 muted">Transparent pricing, verified sitters, secure booking.</div>
-            <div id="pricingStatus" class="text-xs mt-2 muted">Pricing: loading from sheet…</div>
+            <div class="pill">PetGuardian Care <span style="color:var(--pg-brass)">•</span> Premium Pricing</div>
+            <div class="title font-lux">Get a care cost estimate</div>
+            <div class="sub">Start with a base stay, then select only what you need.</div>
+            <div id="pricingStatus" class="tiny">Pricing: loading from sheet…</div>
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
-          <button id="howBtn" class="btn btn-dark">How pricing works</button>
-          <button id="copyBtn" class="btn btn-primary">Copy Quote</button>
-          <button id="requestBtn" class="btn btn-ghost">Request Booking</button>
+        <div class="actions">
+          <button id="howBtn" class="btn btn-ghost" type="button">How pricing works</button>
+          <button id="copyBtn" class="btn btn-primary" type="button">Copy Quote</button>
+          <button id="requestBtn" class="btn" type="button">Request Booking</button>
         </div>
       </div>
 
-      <div class="mt-5 thin-line"></div>
+      <div class="divider"></div>
 
-      <!-- Main grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-5 tight-gap">
+      <!-- MAIN (LANDSCAPE) -->
+      <div class="main">
 
-        <!-- Left -->
-        <div class="lg:col-span-8 space-y-4">
-
+        <!-- LEFT -->
+        <div class="left">
           <!-- Stay type -->
-          <div class="card p-4 tight-pad">
-            <div class="flex items-start justify-between gap-3">
-              <div>
-                <div class="text-sm font-semibold">1) Choose your stay type</div>
-                <div class="text-xs muted mt-1">Base cost starts here. Add-ons apply on top.</div>
-              </div>
-              <div class="text-xs muted mt-1">Luxury-grade transparency</div>
+          <div class="card">
+            <div class="card-title">
+              <span>1) Choose your stay type</span>
+              <span class="tiny">Add-ons apply on top</span>
             </div>
 
-            <div class="seg mt-3">
+            <div class="seg">
               <button class="seg-btn" data-pkg="day" type="button">
-                <div class="flex items-center gap-2">
-                  <span>🕒</span><span class="font-semibold">Day Visits</span>
-                </div>
-                <div class="sub">Hourly care</div>
+                <div style="font-weight:900;">🕒 Day Visits</div>
+                <div class="seg-sub">Hourly care (you set hours)</div>
               </button>
 
               <button class="seg-btn" data-pkg="night" type="button">
-                <div class="flex items-center gap-2">
-                  <span>🌙</span><span class="font-semibold">Overnight</span>
-                </div>
-                <div class="sub">6pm to 6am</div>
+                <div style="font-weight:900;">🌙 Overnight</div>
+                <div class="seg-sub">6pm to 6am</div>
               </button>
 
               <button class="seg-btn" data-pkg="full" type="button">
-                <div class="flex items-center gap-2">
-                  <span>🏠</span><span class="font-semibold">Full-time</span>
-                </div>
-                <div class="sub">24h presence</div>
+                <div style="font-weight:900;">🏠 Full-time</div>
+                <div class="seg-sub">24h presence</div>
               </button>
             </div>
 
-            <div id="hoursWrap" class="mt-4 hidden">
-              <div class="flex items-center justify-between">
+            <div id="hoursWrap" style="margin-top: 12px; display:none;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
                 <div>
-                  <div class="text-sm font-semibold">Hours per day</div>
-                  <div class="text-xs muted">Day visits only.</div>
+                  <div style="font-weight:900; font-size: 13px;">Hours per day</div>
+                  <div class="tiny">Only used for Day Visits</div>
                 </div>
-                <div class="text-sm"><span class="muted">Hours:</span> <span id="hoursOut" class="font-semibold">4</span></div>
+                <div style="font-size: 13px;"><span class="muted">Hours:</span> <span id="hoursOut" style="font-weight:900;">4</span></div>
               </div>
-              <input id="hours" type="range" min="1" max="12" value="4" class="mt-2">
+              <input id="hours" type="range" min="1" max="12" value="4">
             </div>
           </div>
 
-          <!-- 2x2 card grid -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 tight-gap">
+          <!-- Compact grid (no scroll) -->
+          <div class="grid2x2">
+            <!-- Dates + zone -->
+            <div class="card">
+              <div class="card-title">
+                <span>2) When and where?</span>
+                <span class="tiny"><span class="muted">Days:</span> <span id="daysOut" style="font-weight:900;">1</span></span>
+              </div>
 
-            <!-- Dates -->
-            <div class="card p-4 tight-pad">
-              <div class="text-sm font-semibold">2) When and where</div>
-              <div class="text-xs muted mt-1">Peak dates and long-stay discounts apply automatically.</div>
-
-              <div class="grid grid-cols-2 gap-3 mt-3">
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
                 <div>
-                  <label class="block text-xs muted">Start date</label>
-                  <input id="startDate" type="date" class="input mt-1">
+                  <div class="tiny">Start date</div>
+                  <input id="startDate" type="date" class="input">
                 </div>
                 <div>
-                  <label class="block text-xs muted">End date</label>
-                  <input id="endDate" type="date" class="input mt-1">
+                  <div class="tiny">End date</div>
+                  <input id="endDate" type="date" class="input">
                 </div>
               </div>
 
-              <div class="mt-3 text-sm">
-                <span class="muted">Days:</span> <span id="daysOut" class="font-semibold">1</span>
-                <span id="peakNote" class="ml-2 text-xs muted"></span>
+              <div style="margin-top: 10px;">
+                <div class="tiny">Zone</div>
+                <select id="zone">
+                  <option value="sabie">Sabie (Zone A)</option>
+                  <option value="wr">White River (Zone B)</option>
+                  <option value="nel">Nelspruit (Zone C)</option>
+                </select>
               </div>
 
-              <label class="block mt-3 text-xs muted">Zone</label>
-              <select id="zone" class="input mt-1">
-                <option value="sabie">Sabie (Zone A)</option>
-                <option value="wr">White River (Zone B)</option>
-                <option value="nel">Nelspruit (Zone C)</option>
-              </select>
-
-              <div class="mt-3 text-xs muted leading-relaxed">
-                Travel is included where applicable. If your zone has travel fees, each check-in includes fuel cost.
-              </div>
+              <div id="peakNote" class="tiny" style="margin-top: 10px;"></div>
             </div>
 
             <!-- Pets -->
-            <div class="card p-4 tight-pad">
-              <div class="text-sm font-semibold">3) Pets and care options</div>
-              <div class="text-xs muted mt-1">First pet included. Extra pets add a daily fee.</div>
+            <div class="card">
+              <div class="card-title">
+                <span>3) Pets and options</span>
+                <span id="staffStatus" class="tiny">Loading…</span>
+              </div>
 
-              <div class="grid grid-cols-2 gap-3 mt-3">
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
                 <div>
-                  <label class="block text-xs muted">Dogs</label>
-                  <input id="dogs" type="number" min="0" value="1" class="input mt-1">
+                  <div class="tiny">Dogs</div>
+                  <input id="dogs" type="number" min="0" value="1" class="input">
                 </div>
                 <div>
-                  <label class="block text-xs muted">Cats</label>
-                  <input id="cats" type="number" min="0" value="0" class="input mt-1">
+                  <div class="tiny">Cats</div>
+                  <input id="cats" type="number" min="0" value="0" class="input">
                 </div>
               </div>
 
-              <div class="mt-3 rounded-2xl p-3"
-                   style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
-                <div class="flex items-center justify-between gap-3">
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                <label class="addonBlock" style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0;">
                   <div>
-                    <div class="text-sm font-semibold">Food supplies allowed</div>
-                    <div class="text-xs muted mt-1">Deduct <b>R50</b> per day if allowed.</div>
+                    <div style="font-weight:900; font-size: 13px;">Puppy care</div>
+                    <div class="tiny">Extra supervision</div>
                   </div>
-                  <label class="inline-flex items-center gap-2 text-sm">
-                    <input id="foodSupplies" type="checkbox">
-                    <span>Allowed</span>
-                  </label>
-                </div>
-
-                <div id="foodNote" class="mt-2 text-xs muted leading-relaxed hidden">
-                  Store off-limits items separately or label cupboards. Send photos before the booking starts.
-                </div>
-              </div>
-
-              <div class="grid grid-cols-2 gap-3 mt-3">
-                <label class="flex items-start justify-between gap-3 rounded-2xl p-3"
-                       style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
-                  <div>
-                    <div class="text-sm font-semibold">Puppy care</div>
-                    <div class="text-xs muted mt-1">Extra supervision and cleanup.</div>
-                  </div>
-                  <input id="puppy" type="checkbox" class="mt-1">
+                  <input id="puppy" type="checkbox">
                 </label>
 
-                <label class="flex items-start justify-between gap-3 rounded-2xl p-3"
-                       style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
+                <label class="addonBlock" style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0;">
                   <div>
-                    <div class="text-sm font-semibold">Oral meds</div>
-                    <div class="text-xs muted mt-1">We follow your instructions.</div>
+                    <div style="font-weight:900; font-size: 13px;">Oral meds</div>
+                    <div class="tiny">We follow instructions</div>
                   </div>
-                  <input id="meds" type="checkbox" class="mt-1">
+                  <input id="meds" type="checkbox">
                 </label>
               </div>
+
+              <label class="addonBlock" style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top: 10px;">
+                <div>
+                  <div style="font-weight:900; font-size: 13px;">Food supplies allowed</div>
+                  <div class="tiny">Deduct R50 per day</div>
+                </div>
+                <input id="foodSupplies" type="checkbox">
+              </label>
             </div>
 
-            <!-- Add-ons -->
-            <div class="card p-4 tight-pad">
-              <div class="flex items-start justify-between gap-3">
-                <div>
-                  <div class="text-sm font-semibold">4) Add-ons</div>
-                  <div class="text-xs muted mt-1">Only what you need. Calculated per day unless stated.</div>
-                </div>
-                <div class="text-xs muted mt-1">Transparent totals</div>
+            <!-- Quick actions: Add-ons + Sitter -->
+            <div class="card">
+              <div class="card-title">
+                <span>4) Add-ons and sitter</span>
+                <span class="tiny muted">No scroll on desktop</span>
               </div>
 
-              <div class="grid grid-cols-2 gap-4 mt-3">
-                <div>
-                  <div class="flex items-center justify-between">
-                    <div>
-                      <div class="text-sm font-semibold">Daily updates</div>
-                      <div class="text-xs muted">Photos + short log</div>
-                    </div>
-                    <div class="text-sm"><span class="muted">Qty:</span> <span id="updatesOut" class="font-semibold">0</span></div>
-                  </div>
-                  <input id="updates" type="range" min="0" max="2" step="1" value="0" class="mt-2">
+              <div class="qa">
+                <div class="qa-buttons">
+                  <button id="openAddonsBtn" class="btn btn-primary" type="button">Customize Add-ons</button>
+                  <button id="openSitterBtn" class="btn btn-ghost" type="button">Choose sitter</button>
                 </div>
 
-                <div>
-                  <div class="flex items-center justify-between">
-                    <div>
-                      <div class="text-sm font-semibold">Check-ins/day</div>
-                      <div class="text-xs muted">Short visit</div>
-                    </div>
-                    <div class="text-sm"><span class="muted">Qty:</span> <span id="checkinsOut" class="font-semibold">0</span></div>
-                  </div>
-                  <input id="checkins" type="range" min="0" max="3" step="1" value="0" class="mt-2">
-                </div>
-
-                <div class="col-span-2">
-                  <div class="flex items-center justify-between">
-                    <div>
-                      <div class="text-sm font-semibold">Walk time/day</div>
-                      <div class="text-xs muted">R60 per hour (R5 per 5 min)</div>
-                    </div>
-                    <div class="text-sm">
-                      <span class="muted">Min:</span> <span id="walkMinOut" class="font-semibold">0</span>
-                      <span class="muted ml-3">Cost/day:</span> <span id="walkCostOut" class="font-semibold">R0</span>
+                <div class="selectedSitter" id="selectedSitterPanel">
+                  <div class="selLeft">
+                    <div class="avatar" id="selAvatar"></div>
+                    <div class="selText">
+                      <div class="selName" id="selName">No sitter selected</div>
+                      <div class="selMeta" id="selMeta">Selection required to submit</div>
                     </div>
                   </div>
-                  <input id="walkMinutes" type="range" min="0" max="180" step="5" value="0" class="mt-2">
+                  <button id="changeSitterBtn" class="btn" type="button" style="padding:8px 10px;">Change</button>
                 </div>
 
-                <label class="col-span-2 flex items-start justify-between gap-3 rounded-2xl p-3"
-                       style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
-                  <div>
-                    <div class="text-sm font-semibold">Home care pack</div>
-                    <div class="text-xs muted mt-1">Bins, lights, tidy, quick checks</div>
-                  </div>
-                  <input id="homecare" type="checkbox" class="mt-1">
-                </label>
-
-                <div class="grid grid-cols-2 gap-3 col-span-2">
-                  <div>
-                    <label class="block text-xs muted">Key trips (one-time)</label>
-                    <input id="keys" type="number" min="0" value="0" class="input mt-1">
-                  </div>
-                  <div>
-                    <label class="block text-xs muted">Pet taxi (one-time)</label>
-                    <input id="taxi" type="number" min="0" value="0" class="input mt-1">
-                  </div>
-                </div>
+                <div class="tiny muted" id="addonsSummary">Add-ons: none selected yet</div>
               </div>
+
+              <!-- Keep in DOM for your existing checks -->
+              <div id="staffCarousel"></div>
             </div>
 
-            <!-- Sitter selection (replaces the scroll list, now luxury modal) -->
-            <div class="card p-4 tight-pad">
-              <div class="flex items-start justify-between gap-3">
-                <div>
-                  <div class="text-sm font-semibold">5) Select your sitter</div>
-                  <div class="text-xs muted mt-1">Verified selection required to submit a request.</div>
-                </div>
-                <div id="staffStatus" class="text-xs muted mt-1">Loading…</div>
+            <!-- Notes -->
+            <div class="card">
+              <div class="card-title">
+                <span>Safety and transparency</span>
+                <span class="tiny">Premium standard</span>
               </div>
 
-              <div id="selectedSitterPanel" class="mt-3 rounded-2xl p-3"
-                   style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
-                <div class="flex items-center justify-between gap-3">
-                  <div class="min-w-0">
-                    <div class="text-sm font-semibold">No sitter selected</div>
-                    <div class="text-xs muted mt-1">Choose a sitter to continue.</div>
-                  </div>
-                  <button id="chooseSitterBtn" class="btn btn-primary">Choose sitter</button>
-                </div>
+              <div class="tiny muted" style="margin-top: 10px; line-height: 1.5;">
+                • Verified sitter selection required<br>
+                • Peak dates and discounts auto apply<br>
+                • Deposit secures booking, remainder after service<br>
+                • Final price confirmed after screening and availability
               </div>
-
-              <div id="staffEmpty" class="mt-3 hidden text-sm muted">
-                No sitters available for these dates. Try different dates or stay type.
-              </div>
-
-              <!-- Keep this in DOM (your existing JS checks children length). Hidden by CSS. -->
-              <div id="staffCarousel" class="mt-3"></div>
             </div>
-
           </div>
         </div>
 
-        <!-- Right -->
-        <div class="lg:col-span-4">
-          <div class="card p-5 sticky-panel">
-            <div class="text-sm font-semibold">Your care quote</div>
-            <div id="totalOut" class="text-4xl font-lux mt-2">R0</div>
+        <!-- RIGHT QUOTE -->
+        <div class="quote">
+          <div class="tiny muted">Total estimate</div>
+          <div id="totalOut" class="quote-total font-lux">R0</div>
 
-            <div class="mt-4 thin-line"></div>
+          <div class="line"></div>
 
-            <div class="mt-4 space-y-2 text-sm">
-              <div class="flex items-center justify-between"><span class="muted">Base stay</span><span id="baseOut" class="font-semibold">R0</span></div>
-              <div class="flex items-center justify-between"><span class="muted">Add-ons + travel</span><span id="addonsOut" class="font-semibold">R0</span></div>
-              <div class="flex items-center justify-between"><span class="muted">Long-stay discount</span><span id="discountOut" class="font-semibold">R0</span></div>
-              <div class="flex items-center justify-between"><span class="muted">One-time fees</span><span id="oneTimeOut" class="font-semibold">R0</span></div>
+          <div class="row"><span class="muted">Base stay</span><strong id="baseOut">R0</strong></div>
+          <div class="row"><span class="muted">Add-ons + travel</span><strong id="addonsOut">R0</strong></div>
+          <div class="row"><span class="muted">Long-stay discount</span><strong id="discountOut">R0</strong></div>
+          <div class="row"><span class="muted">One-time fees</span><strong id="oneTimeOut">R0</strong></div>
+
+          <div id="peakAppliedOut" class="tiny muted" style="margin-top: 6px;"></div>
+
+          <div class="depositBox">
+            <div class="tiny muted">Deposit required</div>
+            <div class="depositAmt" id="depositOut">R0</div>
+            <div class="tiny muted" style="margin-top: 10px;">Balance after service</div>
+            <div class="depositAmt" id="balanceOut">R0</div>
+            <div class="tiny muted" style="margin-top: 10px;">
+              50% deposit secures booking. Remaining 50% due after service.
             </div>
+          </div>
 
-            <div id="peakAppliedOut" class="text-xs muted mt-3"></div>
+          <button class="btn btn-primary" type="button" id="requestBtn2">Request Booking</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-            <div class="mt-4 rounded-2xl p-3"
-                 style="background: rgba(243,231,211,0.18); border: 1px solid rgba(176,141,87,0.20);">
-              <div class="text-xs muted">Deposit required</div>
-              <div class="text-xl font-semibold mt-1" id="depositOut">R0</div>
-              <div class="text-xs muted mt-2">Balance after service</div>
-              <div class="text-xl font-semibold mt-1" id="balanceOut">R0</div>
-              <div class="text-xs muted mt-3">
-                50% deposit secures booking. Remaining 50% due after service.
-              </div>
+  <!-- =========================
+      ADD-ONS MODAL (SOLID)
+  ========================== -->
+  <div id="addonsOverlay" class="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modalHeader">
+        <div>
+          <div class="pill">PetGuardian Care <span style="color:var(--pg-brass)">•</span> Add-ons</div>
+          <div class="title font-lux" style="font-size: 22px; margin-top: 8px;">Customize add-ons</div>
+          <div class="tiny muted">Everything recalculates instantly. Close when done.</div>
+        </div>
+        <button id="closeAddonsBtn" class="btn btn-ghost" type="button">Close</button>
+      </div>
+
+      <div class="modalBody">
+        <div class="addonsGrid">
+          <div class="addonBlock">
+            <div class="card-title"><span>Daily update packs</span><span class="tiny">Qty: <b id="updatesOut">0</b></span></div>
+            <div class="tiny muted" style="margin-top:6px;">Photos plus a short written log.</div>
+            <input id="updates" type="range" min="0" max="2" step="1" value="0">
+          </div>
+
+          <div class="addonBlock">
+            <div class="card-title"><span>Check-ins per day</span><span class="tiny">Qty: <b id="checkinsOut">0</b></span></div>
+            <div class="tiny muted" style="margin-top:6px;">Short visit for feed, water, toilet check, quick play.</div>
+            <input id="checkins" type="range" min="0" max="3" step="1" value="0">
+          </div>
+
+          <div class="addonBlock" style="grid-column: 1 / -1;">
+            <div class="card-title">
+              <span>Walk time per day</span>
+              <span class="tiny">Minutes: <b id="walkMinOut">0</b> | Cost/day: <b id="walkCostOut">R0</b></span>
             </div>
+            <div class="tiny muted" style="margin-top:6px;">Single slider in 5 minute steps. R5 per 5 minutes.</div>
+            <input id="walkMinutes" type="range" min="0" max="180" step="5" value="0">
+          </div>
 
-            <div class="mt-4 text-xs muted leading-relaxed">
-              Final price is confirmed after screening and sitter availability.
+          <label class="addonBlock" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+            <div>
+              <div style="font-weight:900;">Home care pack</div>
+              <div class="tiny muted">Bins, lights, basic tidy, quick checks</div>
             </div>
+            <input id="homecare" type="checkbox">
+          </label>
+
+          <div class="addonBlock">
+            <div class="tiny muted">Key trips (one-time)</div>
+            <input id="keys" type="number" min="0" value="0" class="input" style="margin-top:6px;">
+          </div>
+
+          <div class="addonBlock">
+            <div class="tiny muted">Pet taxi (one-time)</div>
+            <input id="taxi" type="number" min="0" value="0" class="input" style="margin-top:6px;">
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- SITTER MODAL -->
-  <div id="sitterModalWrap" class="fixed inset-0 hidden overlay">
-    <div class="max-w-6xl mx-auto p-4 sm:p-8">
-      <div class="modal modal-scroll p-5 sm:p-6">
-        <div class="flex items-start justify-between gap-3">
-          <div>
-            <div class="text-xs muted">Select your sitter</div>
-            <div class="text-xl font-lux font-semibold mt-1">Available sitters</div>
-            <div class="text-xs mt-2 muted">Larger profiles, clearer trust, better choice.</div>
-          </div>
-          <button id="closeSitterModal" class="btn btn-ghost">Close</button>
+  <!-- =========================
+      SITTER MODAL (SOLID + 3 CARD CAROUSEL)
+  ========================== -->
+  <div id="sitterOverlay" class="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modalHeader">
+        <div>
+          <div class="pill">PetGuardian Care <span style="color:var(--pg-brass)">•</span> Sitters</div>
+          <div class="title font-lux" style="font-size: 22px; margin-top: 8px;">Choose your sitter</div>
+          <div class="tiny muted">3-card carousel. Center card is the focus. Click center to select.</div>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-          <div class="md:col-span-2">
-            <input id="sitterSearch" class="input" placeholder="Search sitter name...">
-          </div>
-          <div>
-            <select id="sitterSort" class="input">
-              <option value="rating">Sort: Highest rated</option>
-              <option value="name">Sort: Name A-Z</option>
-            </select>
-          </div>
-        </div>
-
-        <div id="sitterGrid" class="sitter-grid mt-4"></div>
-
-        <div id="sitterModalEmpty" class="hidden mt-4 text-sm muted">
-          No sitters found for these dates.
-        </div>
+        <button id="closeSitterBtn" class="btn btn-ghost" type="button">Close</button>
       </div>
-    </div>
-  </div>
 
-  <!-- PRICING RULES MODAL -->
-  <div id="howModalWrap" class="fixed inset-0 hidden overlay">
-    <div class="max-w-2xl mx-auto p-4 sm:p-8">
-      <div class="modal modal-scroll p-5 sm:p-6">
-        <div class="flex items-start justify-between gap-3">
-          <div>
-            <div class="text-xs muted">Pricing transparency</div>
-            <div class="text-xl font-lux font-semibold mt-1">How pricing works</div>
-            <div class="text-xs mt-2 muted">No surprises. Your total is calculated from these rules.</div>
-          </div>
-          <button id="closeHowModal" class="btn btn-ghost">Close</button>
-        </div>
+      <div class="modalBody">
+        <div class="carouselWrap">
+          <div class="carouselStage" id="carouselStage"></div>
 
-        <div class="mt-4 space-y-3 text-sm">
-          <div class="rounded-2xl p-3" style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
-            <div class="font-semibold">Peak dates</div>
-            <div class="text-xs muted mt-1">Peak multiplier applies if any day falls in peak range.</div>
-            <ul class="mt-2 text-xs muted list-disc pl-5">
-              <li>June 1 to July 31</li>
-              <li>December 1 to January 15</li>
-            </ul>
+          <div class="carouselNav">
+            <button id="prevSitter" class="btn btn-ghost" type="button">Prev</button>
+            <button id="selectSitter" class="btn btn-primary" type="button">Select Center</button>
+            <button id="nextSitter" class="btn btn-ghost" type="button">Next</button>
           </div>
 
-          <div class="rounded-2xl p-3" style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
-            <div class="font-semibold">Long-stay discount</div>
-            <div class="text-xs muted mt-1">Applied automatically in blocks (compounds per block).</div>
-            <div class="text-xs muted mt-2">
-              Example: 10 days at 100%, next 10 days at 90%, next 10 days at 81%, and so on.
-            </div>
-          </div>
+          <div class="dotRow" id="dotRow"></div>
 
-          <div class="rounded-2xl p-3" style="border:1px solid rgba(176,141,87,0.20); background: rgba(11,42,30,0.35);">
-            <div class="font-semibold">Deposit</div>
-            <div class="text-xs muted mt-1">50% deposit secures your booking. Remaining 50% due after service.</div>
+          <div id="sitterEmpty" class="tiny muted" style="display:none; text-align:center; margin-top: 10px;">
+            No sitters available for these dates.
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Booking Modal (your existing one, kept the same) -->
-  <div id="modalWrap" class="fixed inset-0 hidden overflow-y-auto overlay">
-    <div class="max-w-xl mx-auto p-4 sm:p-8 pb-24">
-      <div class="modal p-5 sm:p-6 modal-scroll">
-        <div class="flex items-start justify-between gap-3">
+  <!-- =========================
+      PRICING RULES MODAL (SOLID)
+  ========================== -->
+  <div id="howOverlay" class="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" style="width:min(820px,100%);">
+      <div class="modalHeader">
+        <div>
+          <div class="pill">PetGuardian Care <span style="color:var(--pg-brass)">•</span> Transparency</div>
+          <div class="title font-lux" style="font-size: 22px; margin-top: 8px;">How pricing works</div>
+          <div class="tiny muted">No surprises. Everything is calculated from clear rules.</div>
+        </div>
+        <button id="closeHowBtn" class="btn btn-ghost" type="button">Close</button>
+      </div>
+      <div class="modalBody">
+        <div class="addonBlock">
+          <div style="font-weight:900;">Peak dates</div>
+          <div class="tiny muted" style="margin-top:6px;">Peak multiplier applies if any day falls in peak range.</div>
+          <div class="tiny muted" style="margin-top:8px; line-height:1.55;">
+            • June 1 to July 31<br>
+            • December 1 to January 15
+          </div>
+        </div>
+
+        <div style="height:12px;"></div>
+
+        <div class="addonBlock">
+          <div style="font-weight:900;">Long-stay discount</div>
+          <div class="tiny muted" style="margin-top:6px;">
+            Blocks of 10 days: first 10 days are 100%, next 10 days are 90%, next 10 days are 81%. Then it stays at 81%.
+          </div>
+        </div>
+
+        <div style="height:12px;"></div>
+
+        <div class="addonBlock">
+          <div style="font-weight:900;">Deposit</div>
+          <div class="tiny muted" style="margin-top:6px;">50% deposit secures booking. Remaining 50% due after service.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================
+      BOOKING MODAL (SOLID)
+  ========================== -->
+  <div id="bookingOverlay" class="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" style="width:min(760px,100%);">
+      <div class="modalHeader">
+        <div>
+          <div class="pill">PetGuardian Care <span style="color:var(--pg-brass)">•</span> Booking</div>
+          <div class="title font-lux" style="font-size: 22px; margin-top: 8px;">Request booking</div>
+          <div class="tiny muted">We will email an invoice or estimate. Deposit required is 50%.</div>
+        </div>
+        <button id="closeBookingBtn" class="btn btn-ghost" type="button">Close</button>
+      </div>
+
+      <div class="modalBody">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
-            <div class="text-xs muted">Request Booking</div>
-            <div class="text-xl font-lux font-semibold mt-1">Your details</div>
-            <div class="text-xs mt-2 muted">
-              We will email an invoice or estimate. Deposit required is 50%.
-            </div>
-          </div>
-          <button id="closeModal" class="btn btn-ghost">Close</button>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-          <div>
-            <label class="block text-xs muted">Full name</label>
-            <input id="custName" class="input mt-1" placeholder="Your name">
+            <div class="tiny">Full name</div>
+            <input id="custName" class="input" placeholder="Your name">
           </div>
           <div>
-            <label class="block text-xs muted">Phone</label>
-            <input id="custPhone" class="input mt-1" placeholder="e.g. 081 532 8774">
+            <div class="tiny">Phone</div>
+            <input id="custPhone" class="input" placeholder="e.g. 081 532 8774">
           </div>
-          <div class="sm:col-span-2">
-            <label class="block text-xs muted">Email</label>
-            <input id="custEmail" class="input mt-1" placeholder="you@example.com">
+          <div style="grid-column: 1 / -1;">
+            <div class="tiny">Email</div>
+            <input id="custEmail" class="input" placeholder="you@example.com">
           </div>
-          <div class="sm:col-span-2">
-            <label class="block text-xs muted">Address or area</label>
-            <input id="custAddress" class="input mt-1" placeholder="Street or area">
+          <div style="grid-column: 1 / -1;">
+            <div class="tiny">Address or area</div>
+            <input id="custAddress" class="input" placeholder="Street or area">
           </div>
-          <div class="sm:col-span-2">
-            <label class="block text-xs muted">Notes</label>
-            <textarea id="custNotes" rows="3" class="input mt-1" placeholder="Routine, meds, temperament, gate access, etc."></textarea>
+          <div style="grid-column: 1 / -1;">
+            <div class="tiny">Notes</div>
+            <textarea id="custNotes" rows="3" class="input" placeholder="Routine, meds, temperament, gate access, etc."></textarea>
           </div>
 
-          <div class="hidden">
-            <label>Website</label>
-            <input id="hpField" class="input mt-1" placeholder="Leave blank">
+          <div style="display:none;">
+            <input id="hpField" class="input" placeholder="Leave blank">
           </div>
         </div>
 
-        <div class="rounded-2xl p-3 mt-4"
-             style="background: rgba(11,42,30,0.35); border: 1px solid rgba(176,141,87,0.20);">
-          <div class="text-xs muted">Summary</div>
-          <div id="modalSummary" class="text-sm mt-2" style="color: rgba(203,191,174,0.95);"></div>
+        <div class="addonBlock" style="margin-top: 12px;">
+          <div class="tiny muted">Summary</div>
+          <div id="modalSummary" style="margin-top:8px; font-size: 13px; color: rgba(203,191,174,0.96);"></div>
         </div>
 
-        <div class="flex items-center justify-between gap-3 mt-4">
-          <div class="text-xs muted">By requesting, you agree to deposit terms.</div>
-          <button id="submitBooking" class="btn btn-primary">Send Request</button>
+        <div style="display:flex; align-items:center; justify-content:space-between; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+          <div class="tiny muted">By requesting, you agree to deposit terms.</div>
+          <button id="submitBooking" class="btn btn-primary" type="button">Send Request</button>
         </div>
 
-        <div id="submitStatus" class="text-xs mt-3 muted"></div>
+        <div id="submitStatus" class="tiny muted" style="margin-top: 10px;"></div>
       </div>
     </div>
   </div>
 
 <script>
   /* =========================================================
-    CONFIG (EASY EDIT)
+    JS CONFIG (EASY EDIT)
   ========================================================== */
   const CONFIG = {
     businessName: "PetGuardian Care",
     depositPercent: 0.50,
 
-    // IMPORTANT: keep your live Apps Script URL here
+    // If you upload a texture image to repo root, set it here (example: "bg.jpg")
+    // Leave empty to use CSS noise only.
+    brandBgImage: "",
+
+    // Keep your live Apps Script URL here
     apiBaseUrl: "https://script.google.com/macros/s/AKfycbzfqeIQFLpa155Gf-454kbaSQUEw9RpiqISwnPbSkfYPV-aU6LZlbTbkG5jv-sHe6jp/exec",
     apiKey: ""
   };
 
-  // Defaults (will be overridden by Pricing tab values if present)
+  // Defaults (Pricing tab overrides if present)
   const PRICES = {
     base: { dayHourly: 60, night: 150, fullDay: 320 },
     travelPerDay: { sabie: 0, wr: 30, nel: 60 },
@@ -800,10 +950,7 @@
     add: {
       updatePackPerDay: 50,
       checkin: 50,
-
-      // Walks derived from minutes: R5 per 5 minutes => R1 per minute
-      walkPerMinute: 1,
-
+      walkPerMinute: 1, // R5 per 5 min
       medsPerDay: 50,
       puppyCarePerDay: 100,
       homecarePerDay: 30,
@@ -814,19 +961,27 @@
       petTaxi: 150
     },
 
-    longStay: { blockDays: 10, factor: 0.9 } // compounding every block
+    longStay: { blockDays: 10, factor: 0.9 }
   };
 
+  // State
   let pkg = "day";
   let selectedStaff = null;
   let lastAvailabilityReqId = 0;
   let staffListCache = [];
+  let carouselIndex = 0;
 
+  // Helpers
   const el = (id) => document.getElementById(id);
 
   function money(n){
     const v = Math.round(Number(n) || 0);
     return "R" + v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+  function escapeHtml(str) {
+    return String(str || "").replace(/[&<>"']/g, (m) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
   }
 
   function daysBetween(start, end) {
@@ -838,8 +993,7 @@
   }
 
   function isPeakDate(dateObj){
-    // Peak: June 1 to July 31, and Dec 1 to Jan 15 (cross-year)
-    const m = dateObj.getMonth(); // 0=Jan
+    const m = dateObj.getMonth();
     const d = dateObj.getDate();
     if (m === 5 || m === 6) return true; // Jun, Jul
     if (m === 11) return true;           // Dec
@@ -865,7 +1019,6 @@
     const rem = days % blockDays;
     if (blocks === 0) return days;
 
-    // geometric series: blockDays + blockDays*factor + ... + blockDays*factor^(blocks-1)
     const series = blockDays * (1 - Math.pow(factor, blocks)) / (1 - factor);
     return series + rem * Math.pow(factor, blocks);
   }
@@ -881,7 +1034,6 @@
     if (pkg === "night") return "Overnight";
     return "Full-time";
   }
-
   function zoneLabel() {
     return el("zone").selectedOptions[0].textContent;
   }
@@ -891,192 +1043,21 @@
       const active = b.dataset.pkg === pkg;
       b.classList.toggle("active", active);
     });
-    el("hoursWrap").classList.toggle("hidden", pkg !== "day");
+    el("hoursWrap").style.display = (pkg === "day") ? "block" : "none";
   }
 
-  function escapeHtml(str) {
-    return String(str || "").replace(/[&<>"']/g, (m) => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[m]));
-  }
+  /* ========= Overlay controls ========= */
+  function openOverlay(id){ el(id).classList.add("open"); }
+  function closeOverlay(id){ el(id).classList.remove("open"); }
 
-  /* =========================================================
-    SITTER UI (MODAL + SELECTED PANEL)
-  ========================================================== */
-  function openSitterModal(){
-    el("sitterModalWrap").classList.remove("hidden");
-    el("sitterSearch").focus();
-  }
-  function closeSitterModal(){
-    el("sitterModalWrap").classList.add("hidden");
-  }
-
-  function updateSelectedSitterPanel(){
-    const panel = el("selectedSitterPanel");
-
-    if (!staffListCache.length){
-      panel.innerHTML = `
-        <div class="flex items-center justify-between gap-3">
-          <div class="min-w-0">
-            <div class="text-sm font-semibold">No sitters available</div>
-            <div class="text-xs muted mt-1">Try different dates or stay type.</div>
-          </div>
-          <button id="chooseSitterBtn" class="btn btn-ghost" type="button">Choose sitter</button>
-        </div>
-      `;
-      const btn = document.getElementById("chooseSitterBtn");
-      if (btn) btn.addEventListener("click", openSitterModal);
-      return;
-    }
-
-    if (!selectedStaff){
-      panel.innerHTML = `
-        <div class="flex items-center justify-between gap-3">
-          <div class="min-w-0">
-            <div class="text-sm font-semibold">No sitter selected</div>
-            <div class="text-xs muted mt-1">Choose a sitter to continue.</div>
-          </div>
-          <button id="chooseSitterBtn" class="btn btn-primary" type="button">Choose sitter</button>
-        </div>
-      `;
-      const btn = document.getElementById("chooseSitterBtn");
-      if (btn) btn.addEventListener("click", openSitterModal);
-      return;
-    }
-
-    panel.innerHTML = `
-      <div class="flex items-center justify-between gap-3">
-        <div class="flex items-center gap-3 min-w-0">
-          <img src="${escapeHtml(selectedStaff.photoUrl || "")}" alt="${escapeHtml(selectedStaff.name || "Sitter")}"
-               class="w-14 h-14 rounded-2xl object-cover border"
-               style="border-color: rgba(176,141,87,0.28); background: rgba(0,0,0,0.2);">
-          <div class="min-w-0">
-            <div class="text-sm font-semibold font-lux truncate">${escapeHtml(selectedStaff.name || "Sitter")}</div>
-            <div class="text-xs muted truncate">${escapeHtml(selectedStaff.title || "PetGuardian Care Sitter")}</div>
-            <div class="text-xs mt-1" style="color: rgba(203,191,174,0.95);">
-              Rating: <span class="font-semibold">${escapeHtml(String(selectedStaff.rating || "5.0"))}</span>
-            </div>
-          </div>
-        </div>
-        <button id="changeSitterBtn" class="btn btn-ghost" type="button">Change</button>
-      </div>
-      <div class="text-xs muted mt-3 leading-relaxed">${escapeHtml(selectedStaff.bio || "")}</div>
-    `;
-
-    const btn = document.getElementById("changeSitterBtn");
-    if (btn) btn.addEventListener("click", openSitterModal);
-  }
-
-  function selectSitterById(id){
-    const found = staffListCache.find(s => String(s.id) === String(id));
-    if (!found) return;
-    selectedStaff = found;
-    renderSitterModal(staffListCache);
-    updateSelectedSitterPanel();
-  }
-
-  function renderSitterModal(list){
-    const grid = el("sitterGrid");
-    const empty = el("sitterModalEmpty");
-    const q = (el("sitterSearch").value || "").trim().toLowerCase();
-    const sort = el("sitterSort").value;
-
-    let filtered = list.filter(s => {
-      const name = String(s.name || "").toLowerCase();
-      return !q || name.includes(q);
-    });
-
-    if (sort === "name"){
-      filtered.sort((a,b) => String(a.name||"").localeCompare(String(b.name||"")));
-    } else {
-      filtered.sort((a,b) => (parseFloat(b.rating)||0) - (parseFloat(a.rating)||0));
-    }
-
-    grid.innerHTML = "";
-    empty.classList.toggle("hidden", filtered.length !== 0);
-
-    filtered.forEach((s) => {
-      const tile = document.createElement("button");
-      tile.type = "button";
-      tile.className = "sitter-tile";
-      if (selectedStaff && String(selectedStaff.id) === String(s.id)) tile.classList.add("selected");
-
-      tile.innerHTML = `
-        <div class="aspect-[4/5] rounded-2xl overflow-hidden border"
-             style="border-color: rgba(176,141,87,0.22); background: rgba(0,0,0,0.2);">
-          <img src="${escapeHtml(s.photoUrl || "")}" alt="${escapeHtml(s.name || "Sitter")}"
-               class="w-full h-full object-cover">
-        </div>
-
-        <div class="mt-3">
-          <div class="font-lux font-semibold truncate">${escapeHtml(s.name || "Sitter")}</div>
-          <div class="text-xs muted truncate mt-1">${escapeHtml(s.title || "PetGuardian Care Sitter")}</div>
-          <div class="text-xs mt-2" style="color: rgba(203,191,174,0.95);">
-            Rating: <span class="font-semibold">${escapeHtml(String(s.rating || "5.0"))}</span>
-          </div>
-          <div class="text-xs muted mt-2 leading-relaxed" style="min-height: 48px;">
-            ${escapeHtml(s.bio || "Professional sitter")}
-          </div>
-
-          <div class="mt-3 flex items-center justify-between">
-            <span class="badge">Verified</span>
-            <span class="badge">Select</span>
-          </div>
-        </div>
-      `;
-
-      tile.addEventListener("click", () => {
-        selectedStaff = s;
-        updateSelectedSitterPanel();
-        renderSitterModal(staffListCache);
-        closeSitterModal();
-      });
-
-      grid.appendChild(tile);
-    });
-  }
-
-  /* =========================================================
-    JSONP callbacks (unchanged functionality)
-  ========================================================== */
-  window.pgAvailabilityCallback = function(payload) {
-    if (!payload || payload.reqId != lastAvailabilityReqId) return;
-    const list = payload.staff || [];
-
-    staffListCache = list.slice();
-
-    // preserve selection if still available
-    if (selectedStaff) {
-      const stillThere = staffListCache.find(s => String(s.id) === String(selectedStaff.id));
-      if (!stillThere) selectedStaff = null;
-    }
-
-    renderStaffCarousel(list);   // kept for internal checks
-    renderSitterModal(list);
-    updateSelectedSitterPanel();
-
-    el("staffStatus").textContent = list.length ? "Select a sitter" : "None available";
-    el("staffEmpty").classList.toggle("hidden", list.length !== 0);
-  };
-
-  window.pgBookingCallback = function(payload) {
-    if (!payload || payload.ok !== true) {
-      el("submitStatus").textContent = (payload && payload.error) ? payload.error : "Booking failed. Please try again.";
-      return;
-    }
-    el("submitStatus").textContent =
-      "Request sent. Check your email for the invoice or estimate. If you do not receive it, WhatsApp us with your name and dates.";
-    setTimeout(() => closeModal(), 1600);
-  };
-
+  /* ========= Pricing from sheet ========= */
   window.pgPricingCallback = function(payload){
     if (!payload || payload.ok !== true) {
       el("pricingStatus").textContent = "Pricing: using defaults (Pricing tab not found)";
       calc();
       return;
     }
-    const p = payload.pricing || {};
-    applyPricingFromSheet(p);
+    applyPricingFromSheet(payload.pricing || {});
     el("pricingStatus").textContent = "Pricing: loaded from sheet";
     calc();
   };
@@ -1133,6 +1114,26 @@
     document.body.appendChild(script);
   }
 
+  /* ========= Availability ========= */
+  window.pgAvailabilityCallback = function(payload) {
+    if (!payload || payload.reqId != lastAvailabilityReqId) return;
+    const list = payload.staff || [];
+
+    staffListCache = list.slice();
+    el("staffStatus").textContent = list.length ? "Select a sitter" : "None available";
+    el("sitterEmpty").style.display = list.length ? "none" : "block";
+
+    // preserve selection if possible
+    if (selectedStaff) {
+      const stillThere = staffListCache.find(s => String(s.id) === String(selectedStaff.id));
+      if (!stillThere) selectedStaff = null;
+    }
+
+    renderStaffCarousel(list);  // legacy checks
+    initCarousel();
+    updateSelectedSitterPanel();
+  };
+
   function fetchAvailability() {
     if (!CONFIG.apiBaseUrl) {
       el("staffStatus").textContent = "API not connected";
@@ -1167,7 +1168,7 @@
     document.body.appendChild(script);
   }
 
-  /* Keep this for your existing logic checks, hidden in UI */
+  /* Keep legacy container for existing selection checks */
   function renderStaffCarousel(staffList) {
     const wrap = el("staffCarousel");
     wrap.innerHTML = "";
@@ -1178,6 +1179,122 @@
     });
   }
 
+  /* ========= Carousel ========= */
+  function initCarousel(){
+    carouselIndex = 0;
+    if (selectedStaff){
+      const idx = staffListCache.findIndex(s => String(s.id) === String(selectedStaff.id));
+      if (idx >= 0) carouselIndex = idx;
+    }
+    renderCarousel();
+  }
+
+  function setCarouselIndex(i){
+    if (!staffListCache.length) return;
+    const n = staffListCache.length;
+    carouselIndex = (i % n + n) % n;
+    renderCarousel();
+  }
+
+  function renderCarousel(){
+    const stage = el("carouselStage");
+    const dots = el("dotRow");
+    stage.innerHTML = "";
+    dots.innerHTML = "";
+
+    if (!staffListCache.length){
+      return;
+    }
+
+    // dots
+    staffListCache.forEach((_, i) => {
+      const d = document.createElement("div");
+      d.className = "dot" + (i === carouselIndex ? " active" : "");
+      d.addEventListener("click", () => setCarouselIndex(i));
+      dots.appendChild(d);
+    });
+
+    // cards (render all, but position by diff)
+    staffListCache.forEach((s, i) => {
+      const diffRaw = i - carouselIndex;
+      // wrap diff shortest distance
+      const n = staffListCache.length;
+      let diff = diffRaw;
+      if (diff > n/2) diff -= n;
+      if (diff < -n/2) diff += n;
+
+      // Only show a small neighborhood for performance and clarity
+      if (Math.abs(diff) > 2) return;
+
+      const card = document.createElement("div");
+      card.className = "sCard";
+      card.dataset.id = s.id;
+
+      const x = diff * 250;                    // spacing
+      const scale = diff === 0 ? 1.0 : 0.86;
+      const rot = diff === 0 ? 0 : (diff > 0 ? -10 : 10);
+      const opa = diff === 0 ? 1.0 : 0.55;
+      const blur = diff === 0 ? 0 : 0.3;
+
+      card.style.transform = `translateX(${x}px) scale(${scale}) rotateY(${rot}deg)`;
+      card.style.opacity = String(opa);
+      card.style.filter = `blur(${blur}px)`;
+
+      card.innerHTML = `
+        <div class="img">
+          <img src="${escapeHtml(s.photoUrl || "")}" alt="${escapeHtml(s.name || "Sitter")}">
+        </div>
+        <div class="pad">
+          <div class="sName font-lux">${escapeHtml(s.name || "Sitter")}</div>
+          <div class="sTitle">${escapeHtml(s.title || "PetGuardian Care Sitter")} · Rating ${escapeHtml(String(s.rating || "5.0"))}</div>
+          <div class="sBio">${escapeHtml(s.bio || "")}</div>
+          <div class="badgeRow">
+            <span class="badge">Verified</span>
+            <span class="badge">Safe booking</span>
+            <span class="badge">Transparent pricing</span>
+          </div>
+        </div>
+      `;
+
+      card.addEventListener("click", () => {
+        if (diff !== 0) {
+          setCarouselIndex(i);
+          return;
+        }
+        // center card clicked: select
+        selectedStaff = s;
+        updateSelectedSitterPanel();
+        closeOverlay("sitterOverlay");
+      });
+
+      stage.appendChild(card);
+    });
+  }
+
+  function updateSelectedSitterPanel(){
+    const avatar = el("selAvatar");
+    const name = el("selName");
+    const meta = el("selMeta");
+
+    if (!staffListCache.length){
+      avatar.innerHTML = "";
+      name.textContent = "No sitters available";
+      meta.textContent = "Try different dates or stay type";
+      return;
+    }
+    if (!selectedStaff){
+      avatar.innerHTML = "";
+      name.textContent = "No sitter selected";
+      meta.textContent = "Selection required to submit";
+      return;
+    }
+
+    avatar.innerHTML = `<img src="${escapeHtml(selectedStaff.photoUrl || "")}" alt="${escapeHtml(selectedStaff.name || "Sitter")}">`;
+    name.textContent = selectedStaff.name || "Selected sitter";
+    meta.textContent = (selectedStaff.title || "PetGuardian Care Sitter") + " · Rating " + (selectedStaff.rating || "5.0");
+  }
+
+  /* ========= Calculator ========= */
   function calc() {
     const start = el("startDate").value;
     const end = el("endDate").value;
@@ -1190,10 +1307,10 @@
     const peakApplied = bookingHasPeak(start, end);
     const peakMult = peakApplied ? PRICES.peakMultiplier : 1;
 
-    el("peakNote").textContent = peakApplied ? `(peak pricing applied)` : ``;
+    el("peakNote").textContent = peakApplied ? "Peak dates detected (pricing applied automatically)." : "No peak dates detected for this range.";
     el("peakAppliedOut").textContent = peakApplied
-      ? `Peak dates detected in your booking range (June-July or Dec to 15 Jan).`
-      : `No peak dates detected in your booking range.`;
+      ? "Peak dates detected in your booking range."
+      : "No peak dates detected in your booking range.";
 
     const wDays = weightedDays(days);
 
@@ -1221,9 +1338,7 @@
     const meds = el("meds").checked;
     const puppy = el("puppy").checked;
     const homecare = el("homecare").checked;
-
     const foodAllowed = el("foodSupplies").checked;
-    el("foodNote").classList.toggle("hidden", !foodAllowed);
 
     const keys = Math.max(0, parseInt(el("keys").value || "0", 10));
     const taxi = Math.max(0, parseInt(el("taxi").value || "0", 10));
@@ -1268,6 +1383,17 @@
     el("oneTimeOut").textContent = money(oneTime);
     el("discountOut").textContent = "-" + money(discountAmt);
 
+    // compact add-ons summary on main page
+    const parts = [];
+    if (updates) parts.push(`updates ${updates}`);
+    if (checkins) parts.push(`check-ins ${checkins}`);
+    if (walkMin) parts.push(`walk ${walkMin}m`);
+    if (homecare) parts.push("home care");
+    if (keys) parts.push(`keys ${keys}`);
+    if (taxi) parts.push(`taxi ${taxi}`);
+    if (foodAllowed) parts.push("food credit");
+    el("addonsSummary").textContent = parts.length ? ("Add-ons: " + parts.join(", ")) : "Add-ons: none selected yet";
+
     return {
       total, deposit, balance, days, wDays, peakApplied,
       inputs: {
@@ -1287,7 +1413,18 @@
     };
   }
 
-  function openModal() {
+  /* ========= Booking ========= */
+  window.pgBookingCallback = function(payload) {
+    if (!payload || payload.ok !== true) {
+      el("submitStatus").textContent = (payload && payload.error) ? payload.error : "Booking failed. Please try again.";
+      return;
+    }
+    el("submitStatus").textContent =
+      "Request sent. Check your email for the invoice or estimate.";
+    setTimeout(() => closeOverlay("bookingOverlay"), 1300);
+  };
+
+  function openBooking(){
     const pricing = calc();
     const staffText = selectedStaff ? `${selectedStaff.name} (selected)` : "Not selected yet";
 
@@ -1303,11 +1440,7 @@
       `Balance: <b>${money(pricing.balance)}</b>`;
 
     el("submitStatus").textContent = "";
-    el("modalWrap").classList.remove("hidden");
-  }
-
-  function closeModal() {
-    el("modalWrap").classList.add("hidden");
+    openOverlay("bookingOverlay");
   }
 
   function validateBookingForm() {
@@ -1322,7 +1455,7 @@
     return { ok: true };
   }
 
-  async function submitBooking() {
+  function submitBooking() {
     const v = validateBookingForm();
     if (!v.ok) { el("submitStatus").textContent = v.msg; return; }
 
@@ -1334,7 +1467,6 @@
 
     const pricing = calc();
     const notes = el("custNotes").value.trim().slice(0, 800);
-
     el("submitStatus").textContent = "Sending…";
 
     const payload = {
@@ -1381,6 +1513,7 @@
     document.body.appendChild(script);
   }
 
+  /* ========= Copy quote ========= */
   async function copyQuote() {
     const pricing = calc();
     const staffLine = selectedStaff ? `Sitter: ${selectedStaff.name}` : `Sitter: Not selected`;
@@ -1409,10 +1542,19 @@ Note: Final price confirmed after screening and availability.`;
     }
   }
 
-  function openHowModal(){ el("howModalWrap").classList.remove("hidden"); }
-  function closeHowModal(){ el("howModalWrap").classList.add("hidden"); }
+  /* ========= Bootstrap ========= */
+  function fetchAndRecalc(){
+    calc();
+    fetchAvailability();
+  }
 
   function attach() {
+    // Apply optional background image
+    if (CONFIG.brandBgImage && CONFIG.brandBgImage.trim()){
+      document.documentElement.style.setProperty("--pg-bg-image", `url('${CONFIG.brandBgImage}')`);
+    }
+
+    // Default dates today
     const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth()+1).padStart(2,"0");
@@ -1420,41 +1562,57 @@ Note: Final price confirmed after screening and availability.`;
     el("startDate").value = `${yyyy}-${mm}-${dd}`;
     el("endDate").value = `${yyyy}-${mm}-${dd}`;
 
+    // Stay type
     document.querySelectorAll(".seg-btn").forEach(b => {
       b.addEventListener("click", () => {
         pkg = b.dataset.pkg;
         setPkgUI();
-        calc();
-        fetchAvailability();
+        fetchAndRecalc();
       });
     });
 
+    // Inputs
     [
       "startDate","endDate","zone","dogs","cats",
-      "updates","checkins","walkMinutes",
-      "meds","puppy","homecare","keys","taxi","hours","foodSupplies"
+      "updates","checkins","walkMinutes","homecare","keys","taxi",
+      "meds","puppy","foodSupplies","hours"
     ].forEach(id => el(id).addEventListener("input", () => {
       calc();
       if (["startDate","endDate","zone"].includes(id)) fetchAvailability();
     }));
 
+    // Buttons
     el("copyBtn").addEventListener("click", copyQuote);
-    el("requestBtn").addEventListener("click", openModal);
-    el("closeModal").addEventListener("click", closeModal);
-    el("modalWrap").addEventListener("click", (e) => { if (e.target === el("modalWrap")) closeModal(); });
+
+    el("requestBtn").addEventListener("click", openBooking);
+    el("requestBtn2").addEventListener("click", openBooking);
+
+    el("openAddonsBtn").addEventListener("click", () => openOverlay("addonsOverlay"));
+    el("closeAddonsBtn").addEventListener("click", () => closeOverlay("addonsOverlay"));
+    el("addonsOverlay").addEventListener("click", (e) => { if (e.target === el("addonsOverlay")) closeOverlay("addonsOverlay"); });
+
+    el("openSitterBtn").addEventListener("click", () => openOverlay("sitterOverlay"));
+    el("changeSitterBtn").addEventListener("click", () => openOverlay("sitterOverlay"));
+    el("closeSitterBtn").addEventListener("click", () => closeOverlay("sitterOverlay"));
+    el("sitterOverlay").addEventListener("click", (e) => { if (e.target === el("sitterOverlay")) closeOverlay("sitterOverlay"); });
+
+    el("prevSitter").addEventListener("click", () => setCarouselIndex(carouselIndex - 1));
+    el("nextSitter").addEventListener("click", () => setCarouselIndex(carouselIndex + 1));
+    el("selectSitter").addEventListener("click", () => {
+      if (!staffListCache.length) return;
+      selectedStaff = staffListCache[carouselIndex];
+      updateSelectedSitterPanel();
+      closeOverlay("sitterOverlay");
+    });
+
+    el("howBtn").addEventListener("click", () => openOverlay("howOverlay"));
+    el("closeHowBtn").addEventListener("click", () => closeOverlay("howOverlay"));
+    el("howOverlay").addEventListener("click", (e) => { if (e.target === el("howOverlay")) closeOverlay("howOverlay"); });
+
+    el("closeBookingBtn").addEventListener("click", () => closeOverlay("bookingOverlay"));
+    el("bookingOverlay").addEventListener("click", (e) => { if (e.target === el("bookingOverlay")) closeOverlay("bookingOverlay"); });
+
     el("submitBooking").addEventListener("click", submitBooking);
-
-    // Sitter modal events
-    el("chooseSitterBtn").addEventListener("click", openSitterModal);
-    el("closeSitterModal").addEventListener("click", closeSitterModal);
-    el("sitterModalWrap").addEventListener("click", (e) => { if (e.target === el("sitterModalWrap")) closeSitterModal(); });
-    el("sitterSearch").addEventListener("input", () => renderSitterModal(staffListCache));
-    el("sitterSort").addEventListener("input", () => renderSitterModal(staffListCache));
-
-    // Pricing rules modal events
-    el("howBtn").addEventListener("click", openHowModal);
-    el("closeHowModal").addEventListener("click", closeHowModal);
-    el("howModalWrap").addEventListener("click", (e) => { if (e.target === el("howModalWrap")) closeHowModal(); });
 
     setPkgUI();
     fetchPricing();
