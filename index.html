@@ -3,41 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PetGuardian Care | Care Estimate</title>
+  <title>PetGuardian Care | Pricing Calculator</title>
 
-  <!-- REVAMP_V4 -->
+  <!-- REVAMP_V6 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    /* =========================================================
-      CONFIG (STYLE)
-    ========================================================== */
     :root{
-      --bg0:#061911;
-      --bg1:#0A241A;
-      --card: rgba(8, 28, 20, 0.78);
-      --card2: rgba(10, 36, 26, 0.86);
-
+      --forest:#061911;
+      --pine:#0A241A;
       --champ:#F3E7D3;
       --stone:#CBBFAE;
       --brass:#B08D57;
 
+      --glass: rgba(10, 34, 24, 0.62);
+      --card: rgba(8, 28, 20, 0.74);
+      --card2: rgba(10, 36, 26, 0.84);
+
       --border: rgba(176,141,87,0.22);
-      --border2: rgba(176,141,87,0.38);
+      --border2: rgba(176,141,87,0.40);
 
       --shadow: 0 26px 90px rgba(0,0,0,0.58);
+
       --r-xl: 28px;
       --r-lg: 22px;
 
-      --focus: 0 0 0 3px rgba(176,141,87,0.18);
+      --focus: 0 0 0 3px rgba(176,141,87,0.16);
 
-      /* IMPORTANT: your repo file is bg.jpeg */
       --bg-image: url("bg.jpeg");
 
-      /* subtle noise overlay */
       --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
     }
 
@@ -47,7 +44,7 @@
       margin:0;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color: var(--champ);
-      background: var(--bg0);
+      background: var(--forest);
       overflow-x:hidden;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -55,12 +52,11 @@
     }
     .font-lux{ font-family: Cinzel, Inter, system-ui, sans-serif; letter-spacing: .2px; }
 
-    /* Desktop: true landscape, avoid page scroll */
+    /* Desktop: lock page scroll, allow internal scroll if needed */
     @media (min-width: 1024px){
-      body{ overflow:hidden; }
+      body{ overflow: hidden; }
     }
 
-    /* Premium background (bg.jpeg + gradients + softened noise) */
     .bg-premium{
       min-height: 100vh;
       position: relative;
@@ -70,7 +66,7 @@
         radial-gradient(980px 980px at 45% 120%, rgba(10,36,26,0.85), transparent 60%),
         linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.72)),
         var(--bg-image),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
+        linear-gradient(180deg, var(--forest), var(--pine));
       background-size: cover;
       background-position: center;
     }
@@ -80,35 +76,35 @@
       inset:0;
       pointer-events:none;
       background-image: var(--noise);
-      opacity: 0.20;                /* LOWER = less pixel feel */
-      filter: blur(0.65px);         /* soften grain */
-      mix-blend-mode: soft-light;   /* smoother than overlay */
+      opacity: 0.14;            /* reduced to avoid pixel feel */
+      filter: blur(0.85px);     /* softens grain */
+      mix-blend-mode: soft-light;
     }
     .bg-premium::after{
       content:"";
       position:absolute;
       inset:-1px;
       pointer-events:none;
-      background: radial-gradient(1200px 720px at 50% 18%, transparent 35%, rgba(0,0,0,0.82) 100%);
-      opacity: 0.78;
+      background: radial-gradient(1200px 720px at 50% 18%, transparent 35%, rgba(0,0,0,0.84) 100%);
+      opacity: 0.80;
     }
 
     .shell{
       position:relative;
       z-index: 1;
       height: 100vh;
-      padding: 18px;
+      padding: 16px;
       display:flex;
       align-items: stretch;
       justify-content: center;
     }
 
     .app{
-      width: min(1280px, 100%);
+      width: min(1320px, 100%);
       height: 100%;
       border-radius: var(--r-xl);
       border: 1px solid var(--border);
-      background: rgba(10,36,26,0.52);
+      background: rgba(10,36,26,0.50);
       backdrop-filter: blur(12px);
       box-shadow: var(--shadow);
       overflow:hidden;
@@ -118,13 +114,14 @@
     }
 
     .topbar{
-      padding: 16px 18px;
+      padding: 14px 16px;
       display:flex;
       align-items:flex-start;
       justify-content: space-between;
-      gap: 14px;
+      gap: 12px;
       flex-wrap: wrap;
     }
+
     .brand{
       display:flex;
       align-items:center;
@@ -132,7 +129,7 @@
       min-width: 320px;
     }
     .logo{
-      width: 46px; height: 46px;
+      width: 44px; height: 44px;
       border-radius: 18px;
       border: 1px solid var(--border);
       background: rgba(0,0,0,0.18);
@@ -153,9 +150,10 @@
       color: rgba(203,191,174,0.95);
       white-space: nowrap;
     }
+
     .title{
-      margin-top: 8px;
-      font-size: 30px;
+      margin-top: 6px;
+      font-size: 28px;
       line-height: 1.08;
       font-weight: 700;
     }
@@ -192,54 +190,60 @@
 
     .divider{ height: 1px; background: rgba(176,141,87,0.18); }
 
-    /* MAIN: landscape layout */
+    /* MAIN */
     .main{
       flex: 1;
       min-height: 0;
-      padding: 14px 18px 18px;
+      padding: 12px 16px 16px;
       display:grid;
       grid-template-columns: 1fr 380px;
-      gap: 16px;
+      gap: 14px;
       overflow:hidden;
     }
 
-    /* Mobile stacks */
     @media (max-width: 1023px){
       body{ overflow:auto; }
       .shell{ height:auto; padding: 14px; }
       .app{ height:auto; }
-      .main{
-        grid-template-columns: 1fr;
-        overflow: visible;
-      }
+      .main{ grid-template-columns: 1fr; overflow: visible; }
     }
 
     .left{
       min-height: 0;
-      display:grid;
-      grid-template-rows: auto 1fr;
-      gap: 14px;
+      display:flex;
+      flex-direction: column;
+      gap: 12px;
       overflow:hidden;
     }
 
-    .grid{
+    /* Internal scroll area so nothing clips */
+    .leftScroll{
       min-height: 0;
+      overflow:auto;
+      padding-right: 6px;
+    }
+    .leftScroll::-webkit-scrollbar{ width: 10px; }
+    .leftScroll::-webkit-scrollbar-thumb{
+      background: rgba(243,231,211,0.14);
+      border: 1px solid rgba(176,141,87,0.18);
+      border-radius: 999px;
+    }
+
+    .row2{
       display:grid;
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      gap: 14px;
-      overflow:hidden;
+      gap: 12px;
     }
     @media (max-width: 1023px){
-      .grid{ grid-template-columns: 1fr; grid-template-rows: auto; overflow: visible; }
+      .row2{ grid-template-columns: 1fr; }
+      .leftScroll{ overflow: visible; padding-right: 0; }
     }
 
     .card{
       border-radius: var(--r-lg);
       border: 1px solid var(--border);
       background: var(--card);
-      padding: 14px;
-      overflow: visible; /* FIX clipping */
+      padding: 12px;
     }
 
     .card-title{
@@ -269,7 +273,6 @@
       box-shadow: var(--focus);
     }
 
-    /* Segments */
     .seg{
       display:grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -289,6 +292,9 @@
       transition: all .18s ease;
       color: var(--champ);
       position:relative;
+      display:flex;
+      gap: 10px;
+      align-items:flex-start;
     }
     .seg-btn.active{
       background: rgba(243,231,211,0.88);
@@ -298,7 +304,31 @@
     .seg-sub{ margin-top: 4px; font-size: 12px; color: rgba(203,191,174,0.86); }
     .seg-btn.active .seg-sub{ color: rgba(7,24,17,0.72); }
 
-    /* Slider */
+    .icon{
+      width: 18px;
+      height: 18px;
+      margin-top: 1px;
+      flex: 0 0 auto;
+      opacity: 0.95;
+    }
+    .seg-btn.active .icon{ opacity: 1; }
+
+    /* Hours wrap: reserved space, no layout shift */
+    #hoursWrap{
+      margin-top: 10px;
+      border-top: 1px solid rgba(176,141,87,0.14);
+      padding-top: 10px;
+    }
+    #hoursWrap.inactive{
+      opacity: 0;
+      pointer-events:none;
+      height: 72px;     /* keep space reserved */
+    }
+    #hoursWrap.active{
+      opacity: 1;
+      height: auto;
+    }
+
     input[type="range"]{
       height: 26px;
       appearance:none;
@@ -322,21 +352,51 @@
       box-shadow: 0 10px 22px rgba(0,0,0,0.45);
     }
 
-    /* Right quote */
+    .addonRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    @media (max-width: 1023px){
+      .addonRow{ grid-template-columns: 1fr; }
+    }
+    .toggle{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(176,141,87,0.20);
+      background: rgba(8,28,20,0.38);
+    }
+
+    /* Selected sitter summary */
+    #selectedSitterSummary{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(176,141,87,0.20);
+      background: rgba(8,28,20,0.35);
+    }
+
+    /* Quote */
     .quote{
       border-radius: var(--r-lg);
       border: 1px solid var(--border2);
       background: var(--card2);
-      padding: 16px;
+      padding: 14px;
       display:flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       overflow:hidden;
+      min-height: 0;
     }
     .quote-total{
       font-size: 44px;
       line-height: 1;
-      margin-top: 4px;
+      margin-top: 2px;
     }
     .line{ height:1px; background: rgba(176,141,87,0.18); margin: 6px 0; }
     .row{ display:flex; align-items:center; justify-content: space-between; gap:10px; font-size: 13px; }
@@ -348,54 +408,28 @@
     }
     .depositAmt{ font-size: 22px; font-weight: 900; margin-top: 4px; }
 
-    /* Selected sitter mini panel */
-    .selectedSitter{
-      margin-top: 10px;
-      border-radius: 18px;
-      border: 1px solid rgba(176,141,87,0.20);
-      background: rgba(8,28,20,0.35);
-      padding: 10px;
-      display:flex;
-      align-items:center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-    .selLeft{ display:flex; align-items:center; gap: 10px; min-width: 0; }
-    .avatar{
-      width: 46px; height:46px;
-      border-radius: 16px;
-      border: 1px solid rgba(176,141,87,0.22);
-      background: rgba(0,0,0,0.22);
-      overflow:hidden;
-      flex: 0 0 auto;
-    }
-    .avatar img{ width:100%; height:100%; object-fit: cover; display:block; image-rendering:auto; }
-    .selText{ min-width:0; }
-    .selName{ font-weight: 900; font-size: 13px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
-    .selMeta{ font-size: 12px; color: rgba(203,191,174,0.88); white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
+    /* MODALS */
+    .hidden{ display:none !important; }
 
-    /* =========================================================
-      MODALS
-    ========================================================== */
-    .overlay{
+    .modalWrap{
       position: fixed;
       inset: 0;
-      display:none;
+      z-index: 2147483647;
+      display:flex;
       align-items:center;
       justify-content:center;
       padding: 18px;
-      z-index: 2147483647;
       background: rgba(0,0,0,0.78);
     }
-    .overlay.open{ display:flex; }
+
     .modal{
       width: min(1100px, 100%);
+      max-height: calc(100vh - 48px);
+      overflow:hidden;
       border-radius: var(--r-xl);
       border: 1px solid rgba(176,141,87,0.42);
-      background: #061911;
+      background: rgba(6, 25, 17, 0.96); /* NOT transparent */
       box-shadow: 0 32px 120px rgba(0,0,0,0.72);
-      overflow:hidden;
-      max-height: calc(100vh - 48px);
       display:flex;
       flex-direction: column;
     }
@@ -413,23 +447,7 @@
       overflow:auto;
     }
 
-    /* Add-ons modal */
-    .addonsGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-    @media (max-width: 900px){
-      .addonsGrid{ grid-template-columns: 1fr; }
-    }
-    .addonBlock{
-      border-radius: 18px;
-      border: 1px solid rgba(176,141,87,0.20);
-      background: rgba(8,28,20,0.55);
-      padding: 12px;
-    }
-
-    /* Sitter carousel: 3 cards modern, FIXED centering */
+    /* 3-card carousel */
     .carouselWrap{
       border-radius: 22px;
       border: 1px solid rgba(176,141,87,0.22);
@@ -438,7 +456,7 @@
     }
     .carouselStage{
       position: relative;
-      height: 460px;
+      height: 480px;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -453,20 +471,20 @@
       position:absolute;
       left: 50%;
       top: 50%;
-      width: 320px;
+      width: 300px;
       border-radius: 22px;
       border: 1px solid rgba(176,141,87,0.22);
-      background: rgba(10,36,26,0.92);
+      background: rgba(10,36,26,0.96);
       box-shadow: 0 22px 70px rgba(0,0,0,0.55);
       overflow:hidden;
       transform-origin: center;
-      transition: transform .28s ease, opacity .28s ease, filter .28s ease;
+      transition: transform .26s ease, opacity .26s ease, filter .26s ease;
       cursor:pointer;
       user-select:none;
       will-change: transform;
     }
     @media (max-width: 520px){
-      .sCard{ width: min(320px, 88vw); }
+      .sCard{ width: min(320px, 86vw); }
     }
     .sCard .img{
       width:100%;
@@ -475,7 +493,7 @@
       border-bottom: 1px solid rgba(176,141,87,0.18);
       overflow:hidden;
     }
-    .sCard .img img{ width:100%; height:100%; object-fit: cover; display:block; image-rendering:auto; }
+    .sCard .img img{ width:100%; height:100%; object-fit: cover; display:block; }
     .sCard .pad{ padding: 12px; }
     .sName{ font-weight: 900; }
     .sTitle{ font-size: 12px; color: rgba(203,191,174,0.88); margin-top: 2px; }
@@ -490,6 +508,7 @@
       color: rgba(203,191,174,0.95);
       white-space: nowrap;
     }
+
     .carouselNav{
       display:flex;
       align-items:center;
@@ -510,9 +529,6 @@
       background: rgba(176,141,87,0.88);
       border-color: rgba(176,141,87,0.55);
     }
-
-    /* hidden legacy node used by existing checks */
-    #staffCarousel{ display:none; }
   </style>
 </head>
 
@@ -544,159 +560,167 @@
 
       <div class="main">
         <div class="left">
-          <!-- Stay type -->
-          <div class="card">
-            <div class="card-title">
-              <span>1) Choose your stay type</span>
-              <span class="tiny muted">Add-ons apply on top</span>
-            </div>
-
-            <div class="seg">
-              <button class="seg-btn" data-pkg="day" type="button">
-                <div style="font-weight:900;">Day Visits</div>
-                <div class="seg-sub">Hourly care (you set hours)</div>
-              </button>
-
-              <button class="seg-btn" data-pkg="night" type="button">
-                <div style="font-weight:900;">Overnight</div>
-                <div class="seg-sub">6pm to 6am</div>
-              </button>
-
-              <button class="seg-btn" data-pkg="full" type="button">
-                <div style="font-weight:900;">Full-time</div>
-                <div class="seg-sub">24h presence</div>
-              </button>
-            </div>
-
-            <div id="hoursWrap" style="margin-top: 12px; display:none;">
-              <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-                <div>
-                  <div style="font-weight:900; font-size: 13px;">Hours per day</div>
-                  <div class="tiny muted">Only used for Day Visits</div>
-                </div>
-                <div style="font-size: 13px;"><span class="muted">Hours:</span> <span id="hoursOut" style="font-weight:900;">4</span></div>
-              </div>
-              <input id="hours" type="range" min="1" max="12" value="4">
-            </div>
-          </div>
-
-          <!-- Landscape grid -->
-          <div class="grid">
-            <!-- When and where -->
+          <div class="leftScroll">
+            <!-- 1) Stay type -->
             <div class="card">
               <div class="card-title">
-                <span>2) When and where?</span>
-                <span class="tiny"><span class="muted">Days:</span> <span id="daysOut" style="font-weight:900;">1</span></span>
+                <span>1) Choose your stay type</span>
+                <span class="tiny muted">Add-ons apply on top</span>
               </div>
 
-              <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                <div>
-                  <div class="tiny muted">Start date</div>
-                  <input id="startDate" type="date" class="input">
+              <div class="seg">
+                <button class="seg-btn" data-pkg="day" type="button">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M12 22a10 10 0 1 0-10-10 10 10 0 0 0 10 10Z" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  <div>
+                    <div style="font-weight:900;">Day Visits</div>
+                    <div class="seg-sub">Hourly care (you set hours)</div>
+                  </div>
+                </button>
+
+                <button class="seg-btn" data-pkg="night" type="button">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none">
+                    <path d="M21 12.2A8.5 8.5 0 1 1 11.8 3 6.5 6.5 0 0 0 21 12.2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                  </svg>
+                  <div>
+                    <div style="font-weight:900;">Overnight</div>
+                    <div class="seg-sub">6pm to 6am</div>
+                  </div>
+                </button>
+
+                <button class="seg-btn" data-pkg="full" type="button">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                  </svg>
+                  <div>
+                    <div style="font-weight:900;">Full-time</div>
+                    <div class="seg-sub">24h presence</div>
+                  </div>
+                </button>
+              </div>
+
+              <div id="hoursWrap" class="inactive">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                  <div>
+                    <div style="font-weight:900; font-size: 13px;">Hours per day</div>
+                    <div class="tiny muted">Only used for Day Visits</div>
+                  </div>
+                  <div style="font-size: 13px;"><span class="muted">Hours:</span> <span id="hoursOut" style="font-weight:900;">4</span></div>
                 </div>
-                <div>
-                  <div class="tiny muted">End date</div>
-                  <input id="endDate" type="date" class="input">
-                </div>
+                <input id="hours" type="range" min="1" max="12" value="4">
               </div>
-
-              <div style="margin-top: 10px;">
-                <div class="tiny muted">Zone</div>
-                <select id="zone">
-                  <option value="sabie">Sabie (Zone A)</option>
-                  <option value="wr">White River (Zone B)</option>
-                  <option value="nel">Nelspruit (Zone C)</option>
-                </select>
-              </div>
-
-              <div id="peakNote" class="tiny muted" style="margin-top: 10px;"></div>
             </div>
 
-            <!-- Pets -->
-            <div class="card">
-              <div class="card-title">
-                <span>3) Tell us about your pets</span>
-                <span id="staffStatus" class="tiny muted">Loading…</span>
-              </div>
-
-              <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                <div>
-                  <div class="tiny muted">Dogs</div>
-                  <input id="dogs" type="number" min="0" value="1" class="input">
+            <!-- Row 2 -->
+            <div class="row2" style="margin-top: 12px;">
+              <div class="card">
+                <div class="card-title">
+                  <span>2) When and where?</span>
+                  <span class="tiny"><span class="muted">Days:</span> <span id="daysOut" style="font-weight:900;">1</span></span>
                 </div>
-                <div>
-                  <div class="tiny muted">Cats</div>
-                  <input id="cats" type="number" min="0" value="0" class="input">
-                </div>
-              </div>
 
-              <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                <label class="addonBlock" style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
                   <div>
-                    <div style="font-weight:900; font-size: 13px;">Puppy care</div>
-                    <div class="tiny muted">Extra supervision</div>
+                    <div class="tiny muted">Start date</div>
+                    <input id="startDate" type="date" class="input">
                   </div>
-                  <input id="puppy" type="checkbox">
-                </label>
-
-                <label class="addonBlock" style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0;">
                   <div>
-                    <div style="font-weight:900; font-size: 13px;">Oral meds</div>
-                    <div class="tiny muted">Follow instructions</div>
+                    <div class="tiny muted">End date</div>
+                    <input id="endDate" type="date" class="input">
                   </div>
-                  <input id="meds" type="checkbox">
-                </label>
+                </div>
+
+                <div style="margin-top: 10px;">
+                  <div class="tiny muted">Zone</div>
+                  <select id="zone">
+                    <option value="sabie">Sabie (Zone A)</option>
+                    <option value="wr">White River (Zone B)</option>
+                    <option value="nel">Nelspruit (Zone C)</option>
+                  </select>
+                </div>
+
+                <div id="peakNote" class="tiny muted" style="margin-top: 10px;"></div>
               </div>
 
-              <label class="addonBlock" style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top: 10px;">
-                <div>
-                  <div style="font-weight:900; font-size: 13px;">Food supplies allowed</div>
-                  <div class="tiny muted">Deduct R50 per day</div>
+              <div class="card">
+                <div class="card-title">
+                  <span>3) Tell us about your pets</span>
+                  <span id="staffStatus" class="tiny muted">Loading…</span>
                 </div>
-                <input id="foodSupplies" type="checkbox">
-              </label>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                  <div>
+                    <div class="tiny muted">Dogs</div>
+                    <input id="dogs" type="number" min="0" value="1" class="input">
+                  </div>
+                  <div>
+                    <div class="tiny muted">Cats</div>
+                    <input id="cats" type="number" min="0" value="0" class="input">
+                  </div>
+                </div>
+
+                <div class="addonRow">
+                  <label class="toggle">
+                    <div>
+                      <div style="font-weight:900; font-size: 13px;">Puppy care</div>
+                      <div class="tiny muted">Extra supervision</div>
+                    </div>
+                    <input id="puppy" type="checkbox">
+                  </label>
+
+                  <label class="toggle">
+                    <div>
+                      <div style="font-weight:900; font-size: 13px;">Oral meds</div>
+                      <div class="tiny muted">Follow instructions</div>
+                    </div>
+                    <input id="meds" type="checkbox">
+                  </label>
+                </div>
+
+                <label class="toggle" style="margin-top: 10px;">
+                  <div>
+                    <div style="font-weight:900; font-size: 13px;">Food supplies allowed</div>
+                    <div class="tiny muted">Deduct R50 per day</div>
+                    <div id="foodNote" class="tiny muted hidden" style="margin-top: 6px;">Fuel and supply credit applied.</div>
+                  </div>
+                  <input id="foodSupplies" type="checkbox">
+                </label>
+              </div>
             </div>
 
-            <!-- Add-ons + sitter -->
-            <div class="card">
+            <!-- Row 3 -->
+            <div class="card" style="margin-top: 12px;">
               <div class="card-title">
                 <span>4) Add-ons and sitter</span>
-                <span class="tiny muted">No scroll on desktop</span>
+                <span class="tiny muted" id="peakAppliedOut"></span>
               </div>
 
               <div style="display:flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
                 <button id="openAddonsBtn" class="btn btn-primary" type="button">Customize Add-ons</button>
                 <button id="openSitterBtn" class="btn btn-ghost" type="button">Choose sitter</button>
+                <button id="clearSitterBtn" class="btn" type="button">Clear</button>
               </div>
 
-              <div class="selectedSitter" id="selectedSitterPanel">
-                <div class="selLeft">
-                  <div class="avatar" id="selAvatar"></div>
-                  <div class="selText">
-                    <div class="selName" id="selName">No sitter selected</div>
-                    <div class="selMeta" id="selMeta">Selection required to submit</div>
-                  </div>
-                </div>
-                <button id="changeSitterBtn" class="btn" type="button" style="padding:8px 10px;">Change</button>
+              <div id="selectedSitterSummary">
+                <div class="tiny muted">Loading sitter availability…</div>
               </div>
 
               <div class="tiny muted" id="addonsSummary" style="margin-top: 10px;">Add-ons: none selected yet</div>
 
-              <div id="staffCarousel"></div>
-            </div>
-
-            <!-- Safety card (fills the grid, keeps luxury layout tight) -->
-            <div class="card">
-              <div class="card-title">
-                <span>Safety and transparency</span>
-                <span class="tiny muted">Premium standard</span>
-              </div>
-              <div class="tiny muted" style="margin-top:10px; line-height:1.55;">
+              <div class="tiny muted" style="margin-top: 10px; line-height:1.55;">
                 • Verified sitter selection required<br>
                 • Peak dates and discounts auto apply<br>
                 • Deposit secures booking, balance after service<br>
                 • Final price confirmed after screening and availability
               </div>
+
+              <div id="staffEmpty" class="tiny muted hidden" style="margin-top: 10px;">
+                No sitters available for these dates.
+              </div>
+
+              <div id="staffCarousel" style="display:none;"></div>
             </div>
           </div>
         </div>
@@ -712,8 +736,6 @@
           <div class="row"><span class="muted">Add-ons + travel</span><strong id="addonsOut">R0</strong></div>
           <div class="row"><span class="muted">Long-stay discount</span><strong id="discountOut">R0</strong></div>
           <div class="row"><span class="muted">One-time fees</span><strong id="oneTimeOut">R0</strong></div>
-
-          <div id="peakAppliedOut" class="tiny muted" style="margin-top: 6px;"></div>
 
           <div class="depositBox">
             <div class="tiny muted">Deposit required</div>
@@ -735,8 +757,48 @@
     </div>
   </div>
 
-  <!-- ADD-ONS MODAL -->
-  <div id="addonsOverlay" class="overlay" aria-hidden="true">
+  <!-- HOW PRICING WORKS -->
+  <div id="howWrap" class="modalWrap hidden">
+    <div class="modal" role="dialog" aria-modal="true" style="width:min(820px,100%);">
+      <div class="modalHeader">
+        <div>
+          <div class="pill">PetGuardian Care <span style="color:var(--brass)">•</span> Transparency</div>
+          <div class="title font-lux" style="font-size: 22px; margin-top: 8px;">How pricing works</div>
+          <div class="tiny muted">Clear rules. No surprises.</div>
+        </div>
+        <button id="closeHowBtn" class="btn btn-ghost" type="button">Close</button>
+      </div>
+      <div class="modalBody">
+        <div class="card" style="background:rgba(8,28,20,0.50); border-color:rgba(176,141,87,0.18);">
+          <div style="font-weight:900;">Peak dates</div>
+          <div class="tiny muted" style="margin-top:6px;">Peak multiplier applies if any day falls in peak range.</div>
+          <div class="tiny muted" style="margin-top:8px; line-height:1.55;">
+            June 1 to July 31<br>
+            December 1 to January 15
+          </div>
+        </div>
+
+        <div style="height:12px;"></div>
+
+        <div class="card" style="background:rgba(8,28,20,0.50); border-color:rgba(176,141,87,0.18);">
+          <div style="font-weight:900;">Long-stay discount</div>
+          <div class="tiny muted" style="margin-top:6px;">
+            Blocks of 10 days: first 10 days at 100%, next 10 at 90%, next 10 at 81%. After that it stays at 81%.
+          </div>
+        </div>
+
+        <div style="height:12px;"></div>
+
+        <div class="card" style="background:rgba(8,28,20,0.50); border-color:rgba(176,141,87,0.18);">
+          <div style="font-weight:900;">Deposit</div>
+          <div class="tiny muted" style="margin-top:6px;">50% deposit secures booking. Remaining 50% due after service.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD-ONS -->
+  <div id="addonsModalWrap" class="modalWrap hidden">
     <div class="modal" role="dialog" aria-modal="true">
       <div class="modalHeader">
         <div>
@@ -748,20 +810,20 @@
       </div>
 
       <div class="modalBody">
-        <div class="addonsGrid">
-          <div class="addonBlock">
+        <div class="row2">
+          <div class="card" style="background:rgba(8,28,20,0.50); border-color:rgba(176,141,87,0.18);">
             <div class="card-title"><span>Daily update packs</span><span class="tiny">Qty: <b id="updatesOut">0</b></span></div>
             <div class="tiny muted" style="margin-top:6px;">Photos plus a short written log.</div>
             <input id="updates" type="range" min="0" max="2" step="1" value="0">
           </div>
 
-          <div class="addonBlock">
+          <div class="card" style="background:rgba(8,28,20,0.50); border-color:rgba(176,141,87,0.18);">
             <div class="card-title"><span>Check-ins per day</span><span class="tiny">Qty: <b id="checkinsOut">0</b></span></div>
             <div class="tiny muted" style="margin-top:6px;">Short visit for feed, water, toilet check, quick play.</div>
             <input id="checkins" type="range" min="0" max="3" step="1" value="0">
           </div>
 
-          <div class="addonBlock" style="grid-column: 1 / -1;">
+          <div class="card" style="grid-column: 1 / -1; background:rgba(8,28,20,0.50); border-color:rgba(176,141,87,0.18);">
             <div class="card-title">
               <span>Walk time per day</span>
               <span class="tiny">Minutes: <b id="walkMinOut">0</b> | Cost/day: <b id="walkCostOut">R0</b></span>
@@ -770,7 +832,7 @@
             <input id="walkMinutes" type="range" min="0" max="180" step="5" value="0">
           </div>
 
-          <label class="addonBlock" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+          <label class="toggle" style="grid-column: 1 / -1;">
             <div>
               <div style="font-weight:900;">Home care pack</div>
               <div class="tiny muted">Bins, lights, basic tidy, quick checks</div>
@@ -778,12 +840,12 @@
             <input id="homecare" type="checkbox">
           </label>
 
-          <div class="addonBlock">
+          <div class="card" style="background:rgba(8,28,20,0.50); border-color:rgba(176,141,87,0.18);">
             <div class="tiny muted">Key trips (one-time)</div>
             <input id="keys" type="number" min="0" value="0" class="input" style="margin-top:6px;">
           </div>
 
-          <div class="addonBlock">
+          <div class="card" style="background:rgba(8,28,20,0.50); border-color:rgba(176,141,87,0.18);">
             <div class="tiny muted">Pet taxi (one-time)</div>
             <input id="taxi" type="number" min="0" value="0" class="input" style="margin-top:6px;">
           </div>
@@ -792,80 +854,37 @@
     </div>
   </div>
 
-  <!-- SITTER MODAL -->
-  <div id="sitterOverlay" class="overlay" aria-hidden="true">
+  <!-- SITTERS -->
+  <div id="sitterModalWrap" class="modalWrap hidden">
     <div class="modal" role="dialog" aria-modal="true">
       <div class="modalHeader">
         <div>
           <div class="pill">PetGuardian Care <span style="color:var(--brass)">•</span> Sitters</div>
           <div class="title font-lux" style="font-size: 22px; margin-top: 8px;">Choose your sitter</div>
           <div class="tiny muted">3-card carousel. Center is focus. Click center to select.</div>
+          <div id="sitterModalStatus" class="tiny muted" style="margin-top:6px;"></div>
         </div>
         <button id="closeSitterBtn" class="btn btn-ghost" type="button">Close</button>
       </div>
 
       <div class="modalBody">
         <div class="carouselWrap">
-          <div class="carouselStage" id="carouselStage"></div>
+          <div class="carouselStage" id="sitterCarousel"></div>
 
           <div class="carouselNav">
-            <button id="prevSitter" class="btn btn-ghost" type="button">Prev</button>
-            <button id="selectSitter" class="btn btn-primary" type="button">Select Center</button>
-            <button id="nextSitter" class="btn btn-ghost" type="button">Next</button>
+            <button id="sitterPrevBtn" class="btn btn-ghost" type="button">Prev</button>
+            <button id="selectCenterBtn" class="btn btn-primary" type="button">Select Center</button>
+            <button id="sitterNextBtn" class="btn btn-ghost" type="button">Next</button>
           </div>
 
-          <div class="dotRow" id="dotRow"></div>
-
-          <div id="sitterEmpty" class="tiny muted" style="display:none; text-align:center; margin-top: 10px;">
-            No sitters available for these dates.
-          </div>
+          <div class="dotRow" id="sitterDots"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- HOW PRICING WORKS MODAL -->
-  <div id="howOverlay" class="overlay" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" style="width:min(820px,100%);">
-      <div class="modalHeader">
-        <div>
-          <div class="pill">PetGuardian Care <span style="color:var(--brass)">•</span> Transparency</div>
-          <div class="title font-lux" style="font-size: 22px; margin-top: 8px;">How pricing works</div>
-          <div class="tiny muted">Clear rules. No surprises.</div>
-        </div>
-        <button id="closeHowBtn" class="btn btn-ghost" type="button">Close</button>
-      </div>
-      <div class="modalBody">
-        <div class="addonBlock">
-          <div style="font-weight:900;">Peak dates</div>
-          <div class="tiny muted" style="margin-top:6px;">Peak multiplier applies if any day falls in peak range.</div>
-          <div class="tiny muted" style="margin-top:8px; line-height:1.55;">
-            June 1 to July 31<br>
-            December 1 to January 15
-          </div>
-        </div>
-
-        <div style="height:12px;"></div>
-
-        <div class="addonBlock">
-          <div style="font-weight:900;">Long-stay discount</div>
-          <div class="tiny muted" style="margin-top:6px;">
-            Blocks of 10 days: first 10 days at 100%, next 10 at 90%, next 10 at 81%. After that it stays at 81%.
-          </div>
-        </div>
-
-        <div style="height:12px;"></div>
-
-        <div class="addonBlock">
-          <div style="font-weight:900;">Deposit</div>
-          <div class="tiny muted" style="margin-top:6px;">50% deposit secures booking. Remaining 50% due after service.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- BOOKING MODAL -->
-  <div id="bookingOverlay" class="overlay" aria-hidden="true">
+  <!-- BOOKING -->
+  <div id="modalWrap" class="modalWrap hidden">
     <div class="modal" role="dialog" aria-modal="true" style="width:min(760px,100%);">
       <div class="modalHeader">
         <div>
@@ -873,11 +892,11 @@
           <div class="title font-lux" style="font-size: 22px; margin-top: 8px;">Request booking</div>
           <div class="tiny muted">We will email an invoice or estimate. Deposit required is 50%.</div>
         </div>
-        <button id="closeBookingBtn" class="btn btn-ghost" type="button">Close</button>
+        <button id="closeModal" class="btn btn-ghost" type="button">Close</button>
       </div>
 
       <div class="modalBody">
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="row2">
           <div>
             <div class="tiny muted">Full name</div>
             <input id="custName" class="input" placeholder="Your name">
@@ -904,7 +923,7 @@
           </div>
         </div>
 
-        <div class="addonBlock" style="margin-top: 12px;">
+        <div class="card" style="margin-top: 12px; background:rgba(8,28,20,0.50); border-color:rgba(176,141,87,0.18);">
           <div class="tiny muted">Summary</div>
           <div id="modalSummary" style="margin-top:8px; font-size: 13px; color: rgba(203,191,174,0.96);"></div>
         </div>
@@ -955,9 +974,6 @@
   let pkg = "day";
   let selectedStaff = null;
   let lastAvailabilityReqId = 0;
-
-  let staffListCache = [];
-  let carouselIndex = 0;
 
   const el = (id) => document.getElementById(id);
 
@@ -1026,31 +1042,34 @@
 
   function setPkgUI() {
     document.querySelectorAll(".seg-btn").forEach(b => {
-      b.classList.toggle("active", b.dataset.pkg === pkg);
+      const active = b.dataset.pkg === pkg;
+      b.classList.toggle("active", active);
     });
-    el("hoursWrap").style.display = (pkg === "day") ? "block" : "none";
-  }
 
-  function openOverlay(id){
-    el(id).classList.add("open");
-    document.body.style.overflow = "hidden";
-  }
-  function closeOverlay(id){
-    el(id).classList.remove("open");
-    if (window.matchMedia("(min-width: 1024px)").matches) {
-      document.body.style.overflow = "hidden";
+    const wrap = el("hoursWrap");
+    const slider = el("hours");
+    if (pkg === "day"){
+      wrap.classList.remove("inactive");
+      wrap.classList.add("active");
+      slider.disabled = false;
     } else {
-      document.body.style.overflow = "auto";
+      wrap.classList.add("inactive");  // keeps reserved space
+      wrap.classList.remove("active");
+      slider.disabled = true;
     }
   }
 
+  /* =========================================================
+    JSONP callbacks (pricing, availability, booking)
+  ========================================================== */
   window.pgPricingCallback = function(payload){
     if (!payload || payload.ok !== true) {
       el("pricingStatus").textContent = "Pricing: using defaults (Pricing tab not found)";
       calc();
       return;
     }
-    applyPricingFromSheet(payload.pricing || {});
+    const p = payload.pricing || {};
+    applyPricingFromSheet(p);
     el("pricingStatus").textContent = "Pricing: loaded from sheet";
     calc();
   };
@@ -1110,19 +1129,9 @@
   window.pgAvailabilityCallback = function(payload) {
     if (!payload || payload.reqId != lastAvailabilityReqId) return;
     const list = payload.staff || [];
-
-    staffListCache = list.slice();
-    el("staffStatus").textContent = list.length ? "Select a sitter" : "None available";
-    el("sitterEmpty").style.display = list.length ? "none" : "block";
-
-    if (selectedStaff) {
-      const stillThere = staffListCache.find(s => String(s.id) === String(selectedStaff.id));
-      if (!stillThere) selectedStaff = null;
-    }
-
-    renderStaffCarouselLegacy(list);
-    initCarousel();
-    updateSelectedSitterPanel();
+    renderStaffCarousel(list);
+    el("staffStatus").textContent = list.length ? "Sitters available" : "None available";
+    el("staffEmpty").classList.toggle("hidden", list.length !== 0);
   };
 
   function fetchAvailability() {
@@ -1159,133 +1168,19 @@
     document.body.appendChild(script);
   }
 
-  function renderStaffCarouselLegacy(staffList) {
-    const wrap = el("staffCarousel");
-    wrap.innerHTML = "";
-    staffList.forEach((s) => {
-      const node = document.createElement("div");
-      node.textContent = s.name || "";
-      wrap.appendChild(node);
-    });
-  }
-
-  /* =========================
-    Carousel (FIXED centering + spacing + z-index)
-  ========================== */
-  function initCarousel(){
-    carouselIndex = 0;
-    if (selectedStaff){
-      const idx = staffListCache.findIndex(s => String(s.id) === String(selectedStaff.id));
-      if (idx >= 0) carouselIndex = idx;
-    }
-    renderCarousel();
-  }
-
-  function setCarouselIndex(i){
-    if (!staffListCache.length) return;
-    const n = staffListCache.length;
-    carouselIndex = (i % n + n) % n;
-    renderCarousel();
-  }
-
-  function renderCarousel(){
-    const stage = el("carouselStage");
-    const dots = el("dotRow");
-    stage.innerHTML = "";
-    dots.innerHTML = "";
-
-    if (!staffListCache.length) return;
-
-    staffListCache.forEach((_, i) => {
-      const d = document.createElement("div");
-      d.className = "dot" + (i === carouselIndex ? " active" : "");
-      d.addEventListener("click", () => setCarouselIndex(i));
-      dots.appendChild(d);
-    });
-
-    const n = staffListCache.length;
-    const prev = staffListCache[(carouselIndex - 1 + n) % n];
-    const curr = staffListCache[carouselIndex];
-    const next = staffListCache[(carouselIndex + 1) % n];
-
-    const stageW = stage.clientWidth || 1000;
-    const shift = Math.min(380, Math.max(260, Math.round(stageW * 0.28))); /* responsive spacing */
-
-    const cards = [
-      { data: prev, diff: -1 },
-      { data: curr, diff: 0 },
-      { data: next, diff: 1 },
-    ];
-
-    cards.forEach(({data, diff}) => {
-      const card = document.createElement("div");
-      card.className = "sCard";
-
-      const x = diff * shift;
-      const scale = diff === 0 ? 1.0 : 0.90;
-      const rot = diff === 0 ? 0 : (diff > 0 ? -12 : 12);
-      const opa = diff === 0 ? 1.0 : 0.62;
-
-      /* z-index so center always on top */
-      card.style.zIndex = diff === 0 ? "3" : (diff < 0 ? "2" : "1");
-      card.style.opacity = String(opa);
-
-      /* IMPORTANT: center anchor */
-      card.style.transform = `translate(-50%, -50%) translateX(${x}px) scale(${scale}) rotateY(${rot}deg)`;
-
-      card.innerHTML = `
-        <div class="img">
-          <img src="${escapeHtml(data.photoUrl || "")}" alt="${escapeHtml(data.name || "Sitter")}">
-        </div>
-        <div class="pad">
-          <div class="sName font-lux">${escapeHtml(data.name || "Sitter")}</div>
-          <div class="sTitle">${escapeHtml(data.title || "PetGuardian Care Sitter")} · Rating ${escapeHtml(String(data.rating || "5.0"))}</div>
-          <div class="sBio">${escapeHtml(data.bio || "Professional sitter")}</div>
-          <div class="badgeRow">
-            <span class="badge">Verified</span>
-            <span class="badge">ID checked</span>
-            <span class="badge">Background check</span>
-          </div>
-        </div>
-      `;
-
-      card.addEventListener("click", () => {
-        if (diff === 0){
-          selectedStaff = data;
-          updateSelectedSitterPanel();
-          closeOverlay("sitterOverlay");
-        } else {
-          setCarouselIndex(carouselIndex + diff);
-        }
-      });
-
-      stage.appendChild(card);
-    });
-  }
-
-  function updateSelectedSitterPanel(){
-    const avatar = el("selAvatar");
-    const name = el("selName");
-    const meta = el("selMeta");
-
-    if (!staffListCache.length){
-      avatar.innerHTML = "";
-      name.textContent = "No sitters available";
-      meta.textContent = "Try different dates or stay type";
+  window.pgBookingCallback = function(payload) {
+    if (!payload || payload.ok !== true) {
+      el("submitStatus").textContent = (payload && payload.error) ? payload.error : "Booking failed. Please try again.";
       return;
     }
-    if (!selectedStaff){
-      avatar.innerHTML = "";
-      name.textContent = "No sitter selected";
-      meta.textContent = "Selection required to submit";
-      return;
-    }
+    el("submitStatus").textContent =
+      "Request sent. Check your email for the invoice or estimate. If you do not receive it, WhatsApp us with your name and dates.";
+    setTimeout(() => closeModal(), 1600);
+  };
 
-    avatar.innerHTML = `<img src="${escapeHtml(selectedStaff.photoUrl || "")}" alt="${escapeHtml(selectedStaff.name || "Sitter")}">`;
-    name.textContent = selectedStaff.name || "Selected sitter";
-    meta.textContent = (selectedStaff.title || "PetGuardian Care Sitter") + " · Rating " + (selectedStaff.rating || "5.0");
-  }
-
+  /* =========================================================
+    Add-ons calculations
+  ========================================================== */
   function calc() {
     const start = el("startDate").value;
     const end = el("endDate").value;
@@ -1318,4 +1213,495 @@
     el("updatesOut").textContent = updates;
 
     const checkins = parseInt(el("checkins").value || "0", 10);
-    el("checkinsOut
+    el("checkinsOut").textContent = checkins;
+
+    const walkMin = parseInt(el("walkMinutes").value || "0", 10);
+    el("walkMinOut").textContent = walkMin;
+
+    const walkCostPerDay = walkMin * PRICES.add.walkPerMinute;
+    el("walkCostOut").textContent = money(walkCostPerDay);
+
+    const meds = el("meds").checked;
+    const puppy = el("puppy").checked;
+    const homecare = el("homecare").checked;
+
+    const foodAllowed = el("foodSupplies").checked;
+    el("foodNote").classList.toggle("hidden", !foodAllowed);
+
+    const keys = Math.max(0, parseInt(el("keys").value || "0", 10));
+    const taxi = Math.max(0, parseInt(el("taxi").value || "0", 10));
+
+    let basePerDay = 0;
+    if (pkg === "day") basePerDay = hours * PRICES.base.dayHourly;
+    if (pkg === "night") basePerDay = PRICES.base.night;
+    if (pkg === "full") basePerDay = PRICES.base.fullDay;
+
+    const checkinUnit = PRICES.add.checkin + (travel > 0 ? travel : 0);
+
+    const addOnsPerDay =
+      (updates * PRICES.add.updatePackPerDay) +
+      (checkins * checkinUnit) +
+      walkCostPerDay +
+      (meds ? PRICES.add.medsPerDay : 0) +
+      (puppy ? PRICES.add.puppyCarePerDay : 0) +
+      (homecare ? PRICES.add.homecarePerDay : 0) +
+      (foodAllowed ? -PRICES.add.foodSuppliesCreditPerDay : 0) +
+      (extraDogs * PRICES.add.extraDogPerDay) +
+      (extraCats * PRICES.add.extraCatPerDay) +
+      travel;
+
+    const oneTime = (keys * PRICES.add.keyTrip) + (taxi * PRICES.add.petTaxi);
+
+    const dailyAfterPeak = (basePerDay + addOnsPerDay) * peakMult;
+    const stayTotal = dailyAfterPeak * wDays;
+    const total = stayTotal + oneTime;
+
+    const noDiscountTotal = dailyAfterPeak * days + oneTime;
+    const discountAmt = Math.max(0, noDiscountTotal - total);
+
+    const deposit = total * CONFIG.depositPercent;
+    const balance = total - deposit;
+
+    el("totalOut").textContent = money(total);
+    el("depositOut").textContent = money(deposit);
+    el("balanceOut").textContent = money(balance);
+
+    el("baseOut").textContent = money((basePerDay * peakMult) * wDays);
+    el("addonsOut").textContent = money((addOnsPerDay * peakMult) * wDays);
+    el("oneTimeOut").textContent = money(oneTime);
+    el("discountOut").textContent = "-" + money(discountAmt);
+
+    // Summary string (simple, keeps layout tight)
+    const parts = [];
+    if (updates) parts.push(`Updates x${updates}`);
+    if (checkins) parts.push(`Check-ins x${checkins}`);
+    if (walkMin) parts.push(`Walk ${walkMin} min`);
+    if (meds) parts.push("Meds");
+    if (puppy) parts.push("Puppy care");
+    if (homecare) parts.push("Home care");
+    if (foodAllowed) parts.push("Food credit");
+    if (keys) parts.push(`Key trips x${keys}`);
+    if (taxi) parts.push(`Pet taxi x${taxi}`);
+    el("addonsSummary").textContent = parts.length ? `Add-ons: ${parts.join(" • ")}` : "Add-ons: none selected yet";
+
+    return {
+      total, deposit, balance, days, wDays, peakApplied,
+      inputs: {
+        pkg, start, end, zone,
+        dogs, cats,
+        hours,
+        updates,
+        checkins,
+        walkMinutes: walkMin,
+        meds,
+        puppy,
+        homecare,
+        foodAllowed,
+        keys,
+        taxi
+      }
+    };
+  }
+
+  /* =========================================================
+    Booking modal
+  ========================================================== */
+  function openModal() {
+    const pricing = calc();
+    const staffText = selectedStaff ? `${selectedStaff.name} (selected)` : "Not selected yet";
+
+    el("modalSummary").innerHTML =
+      `Package: <b>${escapeHtml(pkgLabel())}</b><br>` +
+      `Dates: <b>${escapeHtml(pricing.inputs.start)}</b> to <b>${escapeHtml(pricing.inputs.end)}</b> (${pricing.days} days)<br>` +
+      `Zone: <b>${escapeHtml(zoneLabel())}</b><br>` +
+      `Sitter: <b>${escapeHtml(staffText)}</b><br>` +
+      `Walk time/day: <b>${pricing.inputs.walkMinutes} min</b><br><br>` +
+      `Total: <b>${money(pricing.total)}</b><br>` +
+      `Deposit (50%): <b>${money(pricing.deposit)}</b><br>` +
+      `Balance: <b>${money(pricing.balance)}</b>`;
+
+    el("submitStatus").textContent = "";
+    el("modalWrap").classList.remove("hidden");
+  }
+  function closeModal() {
+    el("modalWrap").classList.add("hidden");
+  }
+
+  function validateBookingForm() {
+    const name = el("custName").value.trim();
+    const phone = el("custPhone").value.trim();
+    const email = el("custEmail").value.trim();
+    const hp = el("hpField").value.trim();
+    if (hp) return { ok: false, msg: "Blocked." };
+    if (!name) return { ok: false, msg: "Enter your name." };
+    if (!phone) return { ok: false, msg: "Enter your phone number." };
+    if (!email || !email.includes("@")) return { ok: false, msg: "Enter a valid email." };
+    return { ok: true };
+  }
+
+  async function submitBooking() {
+    const v = validateBookingForm();
+    if (!v.ok) { el("submitStatus").textContent = v.msg; return; }
+
+    const hasCarouselOptions = el("staffCarousel").children.length > 0;
+    if (hasCarouselOptions && !selectedStaff) {
+      el("submitStatus").textContent = "Select a sitter before submitting.";
+      return;
+    }
+
+    const pricing = calc();
+    const notes = el("custNotes").value.trim().slice(0, 800);
+
+    el("submitStatus").textContent = "Sending…";
+
+    const payload = {
+      action: "booking",
+      apiKey: CONFIG.apiKey || "",
+      ts: new Date().toISOString(),
+
+      customerName: el("custName").value.trim(),
+      customerPhone: el("custPhone").value.trim(),
+      customerEmail: el("custEmail").value.trim(),
+      customerAddress: el("custAddress").value.trim(),
+      customerNotes: notes,
+
+      sitterId: selectedStaff ? (selectedStaff.id || "") : "",
+      sitterName: selectedStaff ? (selectedStaff.name || "") : "",
+
+      zone: el("zone").value,
+      zoneLabel: zoneLabel(),
+
+      pkg: pricing.inputs.pkg,
+      start: pricing.inputs.start,
+      end: pricing.inputs.end,
+      days: String(pricing.days),
+
+      total: String(Math.round(pricing.total)),
+      deposit: String(Math.round(pricing.deposit)),
+      balance: String(Math.round(pricing.balance)),
+
+      selectionsJson: JSON.stringify(pricing.inputs)
+    };
+
+    const old = document.getElementById("jsonpBook");
+    if (old) old.remove();
+
+    const url = new URL(CONFIG.apiBaseUrl);
+    Object.entries(payload).forEach(([k, v]) => url.searchParams.set(k, String(v)));
+    url.searchParams.set("reqId", String(Date.now()));
+    url.searchParams.set("callback", "pgBookingCallback");
+
+    const script = document.createElement("script");
+    script.id = "jsonpBook";
+    script.src = url.toString();
+    script.onerror = () => el("submitStatus").textContent = "Could not send. Please try again.";
+    document.body.appendChild(script);
+  }
+
+  async function copyQuote() {
+    const pricing = calc();
+    const staffLine = selectedStaff ? `Sitter: ${selectedStaff.name}` : `Sitter: Not selected`;
+    const peakLine = pricing.peakApplied ? `Peak: Yes (auto)` : `Peak: No`;
+    const text =
+`${CONFIG.businessName} Quote Estimate
+Package: ${pkgLabel()}
+Dates: ${pricing.inputs.start} to ${pricing.inputs.end} (${pricing.days} days)
+Zone: ${zoneLabel()}
+${staffLine}
+${peakLine}
+Walk time/day: ${pricing.inputs.walkMinutes} min
+
+Total: ${money(pricing.total)}
+Deposit (50%): ${money(pricing.deposit)}
+Balance: ${money(pricing.balance)}
+
+Note: Final price confirmed after screening and availability.`;
+
+    try {
+      await navigator.clipboard.writeText(text);
+      el("copyBtn").textContent = "Copied";
+      setTimeout(()=> el("copyBtn").textContent="Copy Quote",1200);
+    } catch {
+      alert(text);
+    }
+  }
+
+  /* =========================================================
+    Sitters: 3-card carousel that works for 1,2,3+ sitters
+  ========================================================== */
+  let sitterList = [];
+  let sitterIndex = 0;
+
+  function renderStaffCarousel(staffList) {
+    const wrap = el("staffCarousel");
+    wrap.innerHTML = "";
+
+    const list = Array.isArray(staffList) ? staffList : [];
+
+    const prevId = selectedStaff && selectedStaff.id ? String(selectedStaff.id) : "";
+    if (prevId) {
+      selectedStaff = list.find(x => String(x.id) === prevId) || null;
+    }
+
+    list.forEach((s) => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.style.display = "none";
+      card.addEventListener("click", () => { selectedStaff = s; updateSelectedSitterSummary(); });
+      wrap.appendChild(card);
+    });
+
+    updateSelectedSitterSummary();
+    renderSitterModalCarousel(list);
+  }
+
+  function updateSelectedSitterSummary(){
+    const box = document.getElementById("selectedSitterSummary");
+    if (!box) return;
+
+    if (!sitterList.length){
+      box.innerHTML = `
+        <div style="font-weight:900;">No sitters available</div>
+        <div class="tiny muted" style="margin-top:6px;">Try different dates or a different stay type.</div>
+      `;
+      return;
+    }
+
+    if (!selectedStaff){
+      box.innerHTML = `
+        <div style="font-weight:900;">No sitter selected</div>
+        <div class="tiny muted" style="margin-top:6px;">You must select a sitter before requesting a booking.</div>
+      `;
+      return;
+    }
+
+    box.innerHTML = `
+      <div style="display:flex; gap:12px; align-items:center;">
+        <div style="width:56px;height:56px;border-radius:18px;overflow:hidden;border:1px solid rgba(176,141,87,0.22);background:rgba(0,0,0,0.20);flex:0 0 auto;">
+          <img src="${escapeHtml(selectedStaff.photoUrl || '')}" alt="${escapeHtml(selectedStaff.name || 'Sitter')}" style="width:100%;height:100%;object-fit:cover;display:block;">
+        </div>
+        <div style="min-width:0;">
+          <div class="font-lux" style="font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(selectedStaff.name || 'Sitter')}</div>
+          <div class="tiny muted" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(selectedStaff.title || 'PetGuardian Care Sitter')}</div>
+          <div class="tiny muted" style="margin-top:6px;">Rating: <b>${escapeHtml(String(selectedStaff.rating || '5.0'))}</b></div>
+        </div>
+      </div>
+    `;
+  }
+
+  function setSitterIndex(i){
+    if (!sitterList.length) return;
+    const n = sitterList.length;
+    sitterIndex = (i % n + n) % n;
+    drawSitterStage();
+  }
+
+  function drawSitterStage(){
+    const stage = document.getElementById("sitterCarousel");
+    const dots = document.getElementById("sitterDots");
+    if (!stage || !dots) return;
+
+    stage.innerHTML = "";
+    dots.innerHTML = "";
+
+    const n = sitterList.length;
+    if (!n) return;
+
+    for (let i=0;i<n;i++){
+      const d = document.createElement("div");
+      d.className = "dot" + (i === sitterIndex ? " active" : "");
+      d.addEventListener("click", () => setSitterIndex(i));
+      dots.appendChild(d);
+    }
+
+    const stageW = stage.clientWidth || 1000;
+    const shift = Math.min(390, Math.max(320, Math.round(stageW * 0.34)));
+
+    const makeCard = (data, x, scale, rot, opacity, z, blur, isCenter, clickFn) => {
+      const card = document.createElement("div");
+      card.className = "sCard";
+      card.style.zIndex = String(z);
+      card.style.opacity = String(opacity);
+      card.style.filter = blur ? `blur(${blur}px) brightness(0.92) saturate(0.92)` : "none";
+      card.style.transform = `translate(-50%, -50%) translateX(${x}px) scale(${scale}) rotateY(${rot}deg)`;
+
+      card.innerHTML = `
+        <div class="img">
+          <img src="${escapeHtml(data.photoUrl || "")}" alt="${escapeHtml(data.name || "Sitter")}">
+        </div>
+        <div class="pad">
+          <div class="sName font-lux">${escapeHtml(data.name || "Sitter")}</div>
+          <div class="sTitle">${escapeHtml(data.title || "PetGuardian Care Sitter")} · Rating ${escapeHtml(String(data.rating || "5.0"))}</div>
+          <div class="sBio">${escapeHtml(data.bio || "Professional sitter")}</div>
+          <div class="badgeRow">
+            <span class="badge">Verified</span>
+            <span class="badge">ID checked</span>
+            <span class="badge">Background check</span>
+          </div>
+        </div>
+      `;
+
+      card.addEventListener("click", clickFn);
+      stage.appendChild(card);
+    };
+
+    if (n === 1){
+      const curr = sitterList[0];
+      makeCard(curr, 0, 1.0, 0, 1.0, 3, 0, true, () => {
+        selectedStaff = curr;
+        updateSelectedSitterSummary();
+        closeSitterModal();
+      });
+      return;
+    }
+
+    if (n === 2){
+      const curr = sitterList[sitterIndex];
+      const other = sitterList[(sitterIndex + 1) % 2];
+
+      makeCard(other, shift * 0.60, 0.86, -14, 0.55, 1, 0.6, false, () => setSitterIndex(sitterIndex + 1));
+      makeCard(curr, 0, 1.0, 0, 1.0, 3, 0, true, () => {
+        selectedStaff = curr;
+        updateSelectedSitterSummary();
+        closeSitterModal();
+      });
+      return;
+    }
+
+    const prev = sitterList[(sitterIndex - 1 + n) % n];
+    const curr = sitterList[sitterIndex];
+    const next = sitterList[(sitterIndex + 1) % n];
+
+    makeCard(prev, -shift, 0.84, 16, 0.56, 1, 0.6, false, () => setSitterIndex(sitterIndex - 1));
+    makeCard(curr, 0, 1.0, 0, 1.0, 3, 0, true, () => {
+      selectedStaff = curr;
+      updateSelectedSitterSummary();
+      closeSitterModal();
+    });
+    makeCard(next, shift, 0.84, -16, 0.56, 2, 0.6, false, () => setSitterIndex(sitterIndex + 1));
+  }
+
+  function renderSitterModalCarousel(list){
+    sitterList = Array.isArray(list) ? list : [];
+    const status = document.getElementById("sitterModalStatus");
+    if (status){
+      status.textContent = sitterList.length ? "Click center card to select" : "No sitters available for these dates.";
+    }
+
+    if (!sitterList.length){
+      drawSitterStage();
+      return;
+    }
+
+    if (selectedStaff && selectedStaff.id){
+      const idx = sitterList.findIndex(x => String(x.id) === String(selectedStaff.id));
+      sitterIndex = idx >= 0 ? idx : 0;
+    } else {
+      sitterIndex = 0;
+    }
+
+    drawSitterStage();
+  }
+
+  /* =========================================================
+    Modal controls
+  ========================================================== */
+  const addonsModalWrap = document.getElementById("addonsModalWrap");
+  const sitterModalWrap = document.getElementById("sitterModalWrap");
+  const howWrap = document.getElementById("howWrap");
+
+  function openAddonsModal(){ addonsModalWrap.classList.remove("hidden"); }
+  function closeAddonsModal(){ addonsModalWrap.classList.add("hidden"); }
+
+  function openSitterModal(){ sitterModalWrap.classList.remove("hidden"); drawSitterStage(); }
+  function closeSitterModal(){ sitterModalWrap.classList.add("hidden"); }
+
+  function openHow(){ howWrap.classList.remove("hidden"); }
+  function closeHow(){ howWrap.classList.add("hidden"); }
+
+  document.getElementById("openAddonsBtn")?.addEventListener("click", openAddonsModal);
+  document.getElementById("closeAddonsBtn")?.addEventListener("click", closeAddonsModal);
+
+  document.getElementById("openSitterBtn")?.addEventListener("click", openSitterModal);
+  document.getElementById("closeSitterBtn")?.addEventListener("click", closeSitterModal);
+
+  document.getElementById("howBtn")?.addEventListener("click", openHow);
+  document.getElementById("closeHowBtn")?.addEventListener("click", closeHow);
+
+  document.getElementById("sitterPrevBtn")?.addEventListener("click", () => setSitterIndex(sitterIndex - 1));
+  document.getElementById("sitterNextBtn")?.addEventListener("click", () => setSitterIndex(sitterIndex + 1));
+  document.getElementById("selectCenterBtn")?.addEventListener("click", () => {
+    if (!sitterList.length) return;
+    const curr = sitterList[sitterIndex];
+    selectedStaff = curr;
+    updateSelectedSitterSummary();
+    closeSitterModal();
+  });
+
+  document.getElementById("clearSitterBtn")?.addEventListener("click", () => {
+    selectedStaff = null;
+    updateSelectedSitterSummary();
+  });
+
+  // Close on overlay click
+  [addonsModalWrap, sitterModalWrap, howWrap, el("modalWrap")].forEach((w) => {
+    if (!w) return;
+    w.addEventListener("click", (e) => {
+      if (e.target !== w) return;
+      if (w === addonsModalWrap) closeAddonsModal();
+      if (w === sitterModalWrap) closeSitterModal();
+      if (w === howWrap) closeHow();
+      if (w === el("modalWrap")) closeModal();
+    });
+  });
+
+  /* =========================================================
+    Attach events
+  ========================================================== */
+  function attach() {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth()+1).padStart(2,"0");
+    const dd = String(today.getDate()).padStart(2,"0");
+    el("startDate").value = `${yyyy}-${mm}-${dd}`;
+    el("endDate").value = `${yyyy}-${mm}-${dd}`;
+
+    document.querySelectorAll(".seg-btn").forEach(b => {
+      b.addEventListener("click", () => {
+        pkg = b.dataset.pkg;
+        setPkgUI();
+        calc();
+        fetchAvailability();
+      });
+    });
+
+    [
+      "startDate","endDate","zone","dogs","cats",
+      "updates","checkins","walkMinutes",
+      "meds","puppy","homecare","keys","taxi","hours","foodSupplies"
+    ].forEach(id => el(id).addEventListener("input", () => {
+      calc();
+      if (["startDate","endDate","zone"].includes(id)) fetchAvailability();
+    }));
+
+    el("copyBtn").addEventListener("click", copyQuote);
+    el("requestBtn").addEventListener("click", openModal);
+    el("requestBtn2").addEventListener("click", openModal);
+    el("closeModal").addEventListener("click", closeModal);
+    el("submitBooking").addEventListener("click", submitBooking);
+
+    setPkgUI();
+    fetchPricing();
+    calc();
+    fetchAvailability();
+
+    // redraw carousel on resize
+    window.addEventListener("resize", () => {
+      if (!sitterModalWrap.classList.contains("hidden")) drawSitterStage();
+    });
+  }
+
+  attach();
+</script>
+</body>
+</html>
