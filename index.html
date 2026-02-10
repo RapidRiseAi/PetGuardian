@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PetGuardian Care | Care Estimate</title>
 
-  <!-- REVAMP_V3 -->
+  <!-- REVAMP_V4 -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,7 +14,6 @@
   <style>
     /* =========================================================
       CONFIG (STYLE)
-      Luxury palette and layout controls. Easy edits only.
     ========================================================== */
     :root{
       --bg0:#061911;
@@ -32,15 +31,14 @@
       --shadow: 0 26px 90px rgba(0,0,0,0.58);
       --r-xl: 28px;
       --r-lg: 22px;
-      --r-md: 16px;
 
       --focus: 0 0 0 3px rgba(176,141,87,0.18);
 
-      /* Background image file in repo root */
-      --bg-image: url("bg.jpg");
+      /* IMPORTANT: your repo file is bg.jpeg */
+      --bg-image: url("bg.jpeg");
 
-      /* Noise overlay for texture (works even without bg.jpg) */
-      --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+      /* subtle noise overlay */
+      --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
     }
 
     *{ box-sizing:border-box; }
@@ -51,15 +49,18 @@
       color: var(--champ);
       background: var(--bg0);
       overflow-x:hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: geometricPrecision;
     }
     .font-lux{ font-family: Cinzel, Inter, system-ui, sans-serif; letter-spacing: .2px; }
 
-    /* Desktop: true landscape, remove page scroll */
+    /* Desktop: true landscape, avoid page scroll */
     @media (min-width: 1024px){
       body{ overflow:hidden; }
     }
 
-    /* Premium background (bg.jpg + gradients + noise) */
+    /* Premium background (bg.jpeg + gradients + softened noise) */
     .bg-premium{
       min-height: 100vh;
       position: relative;
@@ -79,8 +80,9 @@
       inset:0;
       pointer-events:none;
       background-image: var(--noise);
-      opacity: 0.55;
-      mix-blend-mode: overlay;
+      opacity: 0.20;                /* LOWER = less pixel feel */
+      filter: blur(0.65px);         /* soften grain */
+      mix-blend-mode: soft-light;   /* smoother than overlay */
     }
     .bg-premium::after{
       content:"";
@@ -112,7 +114,7 @@
       overflow:hidden;
       display:flex;
       flex-direction: column;
-      isolation: isolate; /* prevents weird stacking issues */
+      isolation: isolate;
     }
 
     .topbar{
@@ -223,7 +225,7 @@
     .grid{
       min-height: 0;
       display:grid;
-      grid-template-columns: 1.06fr 0.94fr;
+      grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr 1fr;
       gap: 14px;
       overflow:hidden;
@@ -237,7 +239,7 @@
       border: 1px solid var(--border);
       background: var(--card);
       padding: 14px;
-      overflow:hidden;
+      overflow: visible; /* FIX clipping */
     }
 
     .card-title{
@@ -367,14 +369,13 @@
       overflow:hidden;
       flex: 0 0 auto;
     }
-    .avatar img{ width:100%; height:100%; object-fit: cover; display:block; }
+    .avatar img{ width:100%; height:100%; object-fit: cover; display:block; image-rendering:auto; }
     .selText{ min-width:0; }
     .selName{ font-weight: 900; font-size: 13px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
     .selMeta{ font-size: 12px; color: rgba(203,191,174,0.88); white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
 
     /* =========================================================
       MODALS
-      Fix: always on top, never behind the page
     ========================================================== */
     .overlay{
       position: fixed;
@@ -383,7 +384,7 @@
       align-items:center;
       justify-content:center;
       padding: 18px;
-      z-index: 2147483647; /* absolute top */
+      z-index: 2147483647;
       background: rgba(0,0,0,0.78);
     }
     .overlay.open{ display:flex; }
@@ -391,7 +392,7 @@
       width: min(1100px, 100%);
       border-radius: var(--r-xl);
       border: 1px solid rgba(176,141,87,0.42);
-      background: #061911; /* solid */
+      background: #061911;
       box-shadow: 0 32px 120px rgba(0,0,0,0.72);
       overflow:hidden;
       max-height: calc(100vh - 48px);
@@ -428,7 +429,7 @@
       padding: 12px;
     }
 
-    /* Sitter carousel: 3 cards modern */
+    /* Sitter carousel: 3 cards modern, FIXED centering */
     .carouselWrap{
       border-radius: 22px;
       border: 1px solid rgba(176,141,87,0.22);
@@ -437,7 +438,7 @@
     }
     .carouselStage{
       position: relative;
-      height: 430px;
+      height: 460px;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -450,7 +451,9 @@
 
     .sCard{
       position:absolute;
-      width: 315px;
+      left: 50%;
+      top: 50%;
+      width: 320px;
       border-radius: 22px;
       border: 1px solid rgba(176,141,87,0.22);
       background: rgba(10,36,26,0.92);
@@ -460,6 +463,10 @@
       transition: transform .28s ease, opacity .28s ease, filter .28s ease;
       cursor:pointer;
       user-select:none;
+      will-change: transform;
+    }
+    @media (max-width: 520px){
+      .sCard{ width: min(320px, 88vw); }
     }
     .sCard .img{
       width:100%;
@@ -468,7 +475,7 @@
       border-bottom: 1px solid rgba(176,141,87,0.18);
       overflow:hidden;
     }
-    .sCard .img img{ width:100%; height:100%; object-fit: cover; display:block; }
+    .sCard .img img{ width:100%; height:100%; object-fit: cover; display:block; image-rendering:auto; }
     .sCard .pad{ padding: 12px; }
     .sName{ font-weight: 900; }
     .sTitle{ font-size: 12px; color: rgba(203,191,174,0.88); margin-top: 2px; }
@@ -650,11 +657,11 @@
               </label>
             </div>
 
-            <!-- Controls: Add-ons + sitter -->
-            <div class="card" style="grid-column: 1 / -1;">
+            <!-- Add-ons + sitter -->
+            <div class="card">
               <div class="card-title">
                 <span>4) Add-ons and sitter</span>
-                <span class="tiny muted">Desktop stays scroll-free</span>
+                <span class="tiny muted">No scroll on desktop</span>
               </div>
 
               <div style="display:flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
@@ -675,8 +682,21 @@
 
               <div class="tiny muted" id="addonsSummary" style="margin-top: 10px;">Add-ons: none selected yet</div>
 
-              <!-- legacy node used by existing checks -->
               <div id="staffCarousel"></div>
+            </div>
+
+            <!-- Safety card (fills the grid, keeps luxury layout tight) -->
+            <div class="card">
+              <div class="card-title">
+                <span>Safety and transparency</span>
+                <span class="tiny muted">Premium standard</span>
+              </div>
+              <div class="tiny muted" style="margin-top:10px; line-height:1.55;">
+                • Verified sitter selection required<br>
+                • Peak dates and discounts auto apply<br>
+                • Deposit secures booking, balance after service<br>
+                • Final price confirmed after screening and availability
+              </div>
             </div>
           </div>
         </div>
@@ -902,7 +922,6 @@
 <script>
   /* =========================================================
     CONFIG (FUNCTIONAL)
-    Keep your Apps Script URL here. Logic stays the same.
   ========================================================== */
   const CONFIG = {
     businessName: "PetGuardian Care",
@@ -919,7 +938,7 @@
     add: {
       updatePackPerDay: 50,
       checkin: 50,
-      walkPerMinute: 1, // R5 per 5 minutes => R1 per minute
+      walkPerMinute: 1,
       medsPerDay: 50,
       puppyCarePerDay: 100,
       homecarePerDay: 30,
@@ -963,9 +982,9 @@
   function isPeakDate(dateObj){
     const m = dateObj.getMonth();
     const d = dateObj.getDate();
-    if (m === 5 || m === 6) return true; // Jun, Jul
-    if (m === 11) return true;           // Dec
-    if (m === 0 && d <= 15) return true; // Jan 1-15
+    if (m === 5 || m === 6) return true;
+    if (m === 11) return true;
+    if (m === 0 && d <= 15) return true;
     return false;
   }
 
@@ -1012,9 +1031,6 @@
     el("hoursWrap").style.display = (pkg === "day") ? "block" : "none";
   }
 
-  /* =========================
-    MODAL helpers
-  ========================== */
   function openOverlay(id){
     el(id).classList.add("open");
     document.body.style.overflow = "hidden";
@@ -1028,9 +1044,6 @@
     }
   }
 
-  /* =========================
-    Pricing JSONP
-  ========================== */
   window.pgPricingCallback = function(payload){
     if (!payload || payload.ok !== true) {
       el("pricingStatus").textContent = "Pricing: using defaults (Pricing tab not found)";
@@ -1094,9 +1107,6 @@
     document.body.appendChild(script);
   }
 
-  /* =========================
-    Availability JSONP
-  ========================== */
   window.pgAvailabilityCallback = function(payload) {
     if (!payload || payload.reqId != lastAvailabilityReqId) return;
     const list = payload.staff || [];
@@ -1160,7 +1170,7 @@
   }
 
   /* =========================
-    Carousel (3 card)
+    Carousel (FIXED centering + spacing + z-index)
   ========================== */
   function initCarousel(){
     carouselIndex = 0;
@@ -1198,23 +1208,30 @@
     const curr = staffListCache[carouselIndex];
     const next = staffListCache[(carouselIndex + 1) % n];
 
+    const stageW = stage.clientWidth || 1000;
+    const shift = Math.min(380, Math.max(260, Math.round(stageW * 0.28))); /* responsive spacing */
+
     const cards = [
-      { data: prev, pos: "left",  diff: -1 },
-      { data: curr, pos: "center",diff: 0 },
-      { data: next, pos: "right", diff: 1 },
+      { data: prev, diff: -1 },
+      { data: curr, diff: 0 },
+      { data: next, diff: 1 },
     ];
 
     cards.forEach(({data, diff}) => {
       const card = document.createElement("div");
       card.className = "sCard";
 
-      const x = diff * 255;
+      const x = diff * shift;
       const scale = diff === 0 ? 1.0 : 0.90;
       const rot = diff === 0 ? 0 : (diff > 0 ? -12 : 12);
-      const opa = diff === 0 ? 1.0 : 0.55;
+      const opa = diff === 0 ? 1.0 : 0.62;
 
-      card.style.transform = `translateX(${x}px) scale(${scale}) rotateY(${rot}deg)`;
+      /* z-index so center always on top */
+      card.style.zIndex = diff === 0 ? "3" : (diff < 0 ? "2" : "1");
       card.style.opacity = String(opa);
+
+      /* IMPORTANT: center anchor */
+      card.style.transform = `translate(-50%, -50%) translateX(${x}px) scale(${scale}) rotateY(${rot}deg)`;
 
       card.innerHTML = `
         <div class="img">
@@ -1269,9 +1286,6 @@
     meta.textContent = (selectedStaff.title || "PetGuardian Care Sitter") + " · Rating " + (selectedStaff.rating || "5.0");
   }
 
-  /* =========================
-    Calculator (unchanged math)
-  ========================== */
   function calc() {
     const start = el("startDate").value;
     const end = el("endDate").value;
@@ -1304,286 +1318,4 @@
     el("updatesOut").textContent = updates;
 
     const checkins = parseInt(el("checkins").value || "0", 10);
-    el("checkinsOut").textContent = checkins;
-
-    const walkMin = parseInt(el("walkMinutes").value || "0", 10);
-    el("walkMinOut").textContent = walkMin;
-
-    const walkCostPerDay = walkMin * PRICES.add.walkPerMinute;
-    el("walkCostOut").textContent = money(walkCostPerDay);
-
-    const meds = el("meds").checked;
-    const puppy = el("puppy").checked;
-    const homecare = el("homecare").checked;
-    const foodAllowed = el("foodSupplies").checked;
-
-    const keys = Math.max(0, parseInt(el("keys").value || "0", 10));
-    const taxi = Math.max(0, parseInt(el("taxi").value || "0", 10));
-
-    let basePerDay = 0;
-    if (pkg === "day") basePerDay = hours * PRICES.base.dayHourly;
-    if (pkg === "night") basePerDay = PRICES.base.night;
-    if (pkg === "full") basePerDay = PRICES.base.fullDay;
-
-    const checkinUnit = PRICES.add.checkin + (travel > 0 ? travel : 0);
-
-    const addOnsPerDay =
-      (updates * PRICES.add.updatePackPerDay) +
-      (checkins * checkinUnit) +
-      walkCostPerDay +
-      (meds ? PRICES.add.medsPerDay : 0) +
-      (puppy ? PRICES.add.puppyCarePerDay : 0) +
-      (homecare ? PRICES.add.homecarePerDay : 0) +
-      (foodAllowed ? -PRICES.add.foodSuppliesCreditPerDay : 0) +
-      (extraDogs * PRICES.add.extraDogPerDay) +
-      (extraCats * PRICES.add.extraCatPerDay) +
-      travel;
-
-    const oneTime = (keys * PRICES.add.keyTrip) + (taxi * PRICES.add.petTaxi);
-
-    const dailyAfterPeak = (basePerDay + addOnsPerDay) * peakMult;
-    const stayTotal = dailyAfterPeak * wDays;
-    const total = stayTotal + oneTime;
-
-    const noDiscountTotal = dailyAfterPeak * days + oneTime;
-    const discountAmt = Math.max(0, noDiscountTotal - total);
-
-    const deposit = total * CONFIG.depositPercent;
-    const balance = total - deposit;
-
-    el("totalOut").textContent = money(total);
-    el("depositOut").textContent = money(deposit);
-    el("balanceOut").textContent = money(balance);
-
-    el("baseOut").textContent = money((basePerDay * peakMult) * wDays);
-    el("addonsOut").textContent = money((addOnsPerDay * peakMult) * wDays);
-    el("oneTimeOut").textContent = money(oneTime);
-    el("discountOut").textContent = "-" + money(discountAmt);
-
-    const parts = [];
-    if (updates) parts.push(`updates ${updates}`);
-    if (checkins) parts.push(`check-ins ${checkins}`);
-    if (walkMin) parts.push(`walk ${walkMin}m`);
-    if (homecare) parts.push("home care");
-    if (keys) parts.push(`keys ${keys}`);
-    if (taxi) parts.push(`taxi ${taxi}`);
-    if (foodAllowed) parts.push("food credit");
-    el("addonsSummary").textContent = parts.length ? ("Add-ons: " + parts.join(", ")) : "Add-ons: none selected yet";
-
-    return {
-      total, deposit, balance, days, wDays, peakApplied,
-      inputs: {
-        pkg, start, end, zone,
-        dogs, cats,
-        hours,
-        updates,
-        checkins,
-        walkMinutes: walkMin,
-        meds,
-        puppy,
-        homecare,
-        foodAllowed,
-        keys,
-        taxi
-      }
-    };
-  }
-
-  /* =========================
-    Booking JSONP
-  ========================== */
-  window.pgBookingCallback = function(payload) {
-    if (!payload || payload.ok !== true) {
-      el("submitStatus").textContent = (payload && payload.error) ? payload.error : "Booking failed. Please try again.";
-      return;
-    }
-    el("submitStatus").textContent = "Request sent. Check your email for the invoice or estimate.";
-    setTimeout(() => closeOverlay("bookingOverlay"), 1300);
-  };
-
-  function openBooking(){
-    const pricing = calc();
-    const staffText = selectedStaff ? `${selectedStaff.name} (selected)` : "Not selected yet";
-
-    el("modalSummary").innerHTML =
-      `Package: <b>${escapeHtml(pkgLabel())}</b><br>` +
-      `Dates: <b>${escapeHtml(pricing.inputs.start)}</b> to <b>${escapeHtml(pricing.inputs.end)}</b> (${pricing.days} days)<br>` +
-      `Zone: <b>${escapeHtml(zoneLabel())}</b><br>` +
-      `Sitter: <b>${escapeHtml(staffText)}</b><br>` +
-      `Walk time/day: <b>${pricing.inputs.walkMinutes} min</b><br>` +
-      `<br>` +
-      `Total: <b>${money(pricing.total)}</b><br>` +
-      `Deposit (50%): <b>${money(pricing.deposit)}</b><br>` +
-      `Balance: <b>${money(pricing.balance)}</b>`;
-
-    el("submitStatus").textContent = "";
-    openOverlay("bookingOverlay");
-  }
-
-  function validateBookingForm() {
-    const name = el("custName").value.trim();
-    const phone = el("custPhone").value.trim();
-    const email = el("custEmail").value.trim();
-    const hp = el("hpField").value.trim();
-    if (hp) return { ok: false, msg: "Blocked." };
-    if (!name) return { ok: false, msg: "Enter your name." };
-    if (!phone) return { ok: false, msg: "Enter your phone number." };
-    if (!email || !email.includes("@")) return { ok: false, msg: "Enter a valid email." };
-    return { ok: true };
-  }
-
-  function submitBooking() {
-    const v = validateBookingForm();
-    if (!v.ok) { el("submitStatus").textContent = v.msg; return; }
-
-    const hasCarouselOptions = el("staffCarousel").children.length > 0;
-    if (hasCarouselOptions && !selectedStaff) {
-      el("submitStatus").textContent = "Select a sitter before submitting.";
-      return;
-    }
-
-    const pricing = calc();
-    const notes = el("custNotes").value.trim().slice(0, 800);
-
-    el("submitStatus").textContent = "Sending…";
-
-    const payload = {
-      action: "booking",
-      apiKey: CONFIG.apiKey || "",
-      ts: new Date().toISOString(),
-
-      customerName: el("custName").value.trim(),
-      customerPhone: el("custPhone").value.trim(),
-      customerEmail: el("custEmail").value.trim(),
-      customerAddress: el("custAddress").value.trim(),
-      customerNotes: notes,
-
-      sitterId: selectedStaff ? (selectedStaff.id || "") : "",
-      sitterName: selectedStaff ? (selectedStaff.name || "") : "",
-
-      zone: el("zone").value,
-      zoneLabel: zoneLabel(),
-
-      pkg: pricing.inputs.pkg,
-      start: pricing.inputs.start,
-      end: pricing.inputs.end,
-      days: String(pricing.days),
-
-      total: String(Math.round(pricing.total)),
-      deposit: String(Math.round(pricing.deposit)),
-      balance: String(Math.round(pricing.balance)),
-
-      selectionsJson: JSON.stringify(pricing.inputs)
-    };
-
-    const old = document.getElementById("jsonpBook");
-    if (old) old.remove();
-
-    const url = new URL(CONFIG.apiBaseUrl);
-    Object.entries(payload).forEach(([k, v]) => url.searchParams.set(k, String(v)));
-    url.searchParams.set("reqId", String(Date.now()));
-    url.searchParams.set("callback", "pgBookingCallback");
-
-    const script = document.createElement("script");
-    script.id = "jsonpBook";
-    script.src = url.toString();
-    script.onerror = () => el("submitStatus").textContent = "Could not send. Please try again.";
-    document.body.appendChild(script);
-  }
-
-  async function copyQuote() {
-    const pricing = calc();
-    const staffLine = selectedStaff ? `Sitter: ${selectedStaff.name}` : `Sitter: Not selected`;
-    const peakLine = pricing.peakApplied ? `Peak: Yes (auto)` : `Peak: No`;
-    const text =
-`${CONFIG.businessName} Quote Estimate
-Package: ${pkgLabel()}
-Dates: ${pricing.inputs.start} to ${pricing.inputs.end} (${pricing.days} days)
-Zone: ${zoneLabel()}
-${staffLine}
-${peakLine}
-Walk time/day: ${pricing.inputs.walkMinutes} min
-
-Total: ${money(pricing.total)}
-Deposit (50%): ${money(pricing.deposit)}
-Balance: ${money(pricing.balance)}
-
-Note: Final price confirmed after screening and availability.`;
-
-    try {
-      await navigator.clipboard.writeText(text);
-      el("copyBtn").textContent = "Copied";
-      setTimeout(()=> el("copyBtn").textContent="Copy Quote",1200);
-    } catch {
-      alert(text);
-    }
-  }
-
-  function attach() {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth()+1).padStart(2,"0");
-    const dd = String(today.getDate()).padStart(2,"0");
-    el("startDate").value = `${yyyy}-${mm}-${dd}`;
-    el("endDate").value = `${yyyy}-${mm}-${dd}`;
-
-    document.querySelectorAll(".seg-btn").forEach(b => {
-      b.addEventListener("click", () => {
-        pkg = b.dataset.pkg;
-        setPkgUI();
-        calc();
-        fetchAvailability();
-      });
-    });
-
-    [
-      "startDate","endDate","zone","dogs","cats",
-      "updates","checkins","walkMinutes","homecare","keys","taxi",
-      "meds","puppy","foodSupplies","hours"
-    ].forEach(id => el(id).addEventListener("input", () => {
-      calc();
-      if (["startDate","endDate","zone"].includes(id)) fetchAvailability();
-    }));
-
-    el("copyBtn").addEventListener("click", copyQuote);
-    el("requestBtn").addEventListener("click", openBooking);
-    el("requestBtn2").addEventListener("click", openBooking);
-
-    el("openAddonsBtn").addEventListener("click", () => openOverlay("addonsOverlay"));
-    el("closeAddonsBtn").addEventListener("click", () => closeOverlay("addonsOverlay"));
-    el("addonsOverlay").addEventListener("click", (e) => { if (e.target === el("addonsOverlay")) closeOverlay("addonsOverlay"); });
-
-    el("openSitterBtn").addEventListener("click", () => openOverlay("sitterOverlay"));
-    el("changeSitterBtn").addEventListener("click", () => openOverlay("sitterOverlay"));
-    el("closeSitterBtn").addEventListener("click", () => closeOverlay("sitterOverlay"));
-    el("sitterOverlay").addEventListener("click", (e) => { if (e.target === el("sitterOverlay")) closeOverlay("sitterOverlay"); });
-
-    el("prevSitter").addEventListener("click", () => setCarouselIndex(carouselIndex - 1));
-    el("nextSitter").addEventListener("click", () => setCarouselIndex(carouselIndex + 1));
-    el("selectSitter").addEventListener("click", () => {
-      if (!staffListCache.length) return;
-      selectedStaff = staffListCache[carouselIndex];
-      updateSelectedSitterPanel();
-      closeOverlay("sitterOverlay");
-    });
-
-    el("howBtn").addEventListener("click", () => openOverlay("howOverlay"));
-    el("closeHowBtn").addEventListener("click", () => closeOverlay("howOverlay"));
-    el("howOverlay").addEventListener("click", (e) => { if (e.target === el("howOverlay")) closeOverlay("howOverlay"); });
-
-    el("closeBookingBtn").addEventListener("click", () => closeOverlay("bookingOverlay"));
-    el("bookingOverlay").addEventListener("click", (e) => { if (e.target === el("bookingOverlay")) closeOverlay("bookingOverlay"); });
-
-    el("submitBooking").addEventListener("click", submitBooking);
-
-    setPkgUI();
-    fetchPricing();
-    calc();
-    fetchAvailability();
-    updateSelectedSitterPanel();
-  }
-
-  attach();
-</script>
-</body>
-</html>
+    el("checkinsOut
