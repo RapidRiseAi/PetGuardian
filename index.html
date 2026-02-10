@@ -5,45 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PetGuardian Care | Care Estimate</title>
 
-  <!-- Fonts -->
+  <!-- REVAMP_V3 -->
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
 
   <style>
     /* =========================================================
-      CONFIG (EASY EDIT)
-      These are style-only variables.
-      Pricing, URLs, logic are in JS CONFIG further below.
+      CONFIG (STYLE)
+      Luxury palette and layout controls. Easy edits only.
     ========================================================== */
     :root{
-      --pg-forest:#071C14;
-      --pg-pine:#0B2A1E;
-      --pg-deep:#0A241A;
+      --bg0:#061911;
+      --bg1:#0A241A;
+      --card: rgba(8, 28, 20, 0.78);
+      --card2: rgba(10, 36, 26, 0.86);
 
-      --pg-champ:#F3E7D3;
-      --pg-stone:#CBBFAE;
-      --pg-brass:#B08D57;
+      --champ:#F3E7D3;
+      --stone:#CBBFAE;
+      --brass:#B08D57;
 
-      --pg-border: rgba(176,141,87,0.26);
-      --pg-border-strong: rgba(176,141,87,0.45);
+      --border: rgba(176,141,87,0.22);
+      --border2: rgba(176,141,87,0.38);
 
-      --pg-card: rgba(10,36,26,0.72);
-      --pg-card-2: rgba(8,28,20,0.78);
+      --shadow: 0 26px 90px rgba(0,0,0,0.58);
+      --r-xl: 28px;
+      --r-lg: 22px;
+      --r-md: 16px;
 
-      --pg-muted: rgba(203,191,174,0.92);
+      --focus: 0 0 0 3px rgba(176,141,87,0.18);
 
-      --pg-radius-xl: 28px;
-      --pg-radius-lg: 22px;
-      --pg-radius-md: 16px;
+      /* Background image file in repo root */
+      --bg-image: url("bg.jpg");
 
-      --pg-shadow: 0 22px 70px rgba(0,0,0,0.52);
-
-      /* Optional background image (set via JS if CONFIG.brandBgImage provided) */
-      --pg-bg-image: none;
-
-      /* SVG noise texture (stronger than before, still tasteful) */
-      --pg-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+      /* Noise overlay for texture (works even without bg.jpg) */
+      --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
     }
 
     *{ box-sizing:border-box; }
@@ -51,28 +48,28 @@
     body{
       margin:0;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color: var(--pg-champ);
-      background: var(--pg-forest);
+      color: var(--champ);
+      background: var(--bg0);
       overflow-x:hidden;
     }
     .font-lux{ font-family: Cinzel, Inter, system-ui, sans-serif; letter-spacing: .2px; }
 
-    /* Desktop: true landscape, no page scroll */
+    /* Desktop: true landscape, remove page scroll */
     @media (min-width: 1024px){
       body{ overflow:hidden; }
     }
 
-    /* Premium background */
+    /* Premium background (bg.jpg + gradients + noise) */
     .bg-premium{
-      position: relative;
       min-height: 100vh;
+      position: relative;
       background:
-        var(--pg-bg-image),
-        radial-gradient(1100px 680px at 18% 0%, rgba(176,141,87,0.24), transparent 60%),
-        radial-gradient(980px 640px at 92% 18%, rgba(243,231,211,0.10), transparent 55%),
-        radial-gradient(980px 980px at 50% 115%, rgba(11,42,30,0.62), transparent 60%),
-        linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.66)),
-        var(--pg-forest);
+        radial-gradient(1100px 720px at 18% 0%, rgba(176,141,87,0.18), transparent 62%),
+        radial-gradient(1000px 700px at 95% 20%, rgba(243,231,211,0.09), transparent 56%),
+        radial-gradient(980px 980px at 45% 120%, rgba(10,36,26,0.85), transparent 60%),
+        linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.72)),
+        var(--bg-image),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
       background-size: cover;
       background-position: center;
     }
@@ -81,40 +78,41 @@
       position:absolute;
       inset:0;
       pointer-events:none;
+      background-image: var(--noise);
       opacity: 0.55;
       mix-blend-mode: overlay;
-      background-image: var(--pg-noise);
-      background-size: 240px 240px;
     }
     .bg-premium::after{
       content:"";
       position:absolute;
       inset:-1px;
       pointer-events:none;
-      background: radial-gradient(1200px 720px at 50% 16%, transparent 38%, rgba(0,0,0,0.75) 100%);
-      opacity: 0.70;
+      background: radial-gradient(1200px 720px at 50% 18%, transparent 35%, rgba(0,0,0,0.82) 100%);
+      opacity: 0.78;
     }
 
     .shell{
       position:relative;
-      z-index:1;
-      padding: 18px;
+      z-index: 1;
       height: 100vh;
+      padding: 18px;
       display:flex;
       align-items: stretch;
       justify-content: center;
     }
 
-    .glass{
-      width: min(1260px, 100%);
-      border-radius: var(--pg-radius-xl);
-      border: 1px solid var(--pg-border);
-      background: rgba(11,42,30,0.58);
+    .app{
+      width: min(1280px, 100%);
+      height: 100%;
+      border-radius: var(--r-xl);
+      border: 1px solid var(--border);
+      background: rgba(10,36,26,0.52);
       backdrop-filter: blur(12px);
-      box-shadow: var(--pg-shadow);
+      box-shadow: var(--shadow);
+      overflow:hidden;
       display:flex;
       flex-direction: column;
-      overflow:hidden;
+      isolation: isolate; /* prevents weird stacking issues */
     }
 
     .topbar{
@@ -126,27 +124,31 @@
       flex-wrap: wrap;
     }
     .brand{
-      display:flex; align-items:center; gap:12px; min-width: 320px;
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 320px;
     }
     .logo{
-      width: 46px; height:46px;
+      width: 46px; height: 46px;
       border-radius: 18px;
-      border: 1px solid var(--pg-border);
-      background: rgba(8,28,20,0.65);
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.18);
       overflow:hidden;
-      display:flex; align-items:center; justify-content:center;
+      flex: 0 0 auto;
     }
     .logo img{ width:100%; height:100%; object-fit: cover; display:block; }
+
     .pill{
       display:inline-flex;
       align-items:center;
-      gap:10px;
-      border-radius:999px;
-      padding:6px 10px;
+      gap: 10px;
+      border-radius: 999px;
+      padding: 6px 10px;
       font-size: 12px;
-      border: 1px solid rgba(176,141,87,0.35);
-      background: rgba(8,28,20,0.55);
-      color: var(--pg-stone);
+      border: 1px solid rgba(176,141,87,0.32);
+      background: rgba(8,28,20,0.45);
+      color: rgba(203,191,174,0.95);
       white-space: nowrap;
     }
     .title{
@@ -158,49 +160,56 @@
     .sub{
       margin-top: 4px;
       font-size: 13px;
-      color: var(--pg-muted);
+      color: rgba(203,191,174,0.92);
     }
+    #pricingStatus{ font-size: 12px; color: rgba(203,191,174,0.85); margin-top: 4px; }
 
-    .actions{ display:flex; align-items:center; gap:10px; flex-wrap: wrap; }
+    .actions{ display:flex; align-items:center; gap: 10px; flex-wrap: wrap; }
     .btn{
       border-radius: 16px;
       padding: 10px 14px;
       font-weight: 800;
       border: 1px solid rgba(176,141,87,0.45);
-      background: rgba(8,28,20,0.18);
-      color: var(--pg-champ);
+      background: rgba(8,28,20,0.22);
+      color: var(--champ);
       cursor:pointer;
       transition: transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease;
       user-select:none;
     }
     .btn:hover{ transform: translateY(-1px); }
-    .btn:focus{ outline:none; box-shadow: 0 0 0 3px rgba(176,141,87,0.18), 0 0 0 1px rgba(176,141,87,0.55); }
+    .btn:focus{ outline:none; box-shadow: var(--focus), 0 0 0 1px rgba(176,141,87,0.55); }
     .btn-primary{
       background: rgba(243,231,211,0.94);
-      color: #081B13;
-      border-color: rgba(243,231,211,0.55);
+      color: #071811;
+      border-color: rgba(243,231,211,0.58);
     }
     .btn-ghost{
-      background: rgba(8,28,20,0.35);
+      background: rgba(8,28,20,0.42);
       border-color: rgba(176,141,87,0.55);
     }
 
-    .divider{ height:1px; background: rgba(176,141,87,0.18); }
+    .divider{ height: 1px; background: rgba(176,141,87,0.18); }
 
-    /* MAIN LAYOUT (landscape, no scroll) */
+    /* MAIN: landscape layout */
     .main{
-      flex:1;
+      flex: 1;
       min-height: 0;
       padding: 14px 18px 18px;
       display:grid;
       grid-template-columns: 1fr 380px;
       gap: 16px;
+      overflow:hidden;
     }
+
+    /* Mobile stacks */
     @media (max-width: 1023px){
-      .shell{ height:auto; padding: 14px; }
-      .glass{ height:auto; }
-      .main{ grid-template-columns: 1fr; }
       body{ overflow:auto; }
+      .shell{ height:auto; padding: 14px; }
+      .app{ height:auto; }
+      .main{
+        grid-template-columns: 1fr;
+        overflow: visible;
+      }
     }
 
     .left{
@@ -208,85 +217,89 @@
       display:grid;
       grid-template-rows: auto 1fr;
       gap: 14px;
+      overflow:hidden;
     }
 
-    .grid2x2{
+    .grid{
       min-height: 0;
       display:grid;
-      grid-template-columns: 1.08fr 0.92fr;
+      grid-template-columns: 1.06fr 0.94fr;
       grid-template-rows: 1fr 1fr;
       gap: 14px;
+      overflow:hidden;
     }
     @media (max-width: 1023px){
-      .grid2x2{ grid-template-columns: 1fr; grid-template-rows: auto; }
+      .grid{ grid-template-columns: 1fr; grid-template-rows: auto; overflow: visible; }
     }
 
     .card{
-      border-radius: var(--pg-radius-lg);
-      border: 1px solid var(--pg-border);
-      background: var(--pg-card);
+      border-radius: var(--r-lg);
+      border: 1px solid var(--border);
+      background: var(--card);
       padding: 14px;
       overflow:hidden;
     }
+
     .card-title{
-      font-weight: 800;
-      font-size: 14px;
       display:flex;
       align-items:center;
       justify-content: space-between;
       gap: 10px;
+      font-size: 13px;
+      font-weight: 900;
     }
-    .muted{ color: var(--pg-muted); }
-    .tiny{ font-size: 12px; color: var(--pg-muted); }
+    .muted{ color: rgba(203,191,174,0.92); }
+    .tiny{ font-size: 12px; color: rgba(203,191,174,0.86); }
 
     .input, select, textarea{
       width:100%;
       border-radius: 14px;
       padding: 10px 12px;
-      background: rgba(8,28,20,0.55);
-      border: 1px solid rgba(176,141,87,0.22);
-      color: var(--pg-champ);
+      background: rgba(8,28,20,0.58);
+      border: 1px solid rgba(176,141,87,0.20);
+      color: var(--champ);
       outline:none;
       transition: box-shadow .15s ease, border-color .15s ease;
       font-family: inherit;
     }
     .input:focus, select:focus, textarea:focus{
       border-color: rgba(176,141,87,0.62);
-      box-shadow: 0 0 0 3px rgba(176,141,87,0.16);
+      box-shadow: var(--focus);
     }
 
-    /* Stay type segments */
+    /* Segments */
     .seg{
       display:grid;
-      grid-template-columns: repeat(3, minmax(0,1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
-      margin-top: 12px;
+      margin-top: 10px;
     }
     @media (max-width: 1023px){
       .seg{ grid-template-columns: 1fr; }
     }
     .seg-btn{
-      border: 1px solid rgba(176,141,87,0.28);
+      border: 1px solid rgba(176,141,87,0.26);
       background: rgba(8,28,20,0.40);
       border-radius: 18px;
       padding: 12px 12px;
       text-align: left;
       cursor:pointer;
       transition: all .18s ease;
-      color: var(--pg-champ);
+      color: var(--champ);
+      position:relative;
     }
     .seg-btn.active{
-      background: rgba(243,231,211,0.86);
-      color: #081B13;
+      background: rgba(243,231,211,0.88);
+      color: #071811;
       border-color: rgba(176,141,87,0.70);
     }
-    .seg-sub{ margin-top: 4px; font-size: 12px; color: var(--pg-muted); }
-    .seg-btn.active .seg-sub{ color: rgba(8,27,19,0.75); }
+    .seg-sub{ margin-top: 4px; font-size: 12px; color: rgba(203,191,174,0.86); }
+    .seg-btn.active .seg-sub{ color: rgba(7,24,17,0.72); }
 
-    /* Range slider */
+    /* Slider */
     input[type="range"]{
       height: 26px;
-      appearance: none;
+      appearance:none;
       background: transparent;
       width: 100%;
       margin-top: 8px;
@@ -294,29 +307,29 @@
     input[type="range"]::-webkit-slider-runnable-track{
       height: 7px;
       border-radius: 999px;
-      background: rgba(243,231,211,0.16);
-      border: 1px solid rgba(176,141,87,0.30);
+      background: rgba(243,231,211,0.14);
+      border: 1px solid rgba(176,141,87,0.28);
     }
     input[type="range"]::-webkit-slider-thumb{
-      appearance: none;
-      width: 18px;
-      height: 18px;
+      appearance:none;
+      width: 18px; height: 18px;
       border-radius: 999px;
-      background: var(--pg-brass);
+      background: var(--brass);
       border: 2px solid rgba(243,231,211,0.95);
       margin-top: -7px;
       box-shadow: 0 10px 22px rgba(0,0,0,0.45);
     }
 
-    /* Quote panel */
+    /* Right quote */
     .quote{
-      border-radius: var(--pg-radius-lg);
-      border: 1px solid var(--pg-border);
-      background: var(--pg-card-2);
+      border-radius: var(--r-lg);
+      border: 1px solid var(--border2);
+      background: var(--card2);
       padding: 16px;
       display:flex;
       flex-direction: column;
       gap: 12px;
+      overflow:hidden;
     }
     .quote-total{
       font-size: 44px;
@@ -324,35 +337,18 @@
       margin-top: 4px;
     }
     .line{ height:1px; background: rgba(176,141,87,0.18); margin: 6px 0; }
-    .row{
-      display:flex; align-items:center; justify-content: space-between; gap: 10px;
-      font-size: 13px;
-    }
-    .row strong{ font-size: 13px; }
-
+    .row{ display:flex; align-items:center; justify-content: space-between; gap:10px; font-size: 13px; }
     .depositBox{
-      margin-top: 8px;
       border-radius: 18px;
       border: 1px solid rgba(176,141,87,0.20);
-      background: rgba(243,231,211,0.12);
+      background: rgba(243,231,211,0.10);
       padding: 12px;
     }
     .depositAmt{ font-size: 22px; font-weight: 900; margin-top: 4px; }
 
-    /* Quick actions card */
-    .qa{
-      display:flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .qa-buttons{
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+    /* Selected sitter mini panel */
     .selectedSitter{
-      margin-top: 8px;
+      margin-top: 10px;
       border-radius: 18px;
       border: 1px solid rgba(176,141,87,0.20);
       background: rgba(8,28,20,0.35);
@@ -372,29 +368,35 @@
       flex: 0 0 auto;
     }
     .avatar img{ width:100%; height:100%; object-fit: cover; display:block; }
-    .selText{ min-width: 0; }
+    .selText{ min-width:0; }
     .selName{ font-weight: 900; font-size: 13px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
-    .selMeta{ font-size: 12px; color: var(--pg-muted); white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
+    .selMeta{ font-size: 12px; color: rgba(203,191,174,0.88); white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
 
-    /* =========================
-      MODALS (solid, not transparent)
-    ========================== */
+    /* =========================================================
+      MODALS
+      Fix: always on top, never behind the page
+    ========================================================== */
     .overlay{
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.72);
       display:none;
-      z-index: 9999;
+      align-items:center;
+      justify-content:center;
       padding: 18px;
+      z-index: 2147483647; /* absolute top */
+      background: rgba(0,0,0,0.78);
     }
-    .overlay.open{ display:flex; align-items:center; justify-content:center; }
+    .overlay.open{ display:flex; }
     .modal{
       width: min(1100px, 100%);
-      border-radius: var(--pg-radius-xl);
-      border: 1px solid var(--pg-border-strong);
-      background: #071C14; /* solid */
-      box-shadow: 0 30px 110px rgba(0,0,0,0.70);
+      border-radius: var(--r-xl);
+      border: 1px solid rgba(176,141,87,0.42);
+      background: #061911; /* solid */
+      box-shadow: 0 32px 120px rgba(0,0,0,0.72);
       overflow:hidden;
+      max-height: calc(100vh - 48px);
+      display:flex;
+      flex-direction: column;
     }
     .modalHeader{
       padding: 14px 16px;
@@ -407,11 +409,10 @@
     }
     .modalBody{
       padding: 14px 16px 16px;
-      max-height: calc(100vh - 160px);
       overflow:auto;
     }
 
-    /* Add-ons modal layout */
+    /* Add-ons modal */
     .addonsGrid{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -427,12 +428,8 @@
       padding: 12px;
     }
 
-    /* =========================
-      SITTER CAROUSEL (3 cards, modern)
-      Coverflow style: center is primary, sides secondary
-    ========================== */
+    /* Sitter carousel: 3 cards modern */
     .carouselWrap{
-      margin-top: 8px;
       border-radius: 22px;
       border: 1px solid rgba(176,141,87,0.22);
       background: rgba(8,28,20,0.45);
@@ -440,19 +437,20 @@
     }
     .carouselStage{
       position: relative;
-      height: 420px;
+      height: 430px;
       display:flex;
       align-items:center;
       justify-content:center;
       overflow:hidden;
+      perspective: 1200px;
     }
     @media (max-width: 700px){
-      .carouselStage{ height: 520px; }
+      .carouselStage{ height: 560px; }
     }
 
     .sCard{
       position:absolute;
-      width: 310px;
+      width: 315px;
       border-radius: 22px;
       border: 1px solid rgba(176,141,87,0.22);
       background: rgba(10,36,26,0.92);
@@ -461,10 +459,11 @@
       transform-origin: center;
       transition: transform .28s ease, opacity .28s ease, filter .28s ease;
       cursor:pointer;
+      user-select:none;
     }
     .sCard .img{
-      aspect-ratio: 4 / 5;
       width:100%;
+      aspect-ratio: 4 / 5;
       background: rgba(0,0,0,0.22);
       border-bottom: 1px solid rgba(176,141,87,0.18);
       overflow:hidden;
@@ -472,8 +471,8 @@
     .sCard .img img{ width:100%; height:100%; object-fit: cover; display:block; }
     .sCard .pad{ padding: 12px; }
     .sName{ font-weight: 900; }
-    .sTitle{ font-size: 12px; color: var(--pg-muted); margin-top: 2px; }
-    .sBio{ font-size: 12px; color: rgba(203,191,174,0.95); margin-top: 10px; line-height: 1.35; min-height: 48px; }
+    .sTitle{ font-size: 12px; color: rgba(203,191,174,0.88); margin-top: 2px; }
+    .sBio{ font-size: 12px; color: rgba(203,191,174,0.95); margin-top: 10px; line-height: 1.35; min-height: 52px; }
     .badgeRow{ display:flex; gap:8px; flex-wrap: wrap; margin-top: 10px; }
     .badge{
       font-size: 11px;
@@ -484,13 +483,13 @@
       color: rgba(203,191,174,0.95);
       white-space: nowrap;
     }
-
     .carouselNav{
       display:flex;
       align-items:center;
-      justify-content: center;
+      justify-content:center;
       gap: 10px;
       margin-top: 12px;
+      flex-wrap: wrap;
     }
     .dotRow{ display:flex; gap: 8px; justify-content:center; margin-top: 10px; }
     .dot{
@@ -498,32 +497,32 @@
       border-radius: 999px;
       background: rgba(243,231,211,0.22);
       border: 1px solid rgba(176,141,87,0.20);
+      cursor:pointer;
     }
     .dot.active{
       background: rgba(176,141,87,0.88);
       border-color: rgba(176,141,87,0.55);
     }
 
-    /* Hidden legacy element kept for existing checks */
+    /* hidden legacy node used by existing checks */
     #staffCarousel{ display:none; }
   </style>
 </head>
 
 <body class="bg-premium">
   <div class="shell">
-    <div class="glass">
+    <div class="app">
 
-      <!-- TOP BAR -->
       <div class="topbar">
         <div class="brand">
           <div class="logo">
             <img src="logo.png" alt="PetGuardian Care" onerror="this.style.display='none'">
           </div>
           <div>
-            <div class="pill">PetGuardian Care <span style="color:var(--pg-brass)">•</span> Premium Pricing</div>
+            <div class="pill">PetGuardian Care <span style="color:var(--brass)">•</span> Premium Pricing</div>
             <div class="title font-lux">Get a care cost estimate</div>
-            <div class="sub">Start with a base stay, then select only what you need.</div>
-            <div id="pricingStatus" class="tiny">Pricing: loading from sheet…</div>
+            <div class="sub">Transparent pricing. Verified sitters. Secure booking.</div>
+            <div id="pricingStatus">Pricing: loading from sheet…</div>
           </div>
         </div>
 
@@ -536,31 +535,28 @@
 
       <div class="divider"></div>
 
-      <!-- MAIN (LANDSCAPE) -->
       <div class="main">
-
-        <!-- LEFT -->
         <div class="left">
           <!-- Stay type -->
           <div class="card">
             <div class="card-title">
               <span>1) Choose your stay type</span>
-              <span class="tiny">Add-ons apply on top</span>
+              <span class="tiny muted">Add-ons apply on top</span>
             </div>
 
             <div class="seg">
               <button class="seg-btn" data-pkg="day" type="button">
-                <div style="font-weight:900;">🕒 Day Visits</div>
+                <div style="font-weight:900;">Day Visits</div>
                 <div class="seg-sub">Hourly care (you set hours)</div>
               </button>
 
               <button class="seg-btn" data-pkg="night" type="button">
-                <div style="font-weight:900;">🌙 Overnight</div>
+                <div style="font-weight:900;">Overnight</div>
                 <div class="seg-sub">6pm to 6am</div>
               </button>
 
               <button class="seg-btn" data-pkg="full" type="button">
-                <div style="font-weight:900;">🏠 Full-time</div>
+                <div style="font-weight:900;">Full-time</div>
                 <div class="seg-sub">24h presence</div>
               </button>
             </div>
@@ -569,7 +565,7 @@
               <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
                 <div>
                   <div style="font-weight:900; font-size: 13px;">Hours per day</div>
-                  <div class="tiny">Only used for Day Visits</div>
+                  <div class="tiny muted">Only used for Day Visits</div>
                 </div>
                 <div style="font-size: 13px;"><span class="muted">Hours:</span> <span id="hoursOut" style="font-weight:900;">4</span></div>
               </div>
@@ -577,9 +573,9 @@
             </div>
           </div>
 
-          <!-- Compact grid (no scroll) -->
-          <div class="grid2x2">
-            <!-- Dates + zone -->
+          <!-- Landscape grid -->
+          <div class="grid">
+            <!-- When and where -->
             <div class="card">
               <div class="card-title">
                 <span>2) When and where?</span>
@@ -588,17 +584,17 @@
 
               <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
                 <div>
-                  <div class="tiny">Start date</div>
+                  <div class="tiny muted">Start date</div>
                   <input id="startDate" type="date" class="input">
                 </div>
                 <div>
-                  <div class="tiny">End date</div>
+                  <div class="tiny muted">End date</div>
                   <input id="endDate" type="date" class="input">
                 </div>
               </div>
 
               <div style="margin-top: 10px;">
-                <div class="tiny">Zone</div>
+                <div class="tiny muted">Zone</div>
                 <select id="zone">
                   <option value="sabie">Sabie (Zone A)</option>
                   <option value="wr">White River (Zone B)</option>
@@ -606,23 +602,23 @@
                 </select>
               </div>
 
-              <div id="peakNote" class="tiny" style="margin-top: 10px;"></div>
+              <div id="peakNote" class="tiny muted" style="margin-top: 10px;"></div>
             </div>
 
             <!-- Pets -->
             <div class="card">
               <div class="card-title">
-                <span>3) Pets and options</span>
-                <span id="staffStatus" class="tiny">Loading…</span>
+                <span>3) Tell us about your pets</span>
+                <span id="staffStatus" class="tiny muted">Loading…</span>
               </div>
 
               <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
                 <div>
-                  <div class="tiny">Dogs</div>
+                  <div class="tiny muted">Dogs</div>
                   <input id="dogs" type="number" min="0" value="1" class="input">
                 </div>
                 <div>
-                  <div class="tiny">Cats</div>
+                  <div class="tiny muted">Cats</div>
                   <input id="cats" type="number" min="0" value="0" class="input">
                 </div>
               </div>
@@ -631,7 +627,7 @@
                 <label class="addonBlock" style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0;">
                   <div>
                     <div style="font-weight:900; font-size: 13px;">Puppy care</div>
-                    <div class="tiny">Extra supervision</div>
+                    <div class="tiny muted">Extra supervision</div>
                   </div>
                   <input id="puppy" type="checkbox">
                 </label>
@@ -639,7 +635,7 @@
                 <label class="addonBlock" style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0;">
                   <div>
                     <div style="font-weight:900; font-size: 13px;">Oral meds</div>
-                    <div class="tiny">We follow instructions</div>
+                    <div class="tiny muted">Follow instructions</div>
                   </div>
                   <input id="meds" type="checkbox">
                 </label>
@@ -648,63 +644,46 @@
               <label class="addonBlock" style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top: 10px;">
                 <div>
                   <div style="font-weight:900; font-size: 13px;">Food supplies allowed</div>
-                  <div class="tiny">Deduct R50 per day</div>
+                  <div class="tiny muted">Deduct R50 per day</div>
                 </div>
                 <input id="foodSupplies" type="checkbox">
               </label>
             </div>
 
-            <!-- Quick actions: Add-ons + Sitter -->
-            <div class="card">
+            <!-- Controls: Add-ons + sitter -->
+            <div class="card" style="grid-column: 1 / -1;">
               <div class="card-title">
                 <span>4) Add-ons and sitter</span>
-                <span class="tiny muted">No scroll on desktop</span>
+                <span class="tiny muted">Desktop stays scroll-free</span>
               </div>
 
-              <div class="qa">
-                <div class="qa-buttons">
-                  <button id="openAddonsBtn" class="btn btn-primary" type="button">Customize Add-ons</button>
-                  <button id="openSitterBtn" class="btn btn-ghost" type="button">Choose sitter</button>
-                </div>
+              <div style="display:flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+                <button id="openAddonsBtn" class="btn btn-primary" type="button">Customize Add-ons</button>
+                <button id="openSitterBtn" class="btn btn-ghost" type="button">Choose sitter</button>
+              </div>
 
-                <div class="selectedSitter" id="selectedSitterPanel">
-                  <div class="selLeft">
-                    <div class="avatar" id="selAvatar"></div>
-                    <div class="selText">
-                      <div class="selName" id="selName">No sitter selected</div>
-                      <div class="selMeta" id="selMeta">Selection required to submit</div>
-                    </div>
+              <div class="selectedSitter" id="selectedSitterPanel">
+                <div class="selLeft">
+                  <div class="avatar" id="selAvatar"></div>
+                  <div class="selText">
+                    <div class="selName" id="selName">No sitter selected</div>
+                    <div class="selMeta" id="selMeta">Selection required to submit</div>
                   </div>
-                  <button id="changeSitterBtn" class="btn" type="button" style="padding:8px 10px;">Change</button>
                 </div>
-
-                <div class="tiny muted" id="addonsSummary">Add-ons: none selected yet</div>
+                <button id="changeSitterBtn" class="btn" type="button" style="padding:8px 10px;">Change</button>
               </div>
 
-              <!-- Keep in DOM for your existing checks -->
+              <div class="tiny muted" id="addonsSummary" style="margin-top: 10px;">Add-ons: none selected yet</div>
+
+              <!-- legacy node used by existing checks -->
               <div id="staffCarousel"></div>
-            </div>
-
-            <!-- Notes -->
-            <div class="card">
-              <div class="card-title">
-                <span>Safety and transparency</span>
-                <span class="tiny">Premium standard</span>
-              </div>
-
-              <div class="tiny muted" style="margin-top: 10px; line-height: 1.5;">
-                • Verified sitter selection required<br>
-                • Peak dates and discounts auto apply<br>
-                • Deposit secures booking, remainder after service<br>
-                • Final price confirmed after screening and availability
-              </div>
             </div>
           </div>
         </div>
 
-        <!-- RIGHT QUOTE -->
+        <!-- Quote -->
         <div class="quote">
-          <div class="tiny muted">Total estimate</div>
+          <div class="tiny muted">Your care quote</div>
           <div id="totalOut" class="quote-total font-lux">R0</div>
 
           <div class="line"></div>
@@ -726,22 +705,24 @@
             </div>
           </div>
 
+          <div class="tiny muted" style="line-height:1.5;">
+            Final price confirmed after screening and availability.
+          </div>
+
           <button class="btn btn-primary" type="button" id="requestBtn2">Request Booking</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- =========================
-      ADD-ONS MODAL (SOLID)
-  ========================== -->
+  <!-- ADD-ONS MODAL -->
   <div id="addonsOverlay" class="overlay" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true">
       <div class="modalHeader">
         <div>
-          <div class="pill">PetGuardian Care <span style="color:var(--pg-brass)">•</span> Add-ons</div>
+          <div class="pill">PetGuardian Care <span style="color:var(--brass)">•</span> Add-ons</div>
           <div class="title font-lux" style="font-size: 22px; margin-top: 8px;">Customize add-ons</div>
-          <div class="tiny muted">Everything recalculates instantly. Close when done.</div>
+          <div class="tiny muted">Close when done. Quote updates instantly.</div>
         </div>
         <button id="closeAddonsBtn" class="btn btn-ghost" type="button">Close</button>
       </div>
@@ -765,7 +746,7 @@
               <span>Walk time per day</span>
               <span class="tiny">Minutes: <b id="walkMinOut">0</b> | Cost/day: <b id="walkCostOut">R0</b></span>
             </div>
-            <div class="tiny muted" style="margin-top:6px;">Single slider in 5 minute steps. R5 per 5 minutes.</div>
+            <div class="tiny muted" style="margin-top:6px;">Single slider, 5 minute steps. R5 per 5 minutes.</div>
             <input id="walkMinutes" type="range" min="0" max="180" step="5" value="0">
           </div>
 
@@ -791,16 +772,14 @@
     </div>
   </div>
 
-  <!-- =========================
-      SITTER MODAL (SOLID + 3 CARD CAROUSEL)
-  ========================== -->
+  <!-- SITTER MODAL -->
   <div id="sitterOverlay" class="overlay" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true">
       <div class="modalHeader">
         <div>
-          <div class="pill">PetGuardian Care <span style="color:var(--pg-brass)">•</span> Sitters</div>
+          <div class="pill">PetGuardian Care <span style="color:var(--brass)">•</span> Sitters</div>
           <div class="title font-lux" style="font-size: 22px; margin-top: 8px;">Choose your sitter</div>
-          <div class="tiny muted">3-card carousel. Center card is the focus. Click center to select.</div>
+          <div class="tiny muted">3-card carousel. Center is focus. Click center to select.</div>
         </div>
         <button id="closeSitterBtn" class="btn btn-ghost" type="button">Close</button>
       </div>
@@ -825,16 +804,14 @@
     </div>
   </div>
 
-  <!-- =========================
-      PRICING RULES MODAL (SOLID)
-  ========================== -->
+  <!-- HOW PRICING WORKS MODAL -->
   <div id="howOverlay" class="overlay" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" style="width:min(820px,100%);">
       <div class="modalHeader">
         <div>
-          <div class="pill">PetGuardian Care <span style="color:var(--pg-brass)">•</span> Transparency</div>
+          <div class="pill">PetGuardian Care <span style="color:var(--brass)">•</span> Transparency</div>
           <div class="title font-lux" style="font-size: 22px; margin-top: 8px;">How pricing works</div>
-          <div class="tiny muted">No surprises. Everything is calculated from clear rules.</div>
+          <div class="tiny muted">Clear rules. No surprises.</div>
         </div>
         <button id="closeHowBtn" class="btn btn-ghost" type="button">Close</button>
       </div>
@@ -843,8 +820,8 @@
           <div style="font-weight:900;">Peak dates</div>
           <div class="tiny muted" style="margin-top:6px;">Peak multiplier applies if any day falls in peak range.</div>
           <div class="tiny muted" style="margin-top:8px; line-height:1.55;">
-            • June 1 to July 31<br>
-            • December 1 to January 15
+            June 1 to July 31<br>
+            December 1 to January 15
           </div>
         </div>
 
@@ -853,7 +830,7 @@
         <div class="addonBlock">
           <div style="font-weight:900;">Long-stay discount</div>
           <div class="tiny muted" style="margin-top:6px;">
-            Blocks of 10 days: first 10 days are 100%, next 10 days are 90%, next 10 days are 81%. Then it stays at 81%.
+            Blocks of 10 days: first 10 days at 100%, next 10 at 90%, next 10 at 81%. After that it stays at 81%.
           </div>
         </div>
 
@@ -867,14 +844,12 @@
     </div>
   </div>
 
-  <!-- =========================
-      BOOKING MODAL (SOLID)
-  ========================== -->
+  <!-- BOOKING MODAL -->
   <div id="bookingOverlay" class="overlay" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" style="width:min(760px,100%);">
       <div class="modalHeader">
         <div>
-          <div class="pill">PetGuardian Care <span style="color:var(--pg-brass)">•</span> Booking</div>
+          <div class="pill">PetGuardian Care <span style="color:var(--brass)">•</span> Booking</div>
           <div class="title font-lux" style="font-size: 22px; margin-top: 8px;">Request booking</div>
           <div class="tiny muted">We will email an invoice or estimate. Deposit required is 50%.</div>
         </div>
@@ -884,23 +859,23 @@
       <div class="modalBody">
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
-            <div class="tiny">Full name</div>
+            <div class="tiny muted">Full name</div>
             <input id="custName" class="input" placeholder="Your name">
           </div>
           <div>
-            <div class="tiny">Phone</div>
+            <div class="tiny muted">Phone</div>
             <input id="custPhone" class="input" placeholder="e.g. 081 532 8774">
           </div>
           <div style="grid-column: 1 / -1;">
-            <div class="tiny">Email</div>
+            <div class="tiny muted">Email</div>
             <input id="custEmail" class="input" placeholder="you@example.com">
           </div>
           <div style="grid-column: 1 / -1;">
-            <div class="tiny">Address or area</div>
+            <div class="tiny muted">Address or area</div>
             <input id="custAddress" class="input" placeholder="Street or area">
           </div>
           <div style="grid-column: 1 / -1;">
-            <div class="tiny">Notes</div>
+            <div class="tiny muted">Notes</div>
             <textarea id="custNotes" rows="3" class="input" placeholder="Routine, meds, temperament, gate access, etc."></textarea>
           </div>
 
@@ -926,22 +901,16 @@
 
 <script>
   /* =========================================================
-    JS CONFIG (EASY EDIT)
+    CONFIG (FUNCTIONAL)
+    Keep your Apps Script URL here. Logic stays the same.
   ========================================================== */
   const CONFIG = {
     businessName: "PetGuardian Care",
     depositPercent: 0.50,
-
-    // If you upload a texture image to repo root, set it here (example: "bg.jpg")
-    // Leave empty to use CSS noise only.
-    brandBgImage: "",
-
-    // Keep your live Apps Script URL here
     apiBaseUrl: "https://script.google.com/macros/s/AKfycbzfqeIQFLpa155Gf-454kbaSQUEw9RpiqISwnPbSkfYPV-aU6LZlbTbkG5jv-sHe6jp/exec",
     apiKey: ""
   };
 
-  // Defaults (Pricing tab overrides if present)
   const PRICES = {
     base: { dayHourly: 60, night: 150, fullDay: 320 },
     travelPerDay: { sabie: 0, wr: 30, nel: 60 },
@@ -950,7 +919,7 @@
     add: {
       updatePackPerDay: 50,
       checkin: 50,
-      walkPerMinute: 1, // R5 per 5 min
+      walkPerMinute: 1, // R5 per 5 minutes => R1 per minute
       medsPerDay: 50,
       puppyCarePerDay: 100,
       homecarePerDay: 30,
@@ -964,14 +933,13 @@
     longStay: { blockDays: 10, factor: 0.9 }
   };
 
-  // State
   let pkg = "day";
   let selectedStaff = null;
   let lastAvailabilityReqId = 0;
+
   let staffListCache = [];
   let carouselIndex = 0;
 
-  // Helpers
   const el = (id) => document.getElementById(id);
 
   function money(n){
@@ -1018,7 +986,6 @@
     const blocks = Math.floor(days / blockDays);
     const rem = days % blockDays;
     if (blocks === 0) return days;
-
     const series = blockDays * (1 - Math.pow(factor, blocks)) / (1 - factor);
     return series + rem * Math.pow(factor, blocks);
   }
@@ -1040,17 +1007,30 @@
 
   function setPkgUI() {
     document.querySelectorAll(".seg-btn").forEach(b => {
-      const active = b.dataset.pkg === pkg;
-      b.classList.toggle("active", active);
+      b.classList.toggle("active", b.dataset.pkg === pkg);
     });
     el("hoursWrap").style.display = (pkg === "day") ? "block" : "none";
   }
 
-  /* ========= Overlay controls ========= */
-  function openOverlay(id){ el(id).classList.add("open"); }
-  function closeOverlay(id){ el(id).classList.remove("open"); }
+  /* =========================
+    MODAL helpers
+  ========================== */
+  function openOverlay(id){
+    el(id).classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+  function closeOverlay(id){
+    el(id).classList.remove("open");
+    if (window.matchMedia("(min-width: 1024px)").matches) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }
 
-  /* ========= Pricing from sheet ========= */
+  /* =========================
+    Pricing JSONP
+  ========================== */
   window.pgPricingCallback = function(payload){
     if (!payload || payload.ok !== true) {
       el("pricingStatus").textContent = "Pricing: using defaults (Pricing tab not found)";
@@ -1114,7 +1094,9 @@
     document.body.appendChild(script);
   }
 
-  /* ========= Availability ========= */
+  /* =========================
+    Availability JSONP
+  ========================== */
   window.pgAvailabilityCallback = function(payload) {
     if (!payload || payload.reqId != lastAvailabilityReqId) return;
     const list = payload.staff || [];
@@ -1123,13 +1105,12 @@
     el("staffStatus").textContent = list.length ? "Select a sitter" : "None available";
     el("sitterEmpty").style.display = list.length ? "none" : "block";
 
-    // preserve selection if possible
     if (selectedStaff) {
       const stillThere = staffListCache.find(s => String(s.id) === String(selectedStaff.id));
       if (!stillThere) selectedStaff = null;
     }
 
-    renderStaffCarousel(list);  // legacy checks
+    renderStaffCarouselLegacy(list);
     initCarousel();
     updateSelectedSitterPanel();
   };
@@ -1168,18 +1149,19 @@
     document.body.appendChild(script);
   }
 
-  /* Keep legacy container for existing selection checks */
-  function renderStaffCarousel(staffList) {
+  function renderStaffCarouselLegacy(staffList) {
     const wrap = el("staffCarousel");
     wrap.innerHTML = "";
     staffList.forEach((s) => {
-      const card = document.createElement("div");
-      card.innerHTML = `<span>${escapeHtml(s.name || "")}</span>`;
-      wrap.appendChild(card);
+      const node = document.createElement("div");
+      node.textContent = s.name || "";
+      wrap.appendChild(node);
     });
   }
 
-  /* ========= Carousel ========= */
+  /* =========================
+    Carousel (3 card)
+  ========================== */
   function initCarousel(){
     carouselIndex = 0;
     if (selectedStaff){
@@ -1202,11 +1184,8 @@
     stage.innerHTML = "";
     dots.innerHTML = "";
 
-    if (!staffListCache.length){
-      return;
-    }
+    if (!staffListCache.length) return;
 
-    // dots
     staffListCache.forEach((_, i) => {
       const d = document.createElement("div");
       d.className = "dot" + (i === carouselIndex ? " active" : "");
@@ -1214,57 +1193,53 @@
       dots.appendChild(d);
     });
 
-    // cards (render all, but position by diff)
-    staffListCache.forEach((s, i) => {
-      const diffRaw = i - carouselIndex;
-      // wrap diff shortest distance
-      const n = staffListCache.length;
-      let diff = diffRaw;
-      if (diff > n/2) diff -= n;
-      if (diff < -n/2) diff += n;
+    const n = staffListCache.length;
+    const prev = staffListCache[(carouselIndex - 1 + n) % n];
+    const curr = staffListCache[carouselIndex];
+    const next = staffListCache[(carouselIndex + 1) % n];
 
-      // Only show a small neighborhood for performance and clarity
-      if (Math.abs(diff) > 2) return;
+    const cards = [
+      { data: prev, pos: "left",  diff: -1 },
+      { data: curr, pos: "center",diff: 0 },
+      { data: next, pos: "right", diff: 1 },
+    ];
 
+    cards.forEach(({data, diff}) => {
       const card = document.createElement("div");
       card.className = "sCard";
-      card.dataset.id = s.id;
 
-      const x = diff * 250;                    // spacing
-      const scale = diff === 0 ? 1.0 : 0.86;
-      const rot = diff === 0 ? 0 : (diff > 0 ? -10 : 10);
+      const x = diff * 255;
+      const scale = diff === 0 ? 1.0 : 0.90;
+      const rot = diff === 0 ? 0 : (diff > 0 ? -12 : 12);
       const opa = diff === 0 ? 1.0 : 0.55;
-      const blur = diff === 0 ? 0 : 0.3;
 
       card.style.transform = `translateX(${x}px) scale(${scale}) rotateY(${rot}deg)`;
       card.style.opacity = String(opa);
-      card.style.filter = `blur(${blur}px)`;
 
       card.innerHTML = `
         <div class="img">
-          <img src="${escapeHtml(s.photoUrl || "")}" alt="${escapeHtml(s.name || "Sitter")}">
+          <img src="${escapeHtml(data.photoUrl || "")}" alt="${escapeHtml(data.name || "Sitter")}">
         </div>
         <div class="pad">
-          <div class="sName font-lux">${escapeHtml(s.name || "Sitter")}</div>
-          <div class="sTitle">${escapeHtml(s.title || "PetGuardian Care Sitter")} · Rating ${escapeHtml(String(s.rating || "5.0"))}</div>
-          <div class="sBio">${escapeHtml(s.bio || "")}</div>
+          <div class="sName font-lux">${escapeHtml(data.name || "Sitter")}</div>
+          <div class="sTitle">${escapeHtml(data.title || "PetGuardian Care Sitter")} · Rating ${escapeHtml(String(data.rating || "5.0"))}</div>
+          <div class="sBio">${escapeHtml(data.bio || "Professional sitter")}</div>
           <div class="badgeRow">
             <span class="badge">Verified</span>
-            <span class="badge">Safe booking</span>
-            <span class="badge">Transparent pricing</span>
+            <span class="badge">ID checked</span>
+            <span class="badge">Background check</span>
           </div>
         </div>
       `;
 
       card.addEventListener("click", () => {
-        if (diff !== 0) {
-          setCarouselIndex(i);
-          return;
+        if (diff === 0){
+          selectedStaff = data;
+          updateSelectedSitterPanel();
+          closeOverlay("sitterOverlay");
+        } else {
+          setCarouselIndex(carouselIndex + diff);
         }
-        // center card clicked: select
-        selectedStaff = s;
-        updateSelectedSitterPanel();
-        closeOverlay("sitterOverlay");
       });
 
       stage.appendChild(card);
@@ -1294,7 +1269,9 @@
     meta.textContent = (selectedStaff.title || "PetGuardian Care Sitter") + " · Rating " + (selectedStaff.rating || "5.0");
   }
 
-  /* ========= Calculator ========= */
+  /* =========================
+    Calculator (unchanged math)
+  ========================== */
   function calc() {
     const start = el("startDate").value;
     const end = el("endDate").value;
@@ -1307,7 +1284,7 @@
     const peakApplied = bookingHasPeak(start, end);
     const peakMult = peakApplied ? PRICES.peakMultiplier : 1;
 
-    el("peakNote").textContent = peakApplied ? "Peak dates detected (pricing applied automatically)." : "No peak dates detected for this range.";
+    el("peakNote").textContent = peakApplied ? "Peak pricing applied automatically." : "No peak dates detected.";
     el("peakAppliedOut").textContent = peakApplied
       ? "Peak dates detected in your booking range."
       : "No peak dates detected in your booking range.";
@@ -1383,7 +1360,6 @@
     el("oneTimeOut").textContent = money(oneTime);
     el("discountOut").textContent = "-" + money(discountAmt);
 
-    // compact add-ons summary on main page
     const parts = [];
     if (updates) parts.push(`updates ${updates}`);
     if (checkins) parts.push(`check-ins ${checkins}`);
@@ -1413,14 +1389,15 @@
     };
   }
 
-  /* ========= Booking ========= */
+  /* =========================
+    Booking JSONP
+  ========================== */
   window.pgBookingCallback = function(payload) {
     if (!payload || payload.ok !== true) {
       el("submitStatus").textContent = (payload && payload.error) ? payload.error : "Booking failed. Please try again.";
       return;
     }
-    el("submitStatus").textContent =
-      "Request sent. Check your email for the invoice or estimate.";
+    el("submitStatus").textContent = "Request sent. Check your email for the invoice or estimate.";
     setTimeout(() => closeOverlay("bookingOverlay"), 1300);
   };
 
@@ -1467,6 +1444,7 @@
 
     const pricing = calc();
     const notes = el("custNotes").value.trim().slice(0, 800);
+
     el("submitStatus").textContent = "Sending…";
 
     const payload = {
@@ -1513,7 +1491,6 @@
     document.body.appendChild(script);
   }
 
-  /* ========= Copy quote ========= */
   async function copyQuote() {
     const pricing = calc();
     const staffLine = selectedStaff ? `Sitter: ${selectedStaff.name}` : `Sitter: Not selected`;
@@ -1542,19 +1519,7 @@ Note: Final price confirmed after screening and availability.`;
     }
   }
 
-  /* ========= Bootstrap ========= */
-  function fetchAndRecalc(){
-    calc();
-    fetchAvailability();
-  }
-
   function attach() {
-    // Apply optional background image
-    if (CONFIG.brandBgImage && CONFIG.brandBgImage.trim()){
-      document.documentElement.style.setProperty("--pg-bg-image", `url('${CONFIG.brandBgImage}')`);
-    }
-
-    // Default dates today
     const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth()+1).padStart(2,"0");
@@ -1562,16 +1527,15 @@ Note: Final price confirmed after screening and availability.`;
     el("startDate").value = `${yyyy}-${mm}-${dd}`;
     el("endDate").value = `${yyyy}-${mm}-${dd}`;
 
-    // Stay type
     document.querySelectorAll(".seg-btn").forEach(b => {
       b.addEventListener("click", () => {
         pkg = b.dataset.pkg;
         setPkgUI();
-        fetchAndRecalc();
+        calc();
+        fetchAvailability();
       });
     });
 
-    // Inputs
     [
       "startDate","endDate","zone","dogs","cats",
       "updates","checkins","walkMinutes","homecare","keys","taxi",
@@ -1581,9 +1545,7 @@ Note: Final price confirmed after screening and availability.`;
       if (["startDate","endDate","zone"].includes(id)) fetchAvailability();
     }));
 
-    // Buttons
     el("copyBtn").addEventListener("click", copyQuote);
-
     el("requestBtn").addEventListener("click", openBooking);
     el("requestBtn2").addEventListener("click", openBooking);
 
