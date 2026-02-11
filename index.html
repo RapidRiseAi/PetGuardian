@@ -11,13 +11,13 @@
        ========================= -->
   <script>
   const CONFIG = {
-    // Paste your Apps Script Web App /exec URL here
-   apiBaseUrl: "https://petguardian-api.team-a6c.workers.dev"
+    // API base URL (recommended: Cloudflare Worker).
+    apiBaseUrl: "https://petguardian-api.team-a6c.workers.dev",
 
-    
-    // Optional: force a specific signed-in Google account index on problematic devices (0,1,2,3). Leave null for auto.
-    apiAuthUser: null,
-// API timeout for each call (ms)
+
+    // Backup (direct Apps Script). Normally not used when Cloudflare Worker is running.
+    appsScriptExecUrl: "https://script.google.com/macros/s/AKfycbzfqeIQFLpa155Gf-454kbaSQUEw9RpiqISwnPbSkfYPV-aU6LZlbTbkG5jv-sHe6jp/exec",
+    // API timeout for each call (ms)
     apiTimeoutMs: 9000,
   
     // Assets (keep files in same GitHub folder as index.html)
@@ -128,14 +128,6 @@
       justify-content: space-between;
       padding: 18px 20px 12px 20px;
       border-bottom: 1px solid rgba(232, 210, 162, 0.16);
-    }
-
-    .topControls{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
     }
 
     .brand{
@@ -961,29 +953,12 @@
 
     /* Mobile polish (keeps desktop exactly as-is) */
     @media (max-width: 680px){
-      .topbar{flex-direction:column; align-items:stretch; gap:12px;}
-      .topControls{
-        width:100%;
-        display:grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        justify-content:stretch;
-      }
-      #apiPillBtn{grid-column:1/2;}
-      #btnPricingInfo{grid-column:2/3;}
-      #btnCopy{grid-column:1/2;}
-      #btnOpenBooking{grid-column:2/3;}
-      .topControls .btn, .topControls .pillBtn{width:100%; justify-content:center;}
-      .apiPill{margin-left:0;}
-    }
-    @media (max-width: 420px){
-      .topControls{grid-template-columns: 1fr;}
-      #apiPillBtn, #btnPricingInfo, #btnCopy, #btnOpenBooking{grid-column: 1 / -1;}
-    }
-.brandRow{width:100%;}
-      .actions{width:100%; flex-wrap:wrap; justify-content:flex-start;}
-      .actions .btn{flex:1 1 auto;}
-      .apiPill{margin-left:auto;}
+      .topbar{flex-direction:column; align-items:flex-start; gap:10px;}
+      .brandRow{width:100%;}
+      .actions{width:100%; display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:stretch;}
+      .actions .btn{width:100%; padding:10px 12px; justify-content:center;}
+      .actions .btnGold{grid-column:1 / -1;}
+      .apiPill{grid-column:1 / -1; margin-left:0; justify-content:center;}
     }
     @media (max-width: 520px){
       .shell{padding:12px;}
@@ -1000,6 +975,10 @@
       .sitterRow{flex-direction:column; gap:10px; align-items:stretch;}
       .sitterPill{justify-content:center;}
       .sitterBrowse{width:100%;}
+      .chooseSitterBtn{flex-wrap:wrap; gap:10px;}
+      .chooseSitterLeft{flex:1 1 100%;}
+      .chooseSitterCta{flex:1 1 100%; width:100%; justify-content:center;}
+      .stayBtnTitle{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
       .btnWide{width:100%;}
     }
     @media (max-width: 420px){
@@ -1024,7 +1003,7 @@
         </div>
       </div>
 
-      <div class="topControls">
+      <div class="flex items-center gap-2">
         <button class="pill pillBtn" id="apiPillBtn" type="button" title="Tap to test the API URL">
           <span class="statusDot" id="apiDot"></span>
           <span id="apiStatus">API: checking</span>
@@ -1244,7 +1223,7 @@
 
         <div class="lineItems">
           <div class="lineItemsHeader">
-            <div class="topControls">
+            <div class="flex items-center gap-2">
               <span class="statusDot ok" id="lineDot"></span>
               <span class="font-extrabold">Add-on breakdown</span>
             </div>
@@ -1945,23 +1924,18 @@
         const timeoutMs = CONFIG.apiTimeoutMs || 8000;
         const cacheBuster = Date.now().toString(36) + Math.random().toString(36).slice(2);
 
-        const allParams = Object.assign({}, params || {});
-        allParams.callback = cb;
-        allParams._ = cacheBuster;
-
-        // Manual query string builder (more reliable across Android builds)
-        const qs = [];
-        for (const [k, v] of Object.entries(allParams)){
-          if (v === undefined || v === null) continue;
-          qs.push(encodeURIComponent(k) + "=" + encodeURIComponent(String(v)));
-        }
-        const sep = baseUrl.includes("?") ? "&" : "?";
-        const finalUrl = baseUrl + sep + qs.join("&");
+        const url = new URL(baseUrl);
+        Object.entries(params || {}).forEach(([k,v]) => {
+          if (v === undefined || v === null) return;
+          url.searchParams.set(k, String(v));
+        });
+        url.searchParams.set("callback", cb);
+        url.searchParams.set("_", cacheBuster);
 
         let done = false;
         const script = document.createElement("script");
         script.async = true;
-        script.src = finalUrl;
+        script.src = url.toString();
 
         const cleanup = () => {
           try { delete window[cb]; } catch (e) { window[cb] = undefined; }
@@ -1988,31 +1962,32 @@
           done = true;
           clearTimeout(timer);
           cleanup();
-          reject(new Error("Network error loading: " + finalUrl));
+          reject(new Error("Network error loading: " + url.toString()));
         };
 
         (document.head || document.documentElement).appendChild(script);
       });
     }
 
-   async function jsonp(params){
+    async function jsonp(params){
       const candidates = buildApiBaseCandidates();
 
-      // If a specific authuser is set, include it in params (works when base URL has no authuser query)
-      const effectiveParams = Object.assign({}, params || {});
-      if (CONFIG.apiAuthUser !== null && CONFIG.apiAuthUser !== undefined && String(CONFIG.apiAuthUser).length){
-        effectiveParams.authuser = String(CONFIG.apiAuthUser);
+      // Prefer cached working base first, but ignore stale/old values when CONFIG changed
+      const configured = (CONFIG.apiBaseUrl || "").trim();
+      const configNorm = normalizeBaseUrl(configured);
+      let preferred = getApiBaseWorking();
+      if(preferred){
+        try {
+          const prefNorm = normalizeBaseUrl(preferred);
+          if(configNorm && prefNorm && prefNorm !== configNorm) preferred = null;
+        } catch(e){ preferred = null; }
       }
-
-
-      // Prefer cached working base first
-      const preferred = getApiBaseWorking();
       if(preferred && !candidates.includes(preferred)) candidates.unshift(preferred);
 
       let lastErr = null;
       for(const base of candidates){
         try{
-          const res = await jsonpOnce(base, effectiveParams);
+          const res = await jsonpOnce(base, params);
           setApiBaseWorking(base);
           return res;
         }catch(err){
@@ -3059,5 +3034,3 @@ Total estimate: ${total}`;
   </script>
 </body>
 </html>
-
-
