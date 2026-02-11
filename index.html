@@ -770,7 +770,130 @@
     @media (prefers-reduced-motion: reduce){
       .btn, .pkgBtn, .radioCard, .sCard{ transition: none !important; }
     }
-  </style>
+  
+    /* Base stay button + modal */
+    .stayBtn{
+      width: 100%;
+      min-height: 62px;
+      padding: 12px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(232,210,162,0.26);
+      background: rgba(255,255,255,0.06);
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 14px;
+      cursor:pointer;
+      transition: background .12s ease, transform .12s ease, border-color .12s ease;
+      text-align:left;
+    }
+    .stayBtn:hover{ background: rgba(255,255,255,0.085); border-color: rgba(232,210,162,0.38); transform: translateY(-1px); }
+    .stayBtn:active{ transform: translateY(0); }
+
+    .stayBtnLeft{ display:flex; align-items:center; gap: 12px; min-width:0; }
+    .stayIcon{
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border: 1px solid rgba(232,210,162,0.22);
+      background: rgba(0,0,0,0.18);
+      box-shadow: 0 16px 30px rgba(0,0,0,0.25);
+      font-size: 16px;
+      flex: 0 0 auto;
+    }
+    .stayBtnText{ min-width: 0; }
+    .stayBtnTitle{ font-size: 13px; font-weight: 950; letter-spacing: .2px; line-height: 1.15; }
+    .stayBtnSub{ font-size: 12px; opacity: 0.78; line-height: 1.2; margin-top: 3px; }
+    .stayBtnRight{ display:flex; align-items:center; gap: 12px; flex: 0 0 auto; }
+    .stayBtnRate{ font-size: 12px; font-weight: 900; opacity: .92; padding: 6px 10px; border-radius: 999px; border:1px solid rgba(232,210,162,0.18); background: rgba(0,0,0,0.12); }
+    .stayBtnCta{ font-size: 12px; font-weight: 950; letter-spacing: .2px; padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(232,210,162,0.28); background: rgba(0,0,0,0.16); color: rgba(232,210,162,0.98); }
+
+    .modalWide{ max-width: 980px; }
+    .stayGrid{
+      display:grid;
+      grid-template-columns: 1.15fr 1fr 1fr;
+      gap: 14px;
+    }
+    .stayCard{
+      border-radius: 18px;
+      border: 1px solid rgba(232,210,162,0.18);
+      background: rgba(0,0,0,0.16);
+      padding: 14px;
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+      transition: border-color .12s ease, background .12s ease, transform .12s ease;
+    }
+    .stayCard.active{ border-color: rgba(232,210,162,0.38); background: rgba(255,255,255,0.06); }
+    .stayCardTop{ display:flex; align-items:center; justify-content: space-between; gap: 10px; }
+    .stayCardTitle{ font-size: 13px; font-weight: 950; letter-spacing: .2px; display:flex; align-items:center; gap: 8px; }
+    .stayEmoji{ font-size: 14px; }
+    .stayTag{ font-size: 11px; opacity: .85; padding: 5px 10px; border-radius: 999px; border:1px solid rgba(232,210,162,0.18); background: rgba(0,0,0,0.12); }
+
+    .stayCardDesc{ font-size: 12px; opacity: .82; line-height: 1.35; }
+    .stayFacts{ display:grid; grid-template-columns: 1fr; gap: 6px; }
+    .stayFact{ display:flex; align-items:center; justify-content: space-between; gap: 10px; font-size: 12px; }
+    .stayFact .k{ opacity: .72; }
+    .stayFact .v{ font-weight: 850; opacity: .95; }
+
+    .staySlider{ margin-top: 2px; padding-top: 10px; border-top: 1px solid rgba(232,210,162,0.12); }
+    .staySliderTop{ display:flex; align-items:center; justify-content: space-between; gap: 10px; font-size: 12px; }
+    .staySliderTop .k{ opacity: .75; }
+    .staySliderTop .v{ font-weight: 900; }
+    .staySliderHint{ font-size: 11px; opacity: .7; margin-top: 6px; line-height: 1.3; }
+    .staySelect{ margin-top: auto; height: 40px; border-radius: 14px; }
+
+    @media (max-width: 980px){
+      .stayGrid{ grid-template-columns: 1fr; }
+      .modalWide{ max-width: 720px; }
+    }
+
+    /* Step 4 action row */
+    .actionRow{
+      display:flex;
+      gap: 12px;
+      align-items: stretch;
+      margin-top: 6px;
+    }
+    .actionRow .btnPrimary{ flex: 0 0 auto; min-width: 180px; height: 56px; border-radius: 18px; }
+    .actionRow .chooseSitterBtn{ flex: 1 1 auto; }
+
+    /* Selected sitter box */
+    .selectedBox{
+      border-radius: 16px;
+      border: 1px solid rgba(232,210,162,0.14);
+      background: rgba(0,0,0,0.16);
+      padding: 12px;
+    }
+    .selectedTop{ display:flex; align-items:center; justify-content: space-between; gap: 12px; }
+    .selectedName{ font-size: 12px; font-weight: 950; }
+    .selectedMeta{ font-size: 11px; opacity: .72; margin-top: 2px; line-height: 1.25; }
+
+    @media (max-width: 520px){
+      .actionRow{ flex-direction: column; }
+      .actionRow .btnPrimary{ width: 100%; min-width: 0; }
+    }
+
+
+    .stayHoursPill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(232,210,162,0.16);
+      background: rgba(0,0,0,0.12);
+      font-weight: 850;
+      opacity: .92;
+      margin-left: 8px;
+      white-space: nowrap;
+    }
+    .stayHoursPill.isHidden{ display:none; }
+</style>
 </head>
 
 <body>
@@ -805,63 +928,34 @@
               <div class="leftSide">
                 <div class="stepBadge">1</div>
                 <div>
-                  <h3>Choose your stay type</h3>
-                  <div class="sub">Start with a base stay. Add-ons apply on top.</div>
+                  <h3>Base stay</h3>
+                  <div class="sub">Choose the stay type. Add-ons apply on top.</div>
                 </div>
               </div>
-              <div class="pill">Luxury-grade transparency</div>
+              <div class="pill" id="peakNote"></div>
             </div>
 
-            <div class="pkgRow" id="pkgRow">
-              <div class="pkgBtn active" data-pkg="day" id="pkgDay">
-                <div class="pkgTop">
-                  <div class="pkgName">
-                    <span aria-hidden="true">⏱</span>
-                    <span>Day Visits</span>
-                  </div>
-                </div>
-                <div class="pkgDesc">Hourly care (you set hours)</div>
-                <div class="smallRow mt-2">
-                  <div class="label">Hours: <span id="hoursOut">4</span></div>
-                  <div class="label" id="dayRateHint">Rate: R<span id="dayHourlyOut">60</span>/hour</div>
-                </div>
-                <input id="hours" type="range" min="1" max="12" step="1" value="4" class="mt-2"/>
-              </div>
-
-              <div class="pkgBtn" data-pkg="night" id="pkgNight">
-                <div class="pkgTop">
-                  <div class="pkgName">
-                    <span aria-hidden="true">🌙</span>
-                    <span>Overnight</span>
-                  </div>
-                </div>
-                <div class="pkgDesc">6pm to 6am</div>
-                <div class="smallRow mt-2">
-                  <div class="label">Base: R<span id="nightOut">200</span>/night</div>
+            <button class="stayBtn" id="btnOpenStay" type="button" aria-haspopup="dialog">
+              <div class="stayBtnLeft">
+                <div class="stayIcon" id="stayIcon" aria-hidden="true">⏱</div>
+                <div class="stayBtnText">
+                  <div class="stayBtnTitle" id="stayTitle">Day Visits</div>
+                  <div class="stayBtnSub" id="staySub"><span id="staySubText">Hourly care.</span> <span class="stayHoursPill" id="stayHoursPill"><span class="muted">Hours:</span> <span id="hoursOut">4</span></span></div>
                 </div>
               </div>
-
-              <div class="pkgBtn" data-pkg="full" id="pkgFull">
-                <div class="pkgTop">
-                  <div class="pkgName">
-                    <span aria-hidden="true">🏠</span>
-                    <span>Full-time</span>
-                  </div>
-                </div>
-                <div class="pkgDesc">24h presence</div>
-                <div class="smallRow mt-2">
-                  <div class="label">Base: R<span id="fullOut">320</span>/day</div>
-                </div>
+              <div class="stayBtnRight">
+                <div class="stayBtnRate" id="stayRate">R60/hour</div>
+                <div class="stayBtnCta">Change</div>
               </div>
-            </div>
+            </button>
 
-            <div class="smallRow mt-3">
-              <div class="label" id="peakNote"></div>
+            <div class="smallRow mt-2">
               <div class="label">Long-stay discount applies automatically</div>
+              <div class="label" id="dayOnlyHint">Day Visits: travel is charged per day (separate from check-ins)</div>
             </div>
           </div>
 
-          <div class="grid2 mt-3">
+<div class="grid2 mt-3">
             <!-- Step 2 -->
             <div class="card">
               <div class="stepTitle">
@@ -945,51 +1039,50 @@
           </div>
 
           <!-- Step 4 -->
-                <button class="chooseSitterBtn" id="btnOpenSitters" type="button" aria-haspopup="dialog">
-                  <div class="chooseSitterLeft">
-                    <div class="avatarStack" aria-hidden="true">
-                      <img id="facePrev0" src="face1.png" onerror="this.style.display='none'">
-                      <img id="facePrev1" src="face2.png" onerror="this.style.display='none'">
-                      <img id="facePrev2" src="face3.png" onerror="this.style.display='none'">
-                    </div>
-                    <div class="sitterBtnText">
-                      <div class="sitterBtnTitle" id="sitterBtnTitle">Choose sitter</div>
-                      <div class="sitterBtnSub" id="sitterBtnSub">Verified selection required</div>
-                    </div>
-                  </div>
-                  <div class="chooseSitterCta">Browse</div>
-                </button>
-                <button class="btn btnPrimary" id="btnOpenAddons">Customize add-ons</button>
-                <button class="chooseSitterBtn" id="btnOpenSitters">
-                  <div class="flex items-center gap-3">
-                    <div class="avatarStack" aria-hidden="true">
-                      <img id="facePrev0" src="face1.png" onerror="this.style.display='none'">
-                      <img id="facePrev1" src="face2.png" onerror="this.style.display='none'">
-                      <img id="facePrev2" src="face3.png" onerror="this.style.display='none'">
-                    </div>
-                    <div class="text-left">
-                      <div class="text-[12px] font-extrabold leading-tight" id="sitterBtnTitle">Choose sitter</div>
-                      <div class="text-[11px] opacity-70 leading-tight" id="sitterBtnSub">Verified selection required</div>
-                    </div>
-                  </div>
-                  <div class="text-[12px] font-extrabold opacity-90">Open</div>
-                </button>
-              </div>
-
-              <div class="card mt-3" style="padding:12px; border-radius:16px; background: rgba(0,0,0,0.16);">
-                <div class="flex items-center justify-between gap-3">
-                  <div>
-                    <div class="text-[12px] font-extrabold" id="selectedSitterName">No sitter selected</div>
-                    <div class="text-[11px] opacity-70" id="selectedSitterMeta">Choose a sitter to continue</div>
-                  </div>
-                  <button class="btn" id="btnChangeSitter" style="height:36px; padding:0 12px;">Change</button>
+          <div class="card">
+            <div class="stepTitle">
+              <div class="leftSide">
+                <div class="stepBadge">4</div>
+                <div>
+                  <h3>Add-ons and sitter</h3>
+                  <div class="sub">Customize add-ons, then choose a verified sitter to submit your request.</div>
                 </div>
               </div>
-
-              <div class="hint mt-2" id="availabilityHint">Availability loads automatically based on your dates, zone, and stay type.</div>
+              <div class="pill" id="sittersCountPill">Sitters: --</div>
             </div>
 
-            <div class="card">
+            <div class="actionRow">
+              <button class="btn btnPrimary" id="btnOpenAddons" type="button">Customize add-ons</button>
+
+              <button class="chooseSitterBtn" id="btnOpenSitters" type="button" aria-haspopup="dialog">
+                <div class="chooseSitterLeft">
+                  <div class="avatarStack" aria-hidden="true">
+                    <img id="facePrev0" src="face1.png" onerror="this.style.display='none'">
+                    <img id="facePrev1" src="face2.png" onerror="this.style.display='none'">
+                    <img id="facePrev2" src="face3.png" onerror="this.style.display='none'">
+                  </div>
+                  <div class="sitterBtnText">
+                    <div class="sitterBtnTitle" id="sitterBtnTitle">Choose sitter</div>
+                    <div class="sitterBtnSub" id="sitterBtnSub">Verified selection required</div>
+                  </div>
+                </div>
+                <div class="chooseSitterCta">Browse</div>
+              </button>
+            </div>
+
+            <div class="selectedBox mt-3">
+              <div class="selectedTop">
+                <div>
+                  <div class="selectedName" id="selectedSitterName">No sitter selected</div>
+                  <div class="selectedMeta" id="selectedSitterMeta">Choose a sitter to continue</div>
+                </div>
+                <button class="btn" id="btnChangeSitter" type="button" style="height:36px; padding:0 12px;">Change</button>
+              </div>
+              <div class="hint mt-2" id="availabilityHint">Availability loads automatically based on your dates, zone, and stay type.</div>
+            </div>
+          </div>
+
+<div class="card">
               <div class="stepTitle">
                 <div class="leftSide">
                   <div class="stepBadge">5</div>
@@ -1111,7 +1204,82 @@
     </div>
   </div>
 
-  <!-- Add-ons modal -->
+  
+  <!-- Base stay modal -->
+  <div class="modalOverlay" id="modalStay">
+    <div class="modal modalWide">
+      <div class="modalHeader">
+        <h3>Choose your base stay</h3>
+        <button class="btn" id="btnCloseStay" style="height:36px;">Close</button>
+      </div>
+
+      <div class="modalBody">
+        <div class="stayGrid">
+          <div class="stayCard active" data-pkg="day" id="stayCardDay">
+            <div class="stayCardTop">
+              <div class="stayCardTitle"><span class="stayEmoji" aria-hidden="true">⏱</span> Day Visits</div>
+              <div class="stayTag">Hourly</div>
+            </div>
+            <div class="stayCardDesc">Ideal for daytime supervision. You choose the hours needed. Travel is charged per day by zone.</div>
+
+            <div class="stayFacts">
+              <div class="stayFact"><span class="k">Rate</span><span class="v">R<span id="dayHourlyOut">60</span>/hour</span></div>
+              <div class="stayFact"><span class="k">Travel</span><span class="v">Per day by zone</span></div>
+            </div>
+
+            <div class="staySlider">
+              <div class="staySliderTop">
+                <div class="k">Hours per day</div>
+                <div class="v"><span id="hoursModalOut">4</span> hours</div>
+              </div>
+              <input id="hours" type="range" min="1" max="12" step="1" value="4">
+              <div class="staySliderHint">Tip: Keep it realistic. We plan staff capacity from this.</div>
+            </div>
+
+            <button class="btn btnPrimary staySelect" data-select="day" type="button">Use Day Visits</button>
+          </div>
+
+          <div class="stayCard" data-pkg="night" id="stayCardNight">
+            <div class="stayCardTop">
+              <div class="stayCardTitle"><span class="stayEmoji" aria-hidden="true">🌙</span> Overnight</div>
+              <div class="stayTag">12h</div>
+            </div>
+            <div class="stayCardDesc">Overnight care from 6pm to 6am. Best for pets that need presence and comfort overnight.</div>
+
+            <div class="stayFacts">
+              <div class="stayFact"><span class="k">Base</span><span class="v">R<span id="nightOut">200</span>/night</span></div>
+              <div class="stayFact"><span class="k">Coverage</span><span class="v">6pm to 6am</span></div>
+              <div class="stayFact"><span class="k">Travel</span><span class="v">Per day by zone</span></div>
+            </div>
+
+            <button class="btn btnPrimary staySelect" data-select="night" type="button">Use Overnight</button>
+          </div>
+
+          <div class="stayCard" data-pkg="full" id="stayCardFull">
+            <div class="stayCardTop">
+              <div class="stayCardTitle"><span class="stayEmoji" aria-hidden="true">🏠</span> Full-time</div>
+              <div class="stayTag">24h</div>
+            </div>
+            <div class="stayCardDesc">24-hour presence. Premium option for high-care pets, multiple routines, or full house-sitting.</div>
+
+            <div class="stayFacts">
+              <div class="stayFact"><span class="k">Base</span><span class="v">R<span id="fullOut">320</span>/day</span></div>
+              <div class="stayFact"><span class="k">Coverage</span><span class="v">24h presence</span></div>
+              <div class="stayFact"><span class="k">Travel</span><span class="v">Per day by zone</span></div>
+            </div>
+
+            <button class="btn btnPrimary staySelect" data-select="full" type="button">Use Full-time</button>
+          </div>
+        </div>
+
+        <div class="hint" style="margin-top:12px;">
+          Add-ons (walks, updates, plants, transport) can be added next. Peak and long-stay pricing applies automatically.
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Add-ons modal -->
   <div class="modalOverlay" id="modalAddons">
     <div class="modal">
       <div class="modalHeader">
@@ -1792,9 +1960,11 @@
         state.carouselIndex = 0;
 
         if (!staff.length){
+          el("sittersCountPill").textContent = "Sitters: 0";
           el("availabilityHint").textContent = "No sitters available for this range. Adjust dates, zone, or stay type.";
           el("carouselHint").textContent = "No sitters available for this range.";
         } else {
+          el("sittersCountPill").textContent = "Sitters: " + staff.length;
           el("availabilityHint").textContent = staff.length + " sitters available. Choose a sitter to continue.";
           el("carouselHint").textContent = "Use Prev/Next. Click the center card to select.";
         }
@@ -1830,7 +2000,47 @@
       el("keyPriceOut").textContent = Math.round(PRICES.add.keyTripOneTime);
       el("taxiPriceOut").textContent = Math.round(PRICES.add.petTaxiTripOneTime);
       el("taxiKmPriceOut").textContent = Math.round(PRICES.add.petTaxiKm);
+       renderStaySummary();
+   }
+
+    function renderStaySummary(){
+      const pkg = state.pkg;
+      const hours = clamp(parseInt(el("hours")?.value || "4", 10), 1, 12);
+
+      // Mirror hours in the stay modal label + main pill
+      if (el("hoursModalOut")) el("hoursModalOut").textContent = String(hours);
+      if (el("hoursOut")) el("hoursOut").textContent = String(hours);
+
+      const iconEl = el("stayIcon");
+      const titleEl = el("stayTitle");
+      const subTextEl = el("staySubText");
+      const hoursPill = el("stayHoursPill");
+      const rateEl = el("stayRate");
+
+      if (pkg === "day"){
+        if (iconEl) iconEl.textContent = "⏱";
+        if (titleEl) titleEl.textContent = "Day Visits";
+        if (subTextEl) subTextEl.textContent = "Hourly care.";
+        if (hoursPill) hoursPill.classList.remove("isHidden");
+        if (rateEl) rateEl.textContent = `R${Math.round(PRICES.base.dayHourly)}/hour`;
+        if (el("dayOnlyHint")) el("dayOnlyHint").textContent = "Day Visits: travel is charged per day (separate from check-ins)";
+      } else if (pkg === "night"){
+        if (iconEl) iconEl.textContent = "🌙";
+        if (titleEl) titleEl.textContent = "Overnight";
+        if (subTextEl) subTextEl.textContent = "6pm to 6am (12 hours).";
+        if (hoursPill) hoursPill.classList.add("isHidden");
+        if (rateEl) rateEl.textContent = `R${Math.round(PRICES.base.night)}/night`;
+        if (el("dayOnlyHint")) el("dayOnlyHint").textContent = "Travel is charged per day by zone.";
+      } else {
+        if (iconEl) iconEl.textContent = "🏠";
+        if (titleEl) titleEl.textContent = "Full-time";
+        if (subTextEl) subTextEl.textContent = "24h presence.";
+        if (hoursPill) hoursPill.classList.add("isHidden");
+        if (rateEl) rateEl.textContent = `R${Math.round(PRICES.base.fullDay)}/day`;
+        if (el("dayOnlyHint")) el("dayOnlyHint").textContent = "Travel is charged per day by zone.";
+      }
     }
+
 
     function currentUpdateTier(){
       const active = document.querySelector(".radioCard.active[data-upd]");
@@ -1870,7 +2080,7 @@
       const peakApplied = bookingHasPeak(start, end);
       const peakMult = peakApplied ? Number(PRICES.peakMultiplier || 1) : 1;
 
-      el("peakNote").textContent = peakApplied ? "(peak pricing applied)" : "";
+      el("peakNote").textContent = peakApplied ? "Peak pricing" : "Standard dates";
       el("peakAppliedOut").textContent = peakApplied
         ? "Peak dates detected in your booking range (June to July, or Dec to 15 Jan)."
         : "No peak dates detected in your booking range.";
@@ -2223,12 +2433,18 @@
 
     function setPkg(pkg){
       state.pkg = pkg;
-      document.querySelectorAll(".pkgBtn").forEach(b => b.classList.toggle("active", b.getAttribute("data-pkg") === pkg));
+
+      // Highlight stay cards inside the stay modal
+      document.querySelectorAll(".stayCard").forEach(c => c.classList.toggle("active", c.getAttribute("data-pkg") === pkg));
 
       // Hour slider only relevant for day visits
-      el("hours").disabled = (pkg !== "day");
-      el("hours").style.opacity = (pkg === "day") ? "1" : "0.35";
+      const hoursEl = el("hours");
+      if (hoursEl){
+        hoursEl.disabled = (pkg !== "day");
+        hoursEl.style.opacity = (pkg === "day") ? "1" : "0.35";
+      }
 
+      renderStaySummary();
       fetchAvailability();
       recalc();
     }
@@ -2492,6 +2708,17 @@ Total estimate: ${total}`;
       el("btnPricingInfo").addEventListener("click", () => openModal("modalPricing"));
       el("btnClosePricing").addEventListener("click", () => closeModal("modalPricing"));
 
+      el("btnOpenStay").addEventListener("click", () => openModal("modalStay"));
+      el("btnCloseStay").addEventListener("click", () => closeModal("modalStay"));
+      document.querySelectorAll(".staySelect").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const pkg = btn.getAttribute("data-select");
+          if (pkg) setPkg(pkg);
+          closeModal("modalStay");
+        });
+      });
+
+
       el("btnOpenAddons").addEventListener("click", () => openModal("modalAddons"));
       el("btnCloseAddons").addEventListener("click", () => closeModal("modalAddons"));
 
@@ -2536,7 +2763,11 @@ Total estimate: ${total}`;
       // Inputs that affect price
       ["hours","dogs","cats","walkMinutes","taxiKm"].forEach(id => {
         el(id).addEventListener("input", () => {
-          if (id === "hours") el("hoursOut").textContent = el("hours").value;
+          if (id === "hours"){
+            el("hoursOut").textContent = el("hours").value;
+            if (el("hoursModalOut")) el("hoursModalOut").textContent = el("hours").value;
+            renderStaySummary();
+          }
           if (id === "walkMinutes"){
             el("walkMinutesOut").textContent = el("walkMinutes").value;
             el("walkCostOut").textContent = money(Number(el("walkMinutes").value) * Number(PRICES.add.walkPerMinute||0));
