@@ -13,6 +13,9 @@
   const CONFIG = {
     // Paste your Apps Script Web App /exec URL here
     apiBaseUrl: "https://script.google.com/macros/s/AKfycbzfqeIQFLpa155Gf-454kbaSQUEw9RpiqISwnPbSkfYPV-aU6LZlbTbkG5jv-sHe6jp/exec",
+
+    // API timeout for each call (ms)
+    apiTimeoutMs: 9000,
   
     // Assets (keep files in same GitHub folder as index.html)
     logoUrl: "logo.png",
@@ -943,6 +946,41 @@
 .muted{ line-height: 1.25; }
 .miniSitterCard, .miniSitterCard *{ min-width: 0; }
 
+
+
+    /* Mobile polish (keeps desktop exactly as-is) */
+    @media (max-width: 680px){
+      .topbar{flex-direction:column; align-items:flex-start; gap:10px;}
+      .brandRow{width:100%;}
+      .actions{width:100%; flex-wrap:wrap; justify-content:flex-start;}
+      .actions .btn{flex:1 1 auto;}
+      .apiPill{margin-left:auto;}
+    }
+    @media (max-width: 520px){
+      .shell{padding:12px;}
+      .card{padding:14px;}
+      .title{font-size:22px;}
+      .subtitle{font-size:13px;}
+      .stayBtn{flex-direction:column; align-items:stretch; gap:10px;}
+      .stayBtnMain{gap:10px;}
+      .stayBtnRight{width:100%; justify-content:space-between;}
+      .stayHoursPill{align-self:flex-start;}
+      .stayBtnRate{min-width:auto;}
+      .grid2{grid-template-columns:1fr;}
+      .grid3{grid-template-columns:1fr;}
+      .sitterRow{flex-direction:column; gap:10px; align-items:stretch;}
+      .sitterPill{justify-content:center;}
+      .sitterBrowse{width:100%;}
+      .btnWide{width:100%;}
+    }
+    @media (max-width: 420px){
+      .apiPillBtn{padding:8px 10px;}
+      #apiStatus{font-size:12px;}
+      .pillDot{width:8px;height:8px;}
+      .stayBtnIcon{width:34px;height:34px;}
+      .modal{padding:14px;}
+      .modalBody{padding:14px;}
+    }
 </style>
 </head>
 
@@ -1400,7 +1438,7 @@
                 <div class="leftSide">
                   <div class="stepBadge">C</div>
                   <div>
-                    <h3>Extra check-ins per day</h3
+                    <h3>Extra check-ins per day</h3>
                     <div class="sub">Short extra visit for feed, water, toilet check, quick play.</div>
                   </div>
                 </div>
@@ -1831,54 +1869,82 @@
       return { incDogs: 0, incCats: Math.min(cats, inc) };
     }
 
-    function jsonp(params){
-      return new Promise((resolve, reject) => {
-        const baseRaw = (CONFIG.apiBaseUrl || "").trim();
-        if (!baseRaw){
-          reject(new Error("Missing CONFIG.apiBaseUrl"));
-          return;
+    function normalizeBaseUrl(raw){
+      return String(raw || "").trim().replace(/\/+$/,"");
+    }
+
+    function buildApiBaseCandidates(){
+      const bases = [];
+      const raw = normalizeBaseUrl(CONFIG.apiBaseUrl);
+      if(!raw) return bases;
+
+      bases.push(raw);
+
+      // If it's the standard Apps Script web app URL, add /u/{n}/ variants
+      const m = raw.match(/^https:\/\/script\.google\.com\/macros\/s\/([^\/]+)\/exec(?:\?.*)?$/i);
+      if(m){
+        const id = m[1];
+        for(let i=0;i<=2;i++){
+          bases.push(`https://script.google.com/macros/u/${i}/s/${id}/exec`);
         }
+        // Sometimes an account-bound cookie causes redirects; authuser=-1 can force anonymous
+        bases.push(`https://script.google.com/macros/s/${id}/exec?authuser=-1`);
+        bases.push(`https://script.google.com/macros/u/0/s/${id}/exec?authuser=-1`);
+      }
 
-        // Normalize base URL (avoid mobile WebView quirks)
-        const base = baseRaw.startsWith("http") ? baseRaw : ("https://" + baseRaw);
+      // Dedupe while preserving order
+      return bases.filter((v, i) => v && bases.indexOf(v) === i);
+    }
 
-        const cb = "pgCb_" + Date.now() + "_" + Math.random().toString(16).slice(2);
-        const reqId = String(Date.now());
+    let _apiBaseWorking = null;
+    function getApiBaseWorking(){
+      if(_apiBaseWorking) return _apiBaseWorking;
+      try{
+        const stored = localStorage.getItem("pg_api_base_working");
+        if(stored) _apiBaseWorking = stored;
+      }catch(e){}
+      return _apiBaseWorking || normalizeBaseUrl(CONFIG.apiBaseUrl);
+    }
+    function setApiBaseWorking(url){
+      _apiBaseWorking = url;
+      try{ localStorage.setItem("pg_api_base_working", url); }catch(e){}
+    }
 
-        // Build query string manually (more reliable than new URL() on some Android builds)
-        const q = [];
+    function jsonpOnce(baseUrl, params){
+      return new Promise((resolve, reject) => {
+        const cb = "pgCb_" + Math.random().toString(36).slice(2);
+        const timeoutMs = CONFIG.apiTimeoutMs || 8000;
+        const cacheBuster = Date.now().toString(36) + Math.random().toString(36).slice(2);
+
+        const url = new URL(baseUrl);
         Object.entries(params || {}).forEach(([k,v]) => {
           if (v === undefined || v === null) return;
-          q.push(encodeURIComponent(k) + "=" + encodeURIComponent(String(v)));
+          url.searchParams.set(k, String(v));
         });
-        q.push("callback=" + encodeURIComponent(cb));
-        q.push("reqId=" + encodeURIComponent(reqId));
-        q.push("_=" + Date.now());
-
-        const src = base + (base.includes("?") ? "&" : "?") + q.join("&");
+        url.searchParams.set("callback", cb);
+        url.searchParams.set("_", cacheBuster);
 
         let done = false;
         const script = document.createElement("script");
         script.async = true;
-        script.src = src;
-        script.referrerPolicy = "no-referrer";
+        script.src = url.toString();
+
+        const cleanup = () => {
+          try { delete window[cb]; } catch (e) { window[cb] = undefined; }
+          if (script && script.parentNode) script.parentNode.removeChild(script);
+        };
 
         const timer = setTimeout(() => {
           if (done) return;
           done = true;
           cleanup();
-          reject(new Error("Request timeout"));
-        }, 18000);
-
-        function cleanup(){
-          clearTimeout(timer);
-          try { delete window[cb]; } catch(e){}
-          try { script.remove(); } catch(e){}
-        }
+          reject(new Error("JSONP timeout"));
+        }, timeoutMs);
 
         window[cb] = (data) => {
           if (done) return;
           done = true;
+          clearTimeout(timer);
           cleanup();
           resolve(data);
         };
@@ -1886,16 +1952,36 @@
         script.onerror = () => {
           if (done) return;
           done = true;
+          clearTimeout(timer);
           cleanup();
-          reject(new Error("Network error loading: " + src));
+          reject(new Error("Network error loading: " + url.toString()));
         };
 
-        // Append to HEAD (safer than BODY across Android variants)
         (document.head || document.documentElement).appendChild(script);
       });
     }
 
-function setApiStatus(ok, msg){
+    async function jsonp(params){
+      const candidates = buildApiBaseCandidates();
+
+      // Prefer cached working base first
+      const preferred = getApiBaseWorking();
+      if(preferred && !candidates.includes(preferred)) candidates.unshift(preferred);
+
+      let lastErr = null;
+      for(const base of candidates){
+        try{
+          const res = await jsonpOnce(base, params);
+          setApiBaseWorking(base);
+          return res;
+        }catch(err){
+          lastErr = err;
+        }
+      }
+      throw (lastErr || new Error("API request failed"));
+    }
+
+    function setApiStatus(ok, msg){
       const dot = el("apiDot");
       const label = el("apiStatus");
       dot.classList.remove("ok","bad");
@@ -2774,10 +2860,14 @@ Total estimate: ${total}`;
       const apiBtn = document.getElementById("apiPillBtn");
       if (apiBtn){
         apiBtn.addEventListener("click", () => {
-          const baseRaw = (CONFIG.apiBaseUrl || "").trim();
+          const baseRaw = getApiBaseWorking() || (CONFIG.apiBaseUrl || "").trim();
           if (!baseRaw) return;
           const base = baseRaw.startsWith("http") ? baseRaw : ("https://" + baseRaw);
-          const testUrl = base + (base.includes("?") ? "&" : "?") + "action=pricing&callback=cbTest&reqId=1";
+          const u = new URL(base);
+          u.searchParams.set("action", "pricing");
+          u.searchParams.set("_", Date.now().toString(36));
+          // Open a simple JSON response (no callback) so it's easy to verify on any device
+          const testUrl = u.toString();
           try {
             const w = window.open(testUrl, "_blank");
             if (!w) window.location.href = testUrl;
