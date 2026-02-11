@@ -854,10 +854,7 @@
       .modalWide{ max-width: 720px; }
     }
 
-.main{ height: calc(100% - 68px); }
-      .leftScroll{ height: 100%; overflow: auto; }
-    }
-
+/* layout: allow natural page scroll; no inner scroll traps */
     /* Step 4 action row */
     .actionRow{
       display:flex;
@@ -899,6 +896,27 @@
       white-space: nowrap;
     }
     .stayHoursPill.isHidden{ display:none; }
+
+/* --- Desktop layout enforcement (prevents right panel dropping below) --- */
+@media (min-width: 900px){
+  .main{ display: grid !important; grid-template-columns: minmax(640px, 1fr) 420px !important; }
+  .right{ position: sticky; top: 14px; align-self: start; }
+  .actionRow{ display:flex !important; flex-direction: row !important; gap: 12px !important; align-items: stretch !important; }
+  #btnOpenAddons{ flex: 0 0 240px; }
+  .chooseSitterBtn{ flex: 1 1 auto; min-width: 0; }
+}
+/* Stack only on genuinely narrow viewports */
+@media (max-width: 899px){
+  .main{ grid-template-columns: 1fr; }
+  .right{ position: relative; top: auto; }
+  .actionRow{ flex-direction: column; }
+  #btnOpenAddons{ width: 100%; }
+}
+
+/* Prevent clipped helper lines in Step 4 */
+.muted{ line-height: 1.25; }
+.miniSitterCard, .miniSitterCard *{ min-width: 0; }
+
 </style>
 </head>
 
