@@ -175,6 +175,9 @@
       background: rgba(255,255,255,0.04);
       backdrop-filter: blur(8px);
     }
+    .pillBtn{ cursor:pointer; }
+    .pillBtn:focus{ outline: none; box-shadow: 0 0 0 3px rgba(232,210,162,0.16); }
+
 
     .btn{
       display:inline-flex;
@@ -921,7 +924,7 @@
     .stayHoursPill.isHidden{ display:none; }
 
 /* --- Desktop layout enforcement (prevents right panel dropping below) --- */
-@media (min-width: 900px){
+@media (min-width: 981px){
   .main{ display: grid !important; grid-template-columns: minmax(640px, 1fr) 420px !important; }
   .right{ position: sticky; top: 14px; align-self: start; }
   .actionRow{ display:flex !important; flex-direction: row !important; gap: 12px !important; align-items: stretch !important; }
@@ -929,9 +932,9 @@
   .chooseSitterBtn{ flex: 1 1 auto; min-width: 0; }
 }
 /* Stack only on genuinely narrow viewports */
-@media (max-width: 899px){
+@media (max-width: 980px){
   .main{ grid-template-columns: 1fr; }
-  .right{ position: relative; top: auto; }
+  .right{ position: relative; top: auto; width: 100%; }
   .actionRow{ flex-direction: column; }
   #btnOpenAddons{ width: 100%; }
 }
@@ -955,10 +958,10 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <span class="pill">
+        <button class="pill pillBtn" id="apiPillBtn" type="button" title="Tap to test the API URL">
           <span class="statusDot" id="apiDot"></span>
           <span id="apiStatus">API: checking</span>
-        </span>
+        </button>
 
         <button class="btn" id="btnPricingInfo">How pricing works</button>
         <button class="btn" id="btnCopy">Copy Quote</button>
@@ -1830,27 +1833,42 @@
 
     function jsonp(params){
       return new Promise((resolve, reject) => {
-        if (!CONFIG.apiBaseUrl){
+        const baseRaw = (CONFIG.apiBaseUrl || "").trim();
+        if (!baseRaw){
           reject(new Error("Missing CONFIG.apiBaseUrl"));
           return;
         }
+
+        // Normalize base URL (avoid mobile WebView quirks)
+        const base = baseRaw.startsWith("http") ? baseRaw : ("https://" + baseRaw);
+
         const cb = "pgCb_" + Date.now() + "_" + Math.random().toString(16).slice(2);
-        const url = new URL(CONFIG.apiBaseUrl);
-        Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, String(v)));
-        url.searchParams.set("callback", cb);
-        url.searchParams.set("reqId", String(Date.now()));
+        const reqId = String(Date.now());
+
+        // Build query string manually (more reliable than new URL() on some Android builds)
+        const q = [];
+        Object.entries(params || {}).forEach(([k,v]) => {
+          if (v === undefined || v === null) return;
+          q.push(encodeURIComponent(k) + "=" + encodeURIComponent(String(v)));
+        });
+        q.push("callback=" + encodeURIComponent(cb));
+        q.push("reqId=" + encodeURIComponent(reqId));
+        q.push("_=" + Date.now());
+
+        const src = base + (base.includes("?") ? "&" : "?") + q.join("&");
 
         let done = false;
         const script = document.createElement("script");
         script.async = true;
-        script.src = url.toString();
+        script.src = src;
+        script.referrerPolicy = "no-referrer";
 
         const timer = setTimeout(() => {
           if (done) return;
           done = true;
           cleanup();
           reject(new Error("Request timeout"));
-        }, 14000);
+        }, 18000);
 
         function cleanup(){
           clearTimeout(timer);
@@ -1869,14 +1887,15 @@
           if (done) return;
           done = true;
           cleanup();
-          reject(new Error("Network error"));
+          reject(new Error("Network error loading: " + src));
         };
 
-        document.body.appendChild(script);
+        // Append to HEAD (safer than BODY across Android variants)
+        (document.head || document.documentElement).appendChild(script);
       });
     }
 
-    function setApiStatus(ok, msg){
+function setApiStatus(ok, msg){
       const dot = el("apiDot");
       const label = el("apiStatus");
       dot.classList.remove("ok","bad");
@@ -1892,6 +1911,7 @@
       }catch(err){
         state.apiOk = false;
         setApiStatus(false, "API: check URL");
+        try{ const b = document.getElementById("apiPillBtn"); if(b) b.title = String(err && err.message ? err.message : "API request failed"); }catch(e){}
         if (CONFIG.debug) console.error(err);
       }
     }
@@ -2749,6 +2769,23 @@ Total estimate: ${total}`;
       // Top buttons
       el("btnPricingInfo").addEventListener("click", () => openModal("modalPricing"));
       el("btnClosePricing").addEventListener("click", () => closeModal("modalPricing"));
+
+      // API status pill test (helps diagnose mobile issues)
+      const apiBtn = document.getElementById("apiPillBtn");
+      if (apiBtn){
+        apiBtn.addEventListener("click", () => {
+          const baseRaw = (CONFIG.apiBaseUrl || "").trim();
+          if (!baseRaw) return;
+          const base = baseRaw.startsWith("http") ? baseRaw : ("https://" + baseRaw);
+          const testUrl = base + (base.includes("?") ? "&" : "?") + "action=pricing&callback=cbTest&reqId=1";
+          try {
+            const w = window.open(testUrl, "_blank");
+            if (!w) window.location.href = testUrl;
+          } catch(e){
+            window.location.href = testUrl;
+          }
+        });
+      }
 
       el("btnOpenStay").addEventListener("click", () => openModal("modalStay"));
       el("btnCloseStay").addEventListener("click", () => closeModal("modalStay"));
