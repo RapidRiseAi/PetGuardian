@@ -3,1705 +3,2603 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PetGuardian Care | Pricing Calculator</title>
+  <title>PetGuardian Care | Care Estimate</title>
 
-  <!-- REVAMP_V6 -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --forest:#061911;
-      --pine:#0A241A;
-      --champ:#F3E7D3;
-      --stone:#CBBFAE;
-      --brass:#B08D57;
-
-      --glass: rgba(10, 34, 24, 0.62);
-      --card: rgba(8, 28, 20, 0.74);
-      --card2: rgba(10, 36, 26, 0.84);
-
-      --border: rgba(176,141,87,0.22);
-      --border2: rgba(176,141,87,0.40);
-
-      --shadow: 0 26px 90px rgba(0,0,0,0.58);
-
-      --r-xl: 28px;
-      --r-lg: 22px;
-
-      --focus: 0 0 0 3px rgba(176,141,87,0.16);
-
-      --bg-image: url("bg.jpeg");
-
-      --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+      --bg0: #07130f;
+      --bg1: #0b1e17;
+      --card: rgba(10, 26, 20, 0.86);
+      --card2: rgba(9, 23, 18, 0.92);
+      --stroke: rgba(225, 205, 160, 0.16);
+      --stroke2: rgba(225, 205, 160, 0.24);
+      --gold: #e8d2a2;
+      --gold2: #caa96a;
+      --txt: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.65);
+      --muted2: rgba(255,255,255,0.48);
+      --shadow: 0 18px 50px rgba(0,0,0,0.52);
+      --shadow2: 0 10px 30px rgba(0,0,0,0.35);
+      --radius: 22px;
     }
 
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    html, body{ height: 100%; }
     body{
       margin:0;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color: var(--champ);
-      background: var(--forest);
-      overflow-x:hidden;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      text-rendering: geometricPrecision;
-    }
-    .font-lux{ font-family: Cinzel, Inter, system-ui, sans-serif; letter-spacing: .2px; }
-
-    /* Desktop: lock page scroll, allow internal scroll if needed */
-    @media (min-width: 1024px){
-      body{ overflow: hidden; }
+      color: var(--txt);
+      background: radial-gradient(1200px 700px at 20% 10%, rgba(170, 210, 185, 0.10), transparent 55%),
+                  radial-gradient(1000px 700px at 80% 20%, rgba(232, 210, 162, 0.08), transparent 50%),
+                  linear-gradient(180deg, var(--bg0), #040b08 65%);
+      overflow: hidden; /* no page scroll on desktop */
     }
 
-    .bg-premium{
-      min-height: 100vh;
-      position: relative;
-      background:
-        radial-gradient(1100px 720px at 18% 0%, rgba(176,141,87,0.18), transparent 62%),
-        radial-gradient(1000px 700px at 95% 20%, rgba(243,231,211,0.09), transparent 56%),
-        radial-gradient(980px 980px at 45% 120%, rgba(10,36,26,0.85), transparent 60%),
-        linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.72)),
-        var(--bg-image),
-        linear-gradient(180deg, var(--forest), var(--pine));
+    /* Texture image */
+    body::before{
+      content:"";
+      position: fixed;
+      inset: 0;
+      background-image: url("bg.jpeg");
       background-size: cover;
       background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0.22;
+      filter: saturate(0.85) contrast(1.08);
+      transform: translateZ(0);
+      pointer-events: none;
     }
-    .bg-premium::before{
+    /* Soft vignette and grain */
+    body::after{
       content:"";
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      background-image: var(--noise);
-      opacity: 0.14;            /* reduced to avoid pixel feel */
-      filter: blur(0.85px);     /* softens grain */
-      mix-blend-mode: soft-light;
-    }
-    .bg-premium::after{
-      content:"";
-      position:absolute;
-      inset:-1px;
-      pointer-events:none;
-      background: radial-gradient(1200px 720px at 50% 18%, transparent 35%, rgba(0,0,0,0.84) 100%);
-      opacity: 0.80;
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(1200px 700px at 50% 0%, rgba(0,0,0,0.15), transparent 55%),
+        radial-gradient(1000px 800px at 50% 100%, rgba(0,0,0,0.55), transparent 65%),
+        linear-gradient(90deg, rgba(0,0,0,0.35), transparent 18%, transparent 82%, rgba(0,0,0,0.35));
+      pointer-events: none;
+      mix-blend-mode: normal;
     }
 
     .shell{
-      position:relative;
-      z-index: 1;
-      height: 100vh;
-      padding: 16px;
-      display:flex;
-      align-items: stretch;
-      justify-content: center;
+      width: min(1360px, calc(100vw - 40px));
+      height: min(92vh, 920px);
+      margin: 22px auto;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(11, 26, 19, 0.86), rgba(6, 16, 12, 0.92));
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(232, 210, 162, 0.18);
+      position: relative;
+      overflow: hidden;
     }
 
-    .app{
-      width: min(1320px, 100%);
-      height: 100%;
-      border-radius: var(--r-xl);
-      border: 1px solid var(--border);
-      background: rgba(10,36,26,0.50);
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      display:flex;
-      flex-direction: column;
-      isolation: isolate;
+    .shell::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(900px 540px at 15% 10%, rgba(232, 210, 162, 0.10), transparent 60%),
+        radial-gradient(700px 520px at 85% 25%, rgba(170, 210, 185, 0.10), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,0.06), transparent 30%);
+      pointer-events:none;
     }
 
     .topbar{
-      padding: 14px 16px;
+      position: relative;
+      z-index: 2;
       display:flex;
-      align-items:flex-start;
+      align-items:center;
       justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
+      padding: 18px 20px 12px 20px;
+      border-bottom: 1px solid rgba(232, 210, 162, 0.16);
     }
 
     .brand{
       display:flex;
       align-items:center;
       gap: 12px;
-      min-width: 320px;
+      min-width: 260px;
     }
-    .logo{
-      width: 44px; height: 44px;
-      border-radius: 18px;
-      border: 1px solid var(--border);
-      background: rgba(0,0,0,0.18);
+    .logoWrap{
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(232, 210, 162, 0.22);
+      display:flex;
+      align-items:center;
+      justify-content:center;
       overflow:hidden;
-      flex: 0 0 auto;
+      box-shadow: var(--shadow2);
     }
-    .logo img{ width:100%; height:100%; object-fit: cover; display:block; }
+    .logoWrap img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .brandTitle{
+      line-height:1.05;
+    }
+    .brandTitle h1{
+      font-family: Cinzel, serif;
+      font-size: 20px;
+      letter-spacing: 0.02em;
+      margin:0;
+      color: rgba(255,255,255,0.95);
+    }
+    .brandTitle p{
+      margin: 3px 0 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
 
     .pill{
       display:inline-flex;
       align-items:center;
-      gap: 10px;
+      gap: 8px;
+      padding: 7px 10px;
       border-radius: 999px;
-      padding: 6px 10px;
       font-size: 12px;
-      border: 1px solid rgba(176,141,87,0.32);
-      background: rgba(8,28,20,0.45);
-      color: rgba(203,191,174,0.95);
-      white-space: nowrap;
+      color: rgba(255,255,255,0.82);
+      border: 1px solid rgba(232, 210, 162, 0.20);
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(8px);
     }
 
-    .title{
-      margin-top: 6px;
-      font-size: 28px;
-      line-height: 1.08;
-      font-weight: 700;
-    }
-    .sub{
-      margin-top: 4px;
-      font-size: 13px;
-      color: rgba(203,191,174,0.92);
-    }
-    #pricingStatus{ font-size: 12px; color: rgba(203,191,174,0.85); margin-top: 4px; }
-
-    .actions{ display:flex; align-items:center; gap: 10px; flex-wrap: wrap; }
     .btn{
-      border-radius: 16px;
-      padding: 10px 14px;
-      font-weight: 800;
-      border: 1px solid rgba(176,141,87,0.45);
-      background: rgba(8,28,20,0.22);
-      color: var(--champ);
-      cursor:pointer;
-      transition: transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      height: 40px;
+      padding: 0 14px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 13px;
+      border: 1px solid rgba(232, 210, 162, 0.26);
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.92);
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
       user-select:none;
     }
-    .btn:hover{ transform: translateY(-1px); }
-    .btn:focus{ outline:none; box-shadow: var(--focus), 0 0 0 1px rgba(176,141,87,0.55); }
-    .btn-primary{
-      background: rgba(243,231,211,0.94);
-      color: #071811;
-      border-color: rgba(243,231,211,0.58);
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.07); border-color: rgba(232,210,162,0.34); }
+    .btn:active{ transform: translateY(0); }
+    .btnPrimary{
+      background: linear-gradient(180deg, rgba(232,210,162,0.96), rgba(202,169,106,0.92));
+      color: #1b160c;
+      border: 1px solid rgba(255,255,255,0.12);
     }
-    .btn-ghost{
-      background: rgba(8,28,20,0.42);
-      border-color: rgba(176,141,87,0.55);
-    }
+    .btnPrimary:hover{ background: linear-gradient(180deg, rgba(245,228,188,0.98), rgba(202,169,106,0.96)); }
 
-    .divider{ height: 1px; background: rgba(176,141,87,0.18); }
-
-    /* MAIN */
     .main{
-      flex: 1;
-      min-height: 0;
-      padding: 12px 16px 16px;
+      position: relative;
+      z-index: 2;
+      height: calc(100% - 68px);
       display:grid;
-      grid-template-columns: 1fr 380px;
-      gap: 14px;
-      overflow:hidden;
-    }
-
-    @media (max-width: 1023px){
-      body{ overflow:auto; }
-      .shell{ height:auto; padding: 14px; }
-      .app{ height:auto; }
-      .main{ grid-template-columns: 1fr; overflow: visible; }
+      grid-template-columns: 1fr 420px;
+      gap: 16px;
+      padding: 16px 16px 18px 16px;
     }
 
     .left{
-      min-height: 0;
+      border-radius: var(--radius);
+      border: 1px solid rgba(232, 210, 162, 0.14);
+      background: rgba(255,255,255,0.03);
+      overflow: hidden;
       display:flex;
       flex-direction: column;
-      gap: 12px;
-      overflow:hidden;
+      min-width: 0;
     }
-
-    /* Internal scroll area so nothing clips */
     .leftScroll{
-      min-height: 0;
-      overflow:auto;
-      padding-right: 6px;
-    }
-    .leftScroll::-webkit-scrollbar{ width: 10px; }
-    .leftScroll::-webkit-scrollbar-thumb{
-      background: rgba(243,231,211,0.14);
-      border: 1px solid rgba(176,141,87,0.18);
-      border-radius: 999px;
+      overflow: auto;
+      padding: 14px;
+      height: 100%;
     }
 
-    .row2{
+    .grid2{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
     }
-    @media (max-width: 1023px){
-      .row2{ grid-template-columns: 1fr; }
-      .leftScroll{ overflow: visible; padding-right: 0; }
+    .grid3{
+      display:grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 12px;
     }
 
     .card{
-      border-radius: var(--r-lg);
-      border: 1px solid var(--border);
-      background: var(--card);
-      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(232, 210, 162, 0.14);
+      background: linear-gradient(180deg, rgba(7, 20, 15, 0.72), rgba(7, 20, 15, 0.52));
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      padding: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card h3{
+      font-size: 13px;
+      font-weight: 700;
+      margin:0;
+      color: rgba(255,255,255,0.92);
+    }
+    .sub{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height:1.35;
+    }
+    .label{
+      font-size: 11px;
+      color: var(--muted2);
     }
 
-    .card-title{
+    .stepTitle{
       display:flex;
       align-items:center;
       justify-content: space-between;
       gap: 10px;
-      font-size: 13px;
-      font-weight: 900;
+      margin-bottom: 10px;
     }
-    .muted{ color: rgba(203,191,174,0.92); }
-    .tiny{ font-size: 12px; color: rgba(203,191,174,0.86); }
-
-    .input, select, textarea{
-      width:100%;
-      border-radius: 14px;
-      padding: 10px 12px;
-      background: rgba(8,28,20,0.58);
-      border: 1px solid rgba(176,141,87,0.20);
-      color: var(--champ);
-      outline:none;
-      transition: box-shadow .15s ease, border-color .15s ease;
-      font-family: inherit;
-    }
-    .input:focus, select:focus, textarea:focus{
-      border-color: rgba(176,141,87,0.62);
-      box-shadow: var(--focus);
-    }
-
-    .seg{
-      display:grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 10px;
-    }
-    @media (max-width: 1023px){
-      .seg{ grid-template-columns: 1fr; }
-    }
-    .seg-btn{
-      border: 1px solid rgba(176,141,87,0.26);
-      background: rgba(8,28,20,0.40);
-      border-radius: 18px;
-      padding: 12px 12px;
-      text-align: left;
-      cursor:pointer;
-      transition: all .18s ease;
-      color: var(--champ);
-      position:relative;
+    .stepTitle .leftSide{
       display:flex;
+      align-items:center;
       gap: 10px;
-      align-items:flex-start;
+      min-width: 0;
     }
-    .seg-btn.active{
-      background: rgba(243,231,211,0.88);
-      color: #071811;
-      border-color: rgba(176,141,87,0.70);
-    }
-    .seg-sub{ margin-top: 4px; font-size: 12px; color: rgba(203,191,174,0.86); }
-    .seg-btn.active .seg-sub{ color: rgba(7,24,17,0.72); }
-
-    .icon{
-      width: 18px;
-      height: 18px;
-      margin-top: 1px;
+    .stepBadge{
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: rgba(232, 210, 162, 0.10);
+      border: 1px solid rgba(232, 210, 162, 0.28);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: rgba(232,210,162,0.96);
+      font-size: 12px;
+      font-weight: 700;
       flex: 0 0 auto;
-      opacity: 0.95;
     }
-    .seg-btn.active .icon{ opacity: 1; }
 
-    /* Hours wrap: reserved space, no layout shift */
-    #hoursWrap{
+    .pkgRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
       margin-top: 10px;
-      border-top: 1px solid rgba(176,141,87,0.14);
-      padding-top: 10px;
     }
-    #hoursWrap.inactive{
-      opacity: 0;
-      pointer-events:none;
-      height: 72px;     /* keep space reserved */
+    .pkgBtn{
+      border-radius: 16px;
+      border: 1px solid rgba(232, 210, 162, 0.16);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+      cursor: pointer;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+      min-width: 0;
     }
-    #hoursWrap.active{
-      opacity: 1;
-      height: auto;
+    .pkgBtn:hover{ transform: translateY(-1px); border-color: rgba(232,210,162,0.28); background: rgba(255,255,255,0.06); }
+    .pkgBtn.active{
+      background: linear-gradient(180deg, rgba(232,210,162,0.20), rgba(255,255,255,0.04));
+      border-color: rgba(232, 210, 162, 0.42);
+      box-shadow: inset 0 0 0 1px rgba(232,210,162,0.10);
+    }
+    .pkgTop{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .pkgName{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 13px;
+      color: rgba(255,255,255,0.92);
+      min-width: 0;
+    }
+    .pkgDesc{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
     }
 
     input[type="range"]{
-      height: 26px;
-      appearance:none;
-      background: transparent;
       width: 100%;
-      margin-top: 8px;
-    }
-    input[type="range"]::-webkit-slider-runnable-track{
-      height: 7px;
-      border-radius: 999px;
-      background: rgba(243,231,211,0.14);
-      border: 1px solid rgba(176,141,87,0.28);
-    }
-    input[type="range"]::-webkit-slider-thumb{
-      appearance:none;
-      width: 18px; height: 18px;
-      border-radius: 999px;
-      background: var(--brass);
-      border: 2px solid rgba(243,231,211,0.95);
-      margin-top: -7px;
-      box-shadow: 0 10px 22px rgba(0,0,0,0.45);
+      accent-color: var(--gold);
     }
 
-    .addonRow{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
+    .field{
+      display:flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .field input, .field select, .field textarea{
+      height: 42px;
+      padding: 0 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(232, 210, 162, 0.18);
+      background: rgba(0,0,0,0.16);
+      color: rgba(255,255,255,0.92);
+      outline: none;
+    }
+    .field textarea{ height: 100px; padding: 12px; resize: none; }
+
+    .smallRow{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
       gap: 10px;
-      margin-top: 10px;
+      margin-top: 8px;
     }
-    @media (max-width: 1023px){
-      .addonRow{ grid-template-columns: 1fr; }
-    }
+
     .toggle{
       display:flex;
       align-items:center;
       justify-content: space-between;
       gap: 10px;
       padding: 10px 12px;
-      border-radius: 18px;
-      border: 1px solid rgba(176,141,87,0.20);
-      background: rgba(8,28,20,0.38);
+      border-radius: 14px;
+      border: 1px solid rgba(232,210,162,0.14);
+      background: rgba(255,255,255,0.03);
     }
+    .toggle .tText{ min-width:0; }
+    .toggle .tTitle{ font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.90); }
+    .toggle .tSub{ font-size: 11px; color: var(--muted); margin-top: 2px; line-height:1.3; }
 
-    /* Selected sitter summary */
-    #selectedSitterSummary{
-      margin-top: 10px;
-      padding: 10px 12px;
-      border-radius: 18px;
-      border: 1px solid rgba(176,141,87,0.20);
-      background: rgba(8,28,20,0.35);
-    }
-
-    /* Quote */
-    .quote{
-      border-radius: var(--r-lg);
-      border: 1px solid var(--border2);
-      background: var(--card2);
-      padding: 14px;
-      display:flex;
-      flex-direction: column;
-      gap: 10px;
-      overflow:hidden;
-      min-height: 0;
-    }
-    .quote-total{
-      font-size: 44px;
-      line-height: 1;
-      margin-top: 2px;
-    }
-    .line{ height:1px; background: rgba(176,141,87,0.18); margin: 6px 0; }
-    .row{ display:flex; align-items:center; justify-content: space-between; gap:10px; font-size: 13px; }
-    .depositBox{
-      border-radius: 18px;
-      border: 1px solid rgba(176,141,87,0.20);
-      background: rgba(243,231,211,0.10);
-      padding: 12px;
-    }
-    .depositAmt{ font-size: 22px; font-weight: 900; margin-top: 4px; }
-
-    /* MODALS */
-    .hidden{ display:none !important; }
-
-    .modalWrap{
-      position: fixed;
-      inset: 0;
-      z-index: 2147483647;
+    .numRow{
       display:flex;
       align-items:center;
-      justify-content:center;
-      padding: 18px;
-      background: rgba(0,0,0,0.78);
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .stepper{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      border: 1px solid rgba(232,210,162,0.18);
+      background: rgba(0,0,0,0.14);
+      border-radius: 999px;
+      padding: 6px 8px;
+    }
+    .stepper button{
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(232,210,162,0.20);
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.9);
+      font-weight: 800;
+      transition: background .12s ease;
+    }
+    .stepper button:hover{ background: rgba(255,255,255,0.08); }
+    .stepper input{
+      width: 44px;
+      text-align:center;
+      border: 0;
+      background: transparent;
+      color: rgba(255,255,255,0.92);
+      outline:none;
+      font-weight: 700;
     }
 
-    .modal{
-      width: min(1100px, 100%);
-      max-height: calc(100vh - 48px);
-      overflow:hidden;
-      border-radius: var(--r-xl);
-      border: 1px solid rgba(176,141,87,0.42);
-      background: rgba(6, 25, 17, 0.96); /* NOT transparent */
-      box-shadow: 0 32px 120px rgba(0,0,0,0.72);
+    .chooseSitterBtn{
+      height: 44px;
+      padding: 0 14px 0 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(232,210,162,0.22);
+      background: rgba(255,255,255,0.05);
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor:pointer;
+      transition: background .12s ease, transform .12s ease, border-color .12s ease;
+    }
+    .chooseSitterBtn:hover{ background: rgba(255,255,255,0.07); border-color: rgba(232,210,162,0.34); transform: translateY(-1px); }
+    .chooseSitterBtn:active{ transform: translateY(0); }
+    .avatarStack{
+      display:flex;
+      align-items:center;
+    }
+    .avatarStack img{
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      border: 2px solid rgba(6,16,12,0.86);
+      object-fit: cover;
+      background: rgba(255,255,255,0.10);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+    }
+    .avatarStack img:not(:first-child){ margin-left: -10px; }
+
+    .right{
+      border-radius: var(--radius);
+      border: 1px solid rgba(232, 210, 162, 0.16);
+      background: linear-gradient(180deg, rgba(7,20,15,0.72), rgba(7,20,15,0.54));
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      padding: 14px;
+      overflow: hidden;
       display:flex;
       flex-direction: column;
+      min-width: 0;
     }
-    .modalHeader{
-      padding: 14px 16px;
+    .quoteTop{
       display:flex;
       align-items:flex-start;
       justify-content: space-between;
       gap: 10px;
-      background: linear-gradient(180deg, rgba(176,141,87,0.10), transparent);
-      border-bottom: 1px solid rgba(176,141,87,0.18);
+      margin-bottom: 12px;
     }
-    .modalBody{
-      padding: 14px 16px 16px;
-      overflow:auto;
+    .quoteTop h2{
+      font-family: Cinzel, serif;
+      font-size: 16px;
+      margin:0;
+      letter-spacing: 0.02em;
+      color: rgba(255,255,255,0.92);
+    }
+    .bigTotal{
+      font-family: Cinzel, serif;
+      font-size: 44px;
+      line-height: 1;
+      margin-top: 6px;
+      color: rgba(232,210,162,0.98);
+      text-shadow: 0 10px 40px rgba(0,0,0,0.35);
     }
 
-    /* 3-card carousel */
-    .carouselWrap{
-      border-radius: 22px;
-      border: 1px solid rgba(176,141,87,0.22);
-      background: rgba(8,28,20,0.45);
-      padding: 14px;
+    .rows{
+      margin-top: 6px;
+      border-top: 1px solid rgba(232,210,162,0.14);
+      padding-top: 10px;
+      display:flex;
+      flex-direction: column;
+      gap: 8px;
     }
-    .carouselStage{
+    .row{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.82);
+    }
+    .row strong{ color: rgba(255,255,255,0.92); }
+    .hint{
+      font-size: 11px;
+      color: var(--muted2);
+      line-height: 1.35;
+      margin-top: 10px;
+    }
+
+    .lineItems{
+      margin-top: 10px;
+      border: 1px solid rgba(232,210,162,0.12);
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(0,0,0,0.14);
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+    .lineItemsHeader{
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(232,210,162,0.12);
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.86);
+      background: rgba(255,255,255,0.03);
+    }
+    .lineItemsBody{
+      max-height: 220px;
+      overflow: auto;
+      padding: 10px 10px 12px 10px;
+      display:flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .liRow{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items:start;
+      padding: 8px 8px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+    }
+    .liRow .liTitle{
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.90);
+      margin:0;
+    }
+    .liRow .liMeta{
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+      line-height: 1.35;
+    }
+    .liRow .liAmt{
+      font-size: 12px;
+      font-weight: 800;
+      color: rgba(232,210,162,0.95);
+      white-space: nowrap;
+      align-self: center;
+    }
+
+    .depositBox{
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(232,210,162,0.14);
+      background: rgba(255,255,255,0.03);
+    }
+    .depositBox .k{ font-size: 11px; color: var(--muted2); }
+    .depositBox .v{ font-size: 18px; font-weight: 800; color: rgba(255,255,255,0.92); margin-top: 2px; }
+
+    .ctaRow{ margin-top: 12px; display:flex; flex-direction: column; gap: 10px; }
+
+    /* Modal */
+    .modalOverlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.62);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 9999; /* must be above everything */
+      backdrop-filter: blur(10px);
+    }
+    .modalOverlay.active{ display:flex; }
+    .modal{
+      width: min(980px, 98vw);
+      max-height: 90vh;
+      border-radius: 24px;
+      border: 1px solid rgba(232,210,162,0.18);
+      background: linear-gradient(180deg, rgba(9,23,18,0.96), rgba(6,16,12,0.98));
+      box-shadow: var(--shadow);
+      overflow: hidden;
       position: relative;
-      height: 480px;
+    }
+    .modalHeader{
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(232,210,162,0.14);
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+      background: rgba(255,255,255,0.03);
+    }
+    .modalHeader h3{
+      margin:0;
+      font-family: Cinzel, serif;
+      font-size: 16px;
+      color: rgba(255,255,255,0.92);
+      letter-spacing: 0.02em;
+    }
+    .modalBody{
+      padding: 14px;
+      overflow:auto;
+      max-height: calc(90vh - 58px);
+    }
+
+    .tabs{
+      display:flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .tab{
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(232,210,162,0.16);
+      background: rgba(255,255,255,0.04);
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.84);
+      cursor:pointer;
+      user-select:none;
+      transition: background .12s ease, border-color .12s ease;
+    }
+    .tab.active{
+      border-color: rgba(232,210,162,0.40);
+      background: rgba(232,210,162,0.14);
+      color: rgba(255,255,255,0.92);
+    }
+
+    .radioGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .radioCard{
+      border-radius: 16px;
+      border: 1px solid rgba(232,210,162,0.16);
+      background: rgba(255,255,255,0.03);
+      padding: 12px;
+      cursor:pointer;
+      transition: border-color .12s ease, background .12s ease, transform .12s ease;
+      min-width: 0;
+    }
+    .radioCard:hover{ transform: translateY(-1px); border-color: rgba(232,210,162,0.28); background: rgba(255,255,255,0.05); }
+    .radioCard.active{
+      border-color: rgba(232,210,162,0.44);
+      background: rgba(232,210,162,0.12);
+    }
+    .radioCard .t{ font-size: 12px; font-weight: 800; color: rgba(255,255,255,0.92); }
+    .radioCard .b{ font-size: 11px; color: var(--muted); margin-top: 4px; line-height:1.35; }
+    .radioCard .p{ font-size: 12px; font-weight: 800; color: rgba(232,210,162,0.95); margin-top: 8px; }
+
+    /* Sitter carousel */
+    .carouselStage{
+      border-radius: 20px;
+      border: 1px solid rgba(232,210,162,0.14);
+      background: rgba(0,0,0,0.18);
+      padding: 14px;
+      overflow: hidden;
+    }
+    .carouselViewport{
+      position: relative;
+      height: 430px;
       display:flex;
       align-items:center;
       justify-content:center;
-      overflow:hidden;
-      perspective: 1200px;
     }
-    @media (max-width: 700px){
-      .carouselStage{ height: 560px; }
-    }
-
     .sCard{
       position:absolute;
-      left: 50%;
-      top: 50%;
-      width: 300px;
-      border-radius: 22px;
-      border: 1px solid rgba(176,141,87,0.22);
-      background: rgba(10,36,26,0.96);
-      box-shadow: 0 22px 70px rgba(0,0,0,0.55);
+      width: 270px;
+      height: 400px;
+      border-radius: 18px;
+      border: 1px solid rgba(232,210,162,0.14);
+      background: rgba(255,255,255,0.04);
       overflow:hidden;
-      transform-origin: center;
-      transition: transform .26s ease, opacity .26s ease, filter .26s ease;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+      transform: translateX(calc(var(--offset) * 240px)) scale(var(--scale));
+      opacity: var(--opacity);
+      z-index: var(--z);
+      transition: transform .22s ease, opacity .22s ease;
       cursor:pointer;
       user-select:none;
-      will-change: transform;
-    }
-    @media (max-width: 520px){
-      .sCard{ width: min(320px, 86vw); }
     }
     .sCard .img{
-      width:100%;
-      aspect-ratio: 4 / 5;
-      background: rgba(0,0,0,0.22);
-      border-bottom: 1px solid rgba(176,141,87,0.18);
-      overflow:hidden;
+      height: 64%;
+      background: rgba(255,255,255,0.06);
     }
-    .sCard .img img{ width:100%; height:100%; object-fit: cover; display:block; }
-    .sCard .pad{ padding: 12px; }
-    .sName{ font-weight: 900; }
-    .sTitle{ font-size: 12px; color: rgba(203,191,174,0.88); margin-top: 2px; }
-    .sBio{ font-size: 12px; color: rgba(203,191,174,0.95); margin-top: 10px; line-height: 1.35; min-height: 52px; }
-    .badgeRow{ display:flex; gap:8px; flex-wrap: wrap; margin-top: 10px; }
-    .badge{
+    .sCard img{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+    }
+    .sCard .body{
+      padding: 12px;
+      height: 36%;
+      display:flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .sName{
+      font-family: Cinzel, serif;
+      font-size: 14px;
+      letter-spacing: 0.01em;
+      color: rgba(255,255,255,0.92);
+    }
+    .sMeta{
       font-size: 11px;
-      padding: 6px 9px;
+      color: rgba(255,255,255,0.68);
+      line-height: 1.35;
+    }
+    .tags{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .tag{
+      font-size: 10px;
+      padding: 4px 8px;
       border-radius: 999px;
-      border: 1px solid rgba(176,141,87,0.22);
-      background: rgba(8,28,20,0.45);
-      color: rgba(203,191,174,0.95);
+      border: 1px solid rgba(232,210,162,0.18);
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.78);
       white-space: nowrap;
     }
 
-    .carouselNav{
+    .modalFooter{
+      padding: 12px 14px;
+      border-top: 1px solid rgba(232,210,162,0.14);
       display:flex;
       align-items:center;
       justify-content:center;
       gap: 10px;
-      margin-top: 12px;
-      flex-wrap: wrap;
+      background: rgba(255,255,255,0.03);
     }
-    .dotRow{ display:flex; gap: 8px; justify-content:center; margin-top: 10px; }
-    .dot{
-      width: 7px; height: 7px;
+
+    .statusDot{
+      width: 8px;
+      height: 8px;
       border-radius: 999px;
-      background: rgba(243,231,211,0.22);
-      border: 1px solid rgba(176,141,87,0.20);
-      cursor:pointer;
+      background: rgba(255,255,255,0.25);
     }
-    .dot.active{
-      background: rgba(176,141,87,0.88);
-      border-color: rgba(176,141,87,0.55);
+    .statusDot.ok{ background: rgba(100, 255, 190, 0.60); }
+    .statusDot.bad{ background: rgba(255, 120, 120, 0.70); }
+
+    /* Responsive */
+    @media (max-width: 1100px){
+      body{ overflow:auto; }
+      .shell{ height: auto; margin: 14px auto; }
+      .main{ grid-template-columns: 1fr; height: auto; }
+      .left{ height: auto; }
+      .leftScroll{ height: auto; }
+      .right{ height: auto; }
+      .lineItemsBody{ max-height: 240px; }
+      .pkgRow{ grid-template-columns: 1fr; }
+      .grid3{ grid-template-columns: 1fr; }
+      .grid2{ grid-template-columns: 1fr; }
+      .radioGrid{ grid-template-columns: 1fr; }
+      .carouselViewport{ height: 460px; }
+      .sCard{ width: 250px; transform: translateX(calc(var(--offset) * 210px)) scale(var(--scale)); }
+    }
+
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce){
+      .btn, .pkgBtn, .radioCard, .sCard{ transition: none !important; }
     }
   </style>
 </head>
 
-<body class="bg-premium">
+<body>
   <div class="shell">
-    <div class="app">
-
-      <div class="topbar">
-        <div class="brand">
-          <div class="logo">
-            <img src="logo.png" alt="PetGuardian Care" onerror="this.style.display='none'">
-          </div>
-          <div>
-            <div class="pill">PetGuardian Care <span style="color:var(--brass)">•</span> Premium Pricing</div>
-            <div class="title font-lux">Get a care cost estimate</div>
-            <div class="sub">Transparent pricing. Verified sitters. Secure booking.</div>
-            <div id="pricingStatus">Pricing: loading from sheet…</div>
-          </div>
-        </div>
-
-        <div class="actions">
-          <button id="howBtn" class="btn btn-ghost" type="button">How pricing works</button>
-          <button id="copyBtn" class="btn btn-primary" type="button">Copy Quote</button>
-          <button id="requestBtn" class="btn" type="button">Request Booking</button>
+    <div class="topbar">
+      <div class="brand">
+        <div class="logoWrap"><img src="logo.png" alt="PetGuardian logo" /></div>
+        <div class="brandTitle">
+          <h1>PetGuardian Care Estimate</h1>
+          <p>Transparent pricing, verified sitters, secure booking.</p>
         </div>
       </div>
 
-      <div class="divider"></div>
+      <div class="flex items-center gap-2">
+        <span class="pill">
+          <span class="statusDot" id="apiDot"></span>
+          <span id="apiStatus">API: checking</span>
+        </span>
 
-      <div class="main">
-        <div class="left">
-          <div class="leftScroll">
-            <!-- 1) Stay type -->
-            <div class="card">
-              <div class="card-title">
-                <span>1) Choose your stay type</span>
-                <span class="tiny muted">Add-ons apply on top</span>
-              </div>
+        <button class="btn" id="btnPricingInfo">How pricing works</button>
+        <button class="btn" id="btnCopy">Copy Quote</button>
+        <button class="btn btnPrimary" id="btnOpenBooking">Request Booking</button>
+      </div>
+    </div>
 
-              <div class="seg">
-                <button class="seg-btn" data-pkg="day" type="button">
-                  <svg class="icon" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <path d="M12 22a10 10 0 1 0-10-10 10 10 0 0 0 10 10Z" stroke="currentColor" stroke-width="2"/>
-                  </svg>
-                  <div>
-                    <div style="font-weight:900;">Day Visits</div>
-                    <div class="seg-sub">Hourly care (you set hours)</div>
-                  </div>
-                </button>
-
-                <button class="seg-btn" data-pkg="night" type="button">
-                  <svg class="icon" viewBox="0 0 24 24" fill="none">
-                    <path d="M21 12.2A8.5 8.5 0 1 1 11.8 3 6.5 6.5 0 0 0 21 12.2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                  </svg>
-                  <div>
-                    <div style="font-weight:900;">Overnight</div>
-                    <div class="seg-sub">6pm to 6am</div>
-                  </div>
-                </button>
-
-                <button class="seg-btn" data-pkg="full" type="button">
-                  <svg class="icon" viewBox="0 0 24 24" fill="none">
-                    <path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                  </svg>
-                  <div>
-                    <div style="font-weight:900;">Full-time</div>
-                    <div class="seg-sub">24h presence</div>
-                  </div>
-                </button>
-              </div>
-
-              <div id="hoursWrap" class="inactive">
-                <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-                  <div>
-                    <div style="font-weight:900; font-size: 13px;">Hours per day</div>
-                    <div class="tiny muted">Only used for Day Visits</div>
-                  </div>
-                  <div style="font-size: 13px;"><span class="muted">Hours:</span> <span id="hoursOut" style="font-weight:900;">4</span></div>
+    <div class="main">
+      <section class="left">
+        <div class="leftScroll">
+          <!-- Step 1 -->
+          <div class="card">
+            <div class="stepTitle">
+              <div class="leftSide">
+                <div class="stepBadge">1</div>
+                <div>
+                  <h3>Choose your stay type</h3>
+                  <div class="sub">Start with a base stay. Add-ons apply on top.</div>
                 </div>
-                <input id="hours" type="range" min="1" max="12" value="4">
+              </div>
+              <div class="pill">Luxury-grade transparency</div>
+            </div>
+
+            <div class="pkgRow" id="pkgRow">
+              <div class="pkgBtn active" data-pkg="day" id="pkgDay">
+                <div class="pkgTop">
+                  <div class="pkgName">
+                    <span aria-hidden="true">⏱</span>
+                    <span>Day Visits</span>
+                  </div>
+                </div>
+                <div class="pkgDesc">Hourly care (you set hours)</div>
+                <div class="smallRow mt-2">
+                  <div class="label">Hours: <span id="hoursOut">4</span></div>
+                  <div class="label" id="dayRateHint">Rate: R<span id="dayHourlyOut">60</span>/hour</div>
+                </div>
+                <input id="hours" type="range" min="1" max="12" step="1" value="4" class="mt-2"/>
+              </div>
+
+              <div class="pkgBtn" data-pkg="night" id="pkgNight">
+                <div class="pkgTop">
+                  <div class="pkgName">
+                    <span aria-hidden="true">🌙</span>
+                    <span>Overnight</span>
+                  </div>
+                </div>
+                <div class="pkgDesc">6pm to 6am</div>
+                <div class="smallRow mt-2">
+                  <div class="label">Base: R<span id="nightOut">200</span>/night</div>
+                </div>
+              </div>
+
+              <div class="pkgBtn" data-pkg="full" id="pkgFull">
+                <div class="pkgTop">
+                  <div class="pkgName">
+                    <span aria-hidden="true">🏠</span>
+                    <span>Full-time</span>
+                  </div>
+                </div>
+                <div class="pkgDesc">24h presence</div>
+                <div class="smallRow mt-2">
+                  <div class="label">Base: R<span id="fullOut">320</span>/day</div>
+                </div>
               </div>
             </div>
 
-            <!-- Row 2 -->
-            <div class="row2" style="margin-top: 12px;">
-              <div class="card">
-                <div class="card-title">
-                  <span>2) When and where?</span>
-                  <span class="tiny"><span class="muted">Days:</span> <span id="daysOut" style="font-weight:900;">1</span></span>
-                </div>
+            <div class="smallRow mt-3">
+              <div class="label" id="peakNote"></div>
+              <div class="label">Long-stay discount applies automatically</div>
+            </div>
+          </div>
 
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+          <div class="grid2 mt-3">
+            <!-- Step 2 -->
+            <div class="card">
+              <div class="stepTitle">
+                <div class="leftSide">
+                  <div class="stepBadge">2</div>
                   <div>
-                    <div class="tiny muted">Start date</div>
-                    <input id="startDate" type="date" class="input">
-                  </div>
-                  <div>
-                    <div class="tiny muted">End date</div>
-                    <input id="endDate" type="date" class="input">
+                    <h3>When and where?</h3>
+                    <div class="sub">Peak dates and long-stay discounts are calculated automatically.</div>
                   </div>
                 </div>
-
-                <div style="margin-top: 10px;">
-                  <div class="tiny muted">Zone</div>
-                  <select id="zone">
-                    <option value="sabie">Sabie (Zone A)</option>
-                    <option value="wr">White River (Zone B)</option>
-                    <option value="nel">Nelspruit (Zone C)</option>
-                  </select>
-                </div>
-
-                <div id="peakNote" class="tiny muted" style="margin-top: 10px;"></div>
+                <div class="label">Days: <span id="daysOut">1</span></div>
               </div>
 
-              <div class="card">
-                <div class="card-title">
-                  <span>3) Tell us about your pets</span>
-                  <span id="staffStatus" class="tiny muted">Loading…</span>
-                </div>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                  <div>
-                    <div class="tiny muted">Dogs</div>
-                    <input id="dogs" type="number" min="0" value="1" class="input">
-                  </div>
-                  <div>
-                    <div class="tiny muted">Cats</div>
-                    <input id="cats" type="number" min="0" value="0" class="input">
-                  </div>
-                </div>
-
-                <div class="addonRow">
-                  <label class="toggle">
-                    <div>
-                      <div style="font-weight:900; font-size: 13px;">Puppy care</div>
-                      <div class="tiny muted">Extra supervision</div>
-                    </div>
-                    <input id="puppy" type="checkbox">
-                  </label>
-
-                  <label class="toggle">
-                    <div>
-                      <div style="font-weight:900; font-size: 13px;">Oral meds</div>
-                      <div class="tiny muted">Follow instructions</div>
-                    </div>
-                    <input id="meds" type="checkbox">
-                  </label>
-                </div>
-
-                <label class="toggle" style="margin-top: 10px;">
-                  <div>
-                    <div style="font-weight:900; font-size: 13px;">Food supplies allowed</div>
-                    <div class="tiny muted">Deduct R50 per day</div>
-                    <div id="foodNote" class="tiny muted hidden" style="margin-top: 6px;">Fuel and supply credit applied.</div>
-                  </div>
-                  <input id="foodSupplies" type="checkbox">
+              <div class="grid2">
+                <label class="field">
+                  <span class="label">Start date</span>
+                  <input type="date" id="startDate">
+                </label>
+                <label class="field">
+                  <span class="label">End date</span>
+                  <input type="date" id="endDate">
                 </label>
               </div>
+
+              <label class="field mt-3">
+                <span class="label">Zone</span>
+                <select id="zone">
+                  <option value="sabie">Sabie (Zone A)</option>
+                  <option value="wr">White River (Zone B)</option>
+                  <option value="nel">Nelspruit (Zone C)</option>
+                </select>
+              </label>
+
+              <div class="hint" id="peakAppliedOut">No peak dates detected in your booking range.</div>
             </div>
 
-            <!-- Row 3 -->
-            <div class="card" style="margin-top: 12px;">
-              <div class="card-title">
-                <span>4) Add-ons and sitter</span>
-                <span class="tiny muted" id="peakAppliedOut"></span>
+            <!-- Step 3 -->
+            <div class="card">
+              <div class="stepTitle">
+                <div class="leftSide">
+                  <div class="stepBadge">3</div>
+                  <div>
+                    <h3>Pets and essentials</h3>
+                    <div class="sub">First pet included. Extra pets add a daily care fee.</div>
+                  </div>
+                </div>
+                <div class="label">Travel per day: R<span id="travelOut">0</span></div>
               </div>
 
-              <div style="display:flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
-                <button id="openAddonsBtn" class="btn btn-primary" type="button">Customize Add-ons</button>
-                <button id="openSitterBtn" class="btn btn-ghost" type="button">Choose sitter</button>
-                <button id="clearSitterBtn" class="btn" type="button">Clear</button>
+              <div class="grid2">
+                <div class="field">
+                  <span class="label">Dogs</span>
+                  <input id="dogs" type="number" min="0" step="1" value="1">
+                </div>
+                <div class="field">
+                  <span class="label">Cats</span>
+                  <input id="cats" type="number" min="0" step="1" value="0">
+                </div>
               </div>
 
-              <div id="selectedSitterSummary">
-                <div class="tiny muted">Loading sitter availability…</div>
+              <div class="grid2 mt-3">
+                <label class="toggle">
+                  <div class="tText">
+                    <div class="tTitle">Puppy care</div>
+                    <div class="tSub">Extra supervision and routine.</div>
+                  </div>
+                  <input id="puppy" type="checkbox">
+                </label>
+
+                <label class="toggle">
+                  <div class="tText">
+                    <div class="tTitle">Oral meds needed?</div>
+                    <div class="tSub">We administer meds per instructions.</div>
+                  </div>
+                  <input id="meds" type="checkbox">
+                </label>
               </div>
 
-              <div class="tiny muted" id="addonsSummary" style="margin-top: 10px;">Add-ons: none selected yet</div>
+              <div class="hint">More add-ons (walks, updates, plants, chores, transport) are in Customize add-ons.</div>
+            </div>
+          </div>
 
-              <div class="tiny muted" style="margin-top: 10px; line-height:1.55;">
-                • Verified sitter selection required<br>
-                • Peak dates and discounts auto apply<br>
-                • Deposit secures booking, balance after service<br>
-                • Final price confirmed after screening and availability
+          <!-- Step 4 -->
+          <div class="grid2 mt-3">
+            <div class="card">
+              <div class="stepTitle">
+                <div class="leftSide">
+                  <div class="stepBadge">4</div>
+                  <div>
+                    <h3>Add-ons and sitter</h3>
+                    <div class="sub">Premium add-ons, clear totals, verified staff.</div>
+                  </div>
+                </div>
+                <div class="label">No scroll on desktop</div>
               </div>
 
-              <div id="staffEmpty" class="tiny muted hidden" style="margin-top: 10px;">
-                No sitters available for these dates.
+              <div class="grid2 mt-2">
+                <button class="btn btnPrimary" id="btnOpenAddons">Customize add-ons</button>
+                <button class="chooseSitterBtn" id="btnOpenSitters">
+                  <div class="flex items-center gap-3">
+                    <div class="avatarStack" aria-hidden="true">
+                      <img id="facePrev0" src="face1.png" onerror="this.style.display='none'">
+                      <img id="facePrev1" src="face2.png" onerror="this.style.display='none'">
+                      <img id="facePrev2" src="face3.png" onerror="this.style.display='none'">
+                    </div>
+                    <div class="text-left">
+                      <div class="text-[12px] font-extrabold leading-tight" id="sitterBtnTitle">Choose sitter</div>
+                      <div class="text-[11px] opacity-70 leading-tight" id="sitterBtnSub">Verified selection required</div>
+                    </div>
+                  </div>
+                  <div class="text-[12px] font-extrabold opacity-90">Open</div>
+                </button>
               </div>
 
-              <div id="staffCarousel" style="display:none;"></div>
+              <div class="card mt-3" style="padding:12px; border-radius:16px; background: rgba(0,0,0,0.16);">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <div class="text-[12px] font-extrabold" id="selectedSitterName">No sitter selected</div>
+                    <div class="text-[11px] opacity-70" id="selectedSitterMeta">Choose a sitter to continue</div>
+                  </div>
+                  <button class="btn" id="btnChangeSitter" style="height:36px; padding:0 12px;">Change</button>
+                </div>
+              </div>
+
+              <div class="hint mt-2" id="availabilityHint">Availability loads automatically based on your dates, zone, and stay type.</div>
+            </div>
+
+            <div class="card">
+              <div class="stepTitle">
+                <div class="leftSide">
+                  <div class="stepBadge">5</div>
+                  <div>
+                    <h3>Safety and transparency</h3>
+                    <div class="sub">Built for trust: clear pricing, verified staff, secure booking flow.</div>
+                  </div>
+                </div>
+                <div class="pill">Premium standard</div>
+              </div>
+
+              <ul class="text-[12px] opacity-80 leading-relaxed list-disc pl-5">
+                <li>Verified sitter selection required</li>
+                <li>Peak dates and long-stay discounts auto apply</li>
+                <li>Deposit secures booking, remaining balance after service</li>
+                <li>Final price confirmed after screening and availability</li>
+              </ul>
+
+              <div class="hint mt-3">Pricing loads from your Google Sheet via API. If anything fails, the API status pill at the top will show it.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="right">
+        <div class="quoteTop">
+          <div>
+            <h2>Your Care Quote</h2>
+            <div class="bigTotal" id="totalOut">R0</div>
+          </div>
+          <div class="text-right">
+            <div class="pill">Pricing loaded from sheet</div>
+            <div class="hint mt-2" id="quoteWarnings"></div>
+          </div>
+        </div>
+
+        <div class="rows">
+          <div class="row"><span>Base stay</span><strong id="baseOut">R0</strong></div>
+          <div class="row"><span>Add-ons + travel</span><strong id="addonsOut">R0</strong></div>
+          <div class="row"><span>Long-stay discount</span><strong id="discountOut">R0</strong></div>
+          <div class="row"><span>One-time fees</span><strong id="oneTimeOut">R0</strong></div>
+        </div>
+
+        <div class="lineItems">
+          <div class="lineItemsHeader">
+            <div class="flex items-center gap-2">
+              <span class="statusDot ok" id="lineDot"></span>
+              <span class="font-extrabold">Add-on breakdown</span>
+            </div>
+            <span class="text-[11px] opacity-70">Unit x multiplier</span>
+          </div>
+          <div class="lineItemsBody" id="lineItemsBody">
+            <div class="text-[12px] opacity-70">No add-ons selected yet.</div>
+          </div>
+        </div>
+
+        <div class="depositBox">
+          <div class="row"><span class="k">Deposit required</span><span class="v" id="depositOut">R0</span></div>
+          <div class="row mt-1"><span class="k">Balance after service</span><span class="v" id="balanceOut">R0</span></div>
+          <div class="hint mt-2">50% deposit secures booking. Remaining 50% due after service.</div>
+        </div>
+
+        <div class="ctaRow">
+          <button class="btn btnPrimary" id="btnRequestBooking">Request Booking</button>
+          <div class="hint">Final price is confirmed after screening and sitter availability.</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Pricing info modal -->
+  <div class="modalOverlay" id="modalPricing">
+    <div class="modal">
+      <div class="modalHeader">
+        <h3>How pricing works</h3>
+        <button class="btn" id="btnClosePricing" style="height:36px;">Close</button>
+      </div>
+      <div class="modalBody">
+        <div class="card">
+          <h3>What you see is transparent</h3>
+          <div class="sub">
+            Base stay + travel + selected add-ons are calculated per day (or per hour for Day Visits).
+            Peak dates apply a multiplier. Long-stay discounts apply automatically in blocks.
+          </div>
+        </div>
+
+        <div class="grid2 mt-3">
+          <div class="card">
+            <h3>Peak dates</h3>
+            <div class="sub">
+              Peak dates are detected automatically (seasonal rule in this calculator).
+              If peak applies, the daily subtotal is multiplied.
+            </div>
+          </div>
+          <div class="card">
+            <h3>Long-stay discount</h3>
+            <div class="sub">
+              Discount applies per 10-day block: first 10 days full price, next 10 days 10% less,
+              then 19% less after that. After two discount steps, the rate stays at 81%.
             </div>
           </div>
         </div>
 
-        <!-- Quote -->
-        <div class="quote">
-          <div class="tiny muted">Your care quote</div>
-          <div id="totalOut" class="quote-total font-lux">R0</div>
-
-          <div class="line"></div>
-
-          <div class="row"><span class="muted">Base stay</span><strong id="baseOut">R0</strong></div>
-          <div class="row"><span class="muted">Add-ons + travel</span><strong id="addonsOut">R0</strong></div>
-          <div class="row"><span class="muted">Long-stay discount</span><strong id="discountOut">R0</strong></div>
-          <div class="row"><span class="muted">One-time fees</span><strong id="oneTimeOut">R0</strong></div>
-
-          <div class="depositBox">
-            <div class="tiny muted">Deposit required</div>
-            <div class="depositAmt" id="depositOut">R0</div>
-            <div class="tiny muted" style="margin-top: 10px;">Balance after service</div>
-            <div class="depositAmt" id="balanceOut">R0</div>
-            <div class="tiny muted" style="margin-top: 10px;">
-              50% deposit secures booking. Remaining 50% due after service.
+        <div class="grid2 mt-3">
+          <div class="card">
+            <h3>Travel</h3>
+            <div class="sub">
+              Travel is charged per day based on your zone. Extra visits can be added as add-ons.
             </div>
           </div>
-
-          <div class="tiny muted" style="line-height:1.5;">
-            Final price confirmed after screening and availability.
+          <div class="card">
+            <h3>Booking</h3>
+            <div class="sub">
+              A sitter must be selected to submit a booking request. The deposit secures your dates.
+            </div>
           </div>
-
-          <button class="btn btn-primary" type="button" id="requestBtn2">Request Booking</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- HOW PRICING WORKS -->
-  <div id="howWrap" class="modalWrap hidden">
-    <div class="modal" role="dialog" aria-modal="true" style="width:min(820px,100%);">
+  <!-- Add-ons modal -->
+  <div class="modalOverlay" id="modalAddons">
+    <div class="modal">
       <div class="modalHeader">
-        <div>
-          <div class="pill">PetGuardian Care <span style="color:var(--brass)">•</span> Transparency</div>
-          <div class="title font-lux" style="font-size: 22px; margin-top: 8px;">How pricing works</div>
-          <div class="tiny muted">Clear rules. No surprises.</div>
-        </div>
-        <button id="closeHowBtn" class="btn btn-ghost" type="button">Close</button>
+        <h3>Customize add-ons</h3>
+        <button class="btn" id="btnCloseAddons" style="height:36px;">Close</button>
       </div>
       <div class="modalBody">
-        <div class="card" style="background:rgba(8,28,20,0.50); border-color:rgba(176,141,87,0.18);">
-          <div style="font-weight:900;">Peak dates</div>
-          <div class="tiny muted" style="margin-top:6px;">Peak multiplier applies if any day falls in peak range.</div>
-          <div class="tiny muted" style="margin-top:8px; line-height:1.55;">
-            June 1 to July 31<br>
-            December 1 to January 15
-          </div>
+        <div class="tabs" id="addonTabs">
+          <div class="tab active" data-tab="care">Care</div>
+          <div class="tab" data-tab="home">Home</div>
+          <div class="tab" data-tab="transport">Transport</div>
+          <div class="tab" data-tab="discounts">Discounts</div>
         </div>
 
-        <div style="height:12px;"></div>
-
-        <div class="card" style="background:rgba(8,28,20,0.50); border-color:rgba(176,141,87,0.18);">
-          <div style="font-weight:900;">Long-stay discount</div>
-          <div class="tiny muted" style="margin-top:6px;">
-            Blocks of 10 days: first 10 days at 100%, next 10 at 90%, next 10 at 81%. After that it stays at 81%.
-          </div>
-        </div>
-
-        <div style="height:12px;"></div>
-
-        <div class="card" style="background:rgba(8,28,20,0.50); border-color:rgba(176,141,87,0.18);">
-          <div style="font-weight:900;">Deposit</div>
-          <div class="tiny muted" style="margin-top:6px;">50% deposit secures booking. Remaining 50% due after service.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ADD-ONS -->
-  <div id="addonsModalWrap" class="modalWrap hidden">
-    <div class="modal" role="dialog" aria-modal="true">
-      <div class="modalHeader">
-        <div>
-          <div class="pill">PetGuardian Care <span style="color:var(--brass)">•</span> Add-ons</div>
-          <div class="title font-lux" style="font-size: 22px; margin-top: 8px;">Customize add-ons</div>
-          <div class="tiny muted">Close when done. Quote updates instantly.</div>
-        </div>
-        <button id="closeAddonsBtn" class="btn btn-ghost" type="button">Close</button>
-      </div>
-
-      <div class="modalBody">
-        <div class="row2">
-          <div class="card" style="background:rgba(8,28,20,0.50); border-color:rgba(176,141,87,0.18);">
-            <div class="card-title"><span>Daily update packs</span><span class="tiny">Qty: <b id="updatesOut">0</b></span></div>
-            <div class="tiny muted" style="margin-top:6px;">Photos plus a short written log.</div>
-            <input id="updates" type="range" min="0" max="2" step="1" value="0">
-          </div>
-
-          <div class="card" style="background:rgba(8,28,20,0.50); border-color:rgba(176,141,87,0.18);">
-            <div class="card-title"><span>Check-ins per day</span><span class="tiny">Qty: <b id="checkinsOut">0</b></span></div>
-            <div class="tiny muted" style="margin-top:6px;">Short visit for feed, water, toilet check, quick play.</div>
-            <input id="checkins" type="range" min="0" max="3" step="1" value="0">
-          </div>
-
-          <div class="card" style="grid-column: 1 / -1; background:rgba(8,28,20,0.50); border-color:rgba(176,141,87,0.18);">
-            <div class="card-title">
-              <span>Walk time per day</span>
-              <span class="tiny">Minutes: <b id="walkMinOut">0</b> | Cost/day: <b id="walkCostOut">R0</b></span>
+        <!-- CARE TAB -->
+        <div id="tab-care">
+          <div class="card">
+            <div class="stepTitle">
+              <div class="leftSide">
+                <div class="stepBadge">A</div>
+                <div>
+                  <h3>Update method</h3>
+                  <div class="sub">Choose one update option for the whole booking.</div>
+                </div>
+              </div>
+              <div class="label">Per day</div>
             </div>
-            <div class="tiny muted" style="margin-top:6px;">Single slider, 5 minute steps. R5 per 5 minutes.</div>
-            <input id="walkMinutes" type="range" min="0" max="180" step="5" value="0">
+
+            <div class="radioGrid" id="updatesGrid">
+              <div class="radioCard active" data-upd="basic">
+                <div class="t">Daily message</div>
+                <div class="b">One message per day. Included.</div>
+                <div class="p">R<span id="updBasicOut">0</span>/day</div>
+              </div>
+              <div class="radioCard" data-upd="photos">
+                <div class="t">2 photos per day</div>
+                <div class="b">Photo updates beyond included.</div>
+                <div class="p">R<span id="updPhotosOut">10</span>/day</div>
+              </div>
+              <div class="radioCard" data-upd="logbook">
+                <div class="t">Full logbook</div>
+                <div class="b">Detailed notes for key events.</div>
+                <div class="p">R<span id="updLogOut">25</span>/day</div>
+              </div>
+            </div>
           </div>
 
-          <label class="toggle" style="grid-column: 1 / -1;">
-            <div>
-              <div style="font-weight:900;">Home care pack</div>
-              <div class="tiny muted">Bins, lights, basic tidy, quick checks</div>
+          <div class="grid2 mt-3">
+            <div class="card">
+              <div class="stepTitle">
+                <div class="leftSide">
+                  <div class="stepBadge">B</div>
+                  <div>
+                    <h3>Walk time per day</h3>
+                    <div class="sub">R1 per minute. Slider in 5-minute steps.</div>
+                  </div>
+                </div>
+                <div class="label"><span id="walkMinutesOut">0</span> min/day</div>
+              </div>
+              <input id="walkMinutes" type="range" min="0" max="120" step="5" value="0">
+              <div class="smallRow mt-2">
+                <div class="label">Rate: R<span id="walkRateOut">1</span>/min</div>
+                <div class="label">Cost/day: <span id="walkCostOut">R0</span></div>
+              </div>
             </div>
-            <input id="homecare" type="checkbox">
+
+            <div class="card">
+              <div class="stepTitle">
+                <div class="leftSide">
+                  <div class="stepBadge">C</div>
+                  <div>
+                    <h3>Extra check-ins per day</h3>
+                    <div class="sub">Short extra visit for feed, water, toilet check, quick play.</div>
+                  </div>
+                </div>
+                <div class="label">Qty: <span id="checkinsOut">0</span></div>
+              </div>
+
+              <div class="numRow">
+                <div class="label">Check-ins/day</div>
+                <div class="stepper">
+                  <button type="button" data-stepper="checkins" data-dir="-1">-</button>
+                  <input id="checkins" value="0" inputmode="numeric">
+                  <button type="button" data-stepper="checkins" data-dir="1">+</button>
+                </div>
+              </div>
+
+              <div class="smallRow mt-3">
+                <div class="label">Unit: R<span id="checkinPriceOut">50</span>/day</div>
+                <div class="label">Note: travel is charged per day</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid2 mt-3">
+            <label class="toggle">
+              <div class="tText">
+                <div class="tTitle">High-care medical routine</div>
+                <div class="tSub">More frequent checks and monitoring.</div>
+              </div>
+              <input id="highcare" type="checkbox">
+            </label>
+            <label class="toggle">
+              <div class="tText">
+                <div class="tTitle">Reactive or high-risk handling</div>
+                <div class="tSub">Extra risk management and protocols.</div>
+              </div>
+              <input id="reactive" type="checkbox">
+            </label>
+          </div>
+
+          <div class="grid2 mt-3">
+            <label class="toggle">
+              <div class="tText">
+                <div class="tTitle">Play and enrichment</div>
+                <div class="tSub">Focused play and enrichment session.</div>
+              </div>
+              <input id="play" type="checkbox">
+            </label>
+            <label class="toggle">
+              <div class="tText">
+                <div class="tTitle">Training reinforcement</div>
+                <div class="tSub">Reinforce owner-approved cues.</div>
+              </div>
+              <input id="train" type="checkbox">
+            </label>
+          </div>
+
+          <div class="grid2 mt-3">
+            <label class="toggle">
+              <div class="tText">
+                <div class="tTitle">Brush and coat care</div>
+                <div class="tSub">Brushing and quick coat check.</div>
+              </div>
+              <input id="brush" type="checkbox">
+            </label>
+            <div class="card">
+              <h3>Tip</h3>
+              <div class="sub">These add-ons are calculated per day and will reflect in the breakdown on the right.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HOME TAB -->
+        <div id="tab-home" style="display:none;">
+          <div class="grid2">
+            <label class="toggle">
+              <div class="tText">
+                <div class="tTitle">Plants and chores pack</div>
+                <div class="tSub">Plants, bins, lights, mail, basic chores.</div>
+              </div>
+              <input id="homecare" type="checkbox">
+            </label>
+            <label class="toggle">
+              <div class="tText">
+                <div class="tTitle">Home concierge</div>
+                <div class="tSub">Small errands or supply runs (excludes purchase cost).</div>
+              </div>
+              <input id="concierge" type="checkbox">
+            </label>
+          </div>
+
+          <div class="grid2 mt-3">
+            <label class="toggle">
+              <div class="tText">
+                <div class="tTitle">Pool or water feature check</div>
+                <div class="tSub">Quick visual check and top-up if instructed.</div>
+              </div>
+              <input id="pool" type="checkbox">
+            </label>
+            <label class="toggle">
+              <div class="tText">
+                <div class="tTitle">Pet camera setup or check</div>
+                <div class="tSub">Help set up or check camera placement.</div>
+              </div>
+              <input id="camera" type="checkbox">
+            </label>
+          </div>
+
+          <div class="grid2 mt-3">
+            <label class="toggle">
+              <div class="tText">
+                <div class="tTitle">Bath (basic)</div>
+                <div class="tSub">Simple bath. Excludes grooming trim.</div>
+              </div>
+              <input id="bath" type="checkbox">
+            </label>
+            <label class="toggle">
+              <div class="tText">
+                <div class="tTitle">Light clean and linen refresh</div>
+                <div class="tSub">Basic tidy and linen change if provided.</div>
+              </div>
+              <input id="clean" type="checkbox">
+            </label>
+          </div>
+        </div>
+
+        <!-- TRANSPORT TAB -->
+        <div id="tab-transport" style="display:none;">
+          <div class="grid2">
+            <div class="card">
+              <div class="stepTitle">
+                <div class="leftSide">
+                  <div class="stepBadge">T</div>
+                  <div>
+                    <h3>Key pickup or drop-off</h3>
+                    <div class="sub">Per trip (pickup or drop-off).</div>
+                  </div>
+                </div>
+                <div class="label">Qty: <span id="keysOut">0</span></div>
+              </div>
+              <div class="numRow">
+                <div class="label">Trips</div>
+                <div class="stepper">
+                  <button type="button" data-stepper="keys" data-dir="-1">-</button>
+                  <input id="keys" value="0" inputmode="numeric">
+                  <button type="button" data-stepper="keys" data-dir="1">+</button>
+                </div>
+              </div>
+              <div class="smallRow mt-3">
+                <div class="label">Unit: R<span id="keyPriceOut">50</span></div>
+                <div class="label">One-time</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="stepTitle">
+                <div class="leftSide">
+                  <div class="stepBadge">T</div>
+                  <div>
+                    <h3>Pet taxi</h3>
+                    <div class="sub">Base fee per trip plus optional per-km.</div>
+                  </div>
+                </div>
+                <div class="label">Trips: <span id="taxiOut">0</span></div>
+              </div>
+
+              <div class="numRow">
+                <div class="label">Trips</div>
+                <div class="stepper">
+                  <button type="button" data-stepper="taxi" data-dir="-1">-</button>
+                  <input id="taxi" value="0" inputmode="numeric">
+                  <button type="button" data-stepper="taxi" data-dir="1">+</button>
+                </div>
+              </div>
+
+              <div class="field mt-3">
+                <span class="label">Optional distance (km)</span>
+                <input id="taxiKm" type="number" min="0" step="1" value="0">
+              </div>
+
+              <div class="smallRow mt-3">
+                <div class="label">Base: R<span id="taxiPriceOut">150</span>/trip</div>
+                <div class="label">KM: R<span id="taxiKmPriceOut">5</span>/km</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid2 mt-3">
+            <label class="toggle">
+              <div class="tText">
+                <div class="tTitle">Meet and greet</div>
+                <div class="tSub">Optional onboarding for first-time clients.</div>
+              </div>
+              <input id="meet" type="checkbox">
+            </label>
+            <div class="card">
+              <h3>Note</h3>
+              <div class="sub">Transport items are one-time fees, not multiplied by days.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DISCOUNTS TAB -->
+        <div id="tab-discounts" style="display:none;">
+          <label class="toggle">
+            <div class="tText">
+              <div class="tTitle">Pantry use credit</div>
+              <div class="tSub">If owner allows sitter to use food, apply daily credit.</div>
+            </div>
+            <input id="pantry" type="checkbox">
           </label>
 
-          <div class="card" style="background:rgba(8,28,20,0.50); border-color:rgba(176,141,87,0.18);">
-            <div class="tiny muted">Key trips (one-time)</div>
-            <input id="keys" type="number" min="0" value="0" class="input" style="margin-top:6px;">
+          <div class="card mt-3">
+            <h3>Discount note</h3>
+            <div class="sub">Credits reduce the daily subtotal. Long-stay discount still applies automatically.</div>
           </div>
+        </div>
 
-          <div class="card" style="background:rgba(8,28,20,0.50); border-color:rgba(176,141,87,0.18);">
-            <div class="tiny muted">Pet taxi (one-time)</div>
-            <input id="taxi" type="number" min="0" value="0" class="input" style="margin-top:6px;">
-          </div>
+        <div class="card mt-3">
+          <h3>Saved</h3>
+          <div class="sub">Close this panel to see updated totals and the itemized breakdown on the right.</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- SITTERS -->
-  <div id="sitterModalWrap" class="modalWrap hidden">
-    <div class="modal" role="dialog" aria-modal="true">
+  <!-- Sitters modal -->
+  <div class="modalOverlay" id="modalSitters">
+    <div class="modal">
       <div class="modalHeader">
         <div>
-          <div class="pill">PetGuardian Care <span style="color:var(--brass)">•</span> Sitters</div>
-          <div class="title font-lux" style="font-size: 22px; margin-top: 8px;">Choose your sitter</div>
-          <div class="tiny muted">3-card carousel. Center is focus. Click center to select.</div>
-          <div id="sitterModalStatus" class="tiny muted" style="margin-top:6px;"></div>
+          <div class="pill">PetGuardian Care <span style="opacity:.6">|</span> Sitters</div>
+          <h3 style="margin-top:8px;">Choose your sitter</h3>
+          <div class="sub" style="margin-top:6px;">3-card carousel. Center card is focus. Click center to select.</div>
         </div>
-        <button id="closeSitterBtn" class="btn btn-ghost" type="button">Close</button>
+        <button class="btn" id="btnCloseSitters" style="height:36px;">Close</button>
       </div>
 
       <div class="modalBody">
-        <div class="carouselWrap">
-          <div class="carouselStage" id="sitterCarousel"></div>
-
-          <div class="carouselNav">
-            <button id="sitterPrevBtn" class="btn btn-ghost" type="button">Prev</button>
-            <button id="selectCenterBtn" class="btn btn-primary" type="button">Select Center</button>
-            <button id="sitterNextBtn" class="btn btn-ghost" type="button">Next</button>
+        <div class="carouselStage">
+          <div class="carouselViewport" id="carouselViewport">
+            <!-- cards injected -->
           </div>
 
-          <div class="dotRow" id="sitterDots"></div>
+          <div class="modalFooter">
+            <button class="btn" id="btnPrev">Prev</button>
+            <button class="btn btnPrimary" id="btnSelectCenter">Select Center</button>
+            <button class="btn" id="btnNext">Next</button>
+          </div>
+
+          <div class="hint text-center mt-3" id="carouselHint">Loading sitters...</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- BOOKING -->
-  <div id="modalWrap" class="modalWrap hidden">
-    <div class="modal" role="dialog" aria-modal="true" style="width:min(760px,100%);">
+  <!-- Booking modal -->
+  <div class="modalOverlay" id="modalBooking">
+    <div class="modal">
       <div class="modalHeader">
-        <div>
-          <div class="pill">PetGuardian Care <span style="color:var(--brass)">•</span> Booking</div>
-          <div class="title font-lux" style="font-size: 22px; margin-top: 8px;">Request booking</div>
-          <div class="tiny muted">We will email an invoice or estimate. Deposit required is 50%.</div>
-        </div>
-        <button id="closeModal" class="btn btn-ghost" type="button">Close</button>
+        <h3>Request booking</h3>
+        <button class="btn" id="btnCloseBooking" style="height:36px;">Close</button>
       </div>
-
       <div class="modalBody">
-        <div class="row2">
-          <div>
-            <div class="tiny muted">Full name</div>
-            <input id="custName" class="input" placeholder="Your name">
-          </div>
-          <div>
-            <div class="tiny muted">Phone</div>
-            <input id="custPhone" class="input" placeholder="e.g. 081 532 8774">
-          </div>
-          <div style="grid-column: 1 / -1;">
-            <div class="tiny muted">Email</div>
-            <input id="custEmail" class="input" placeholder="you@example.com">
-          </div>
-          <div style="grid-column: 1 / -1;">
-            <div class="tiny muted">Address or area</div>
-            <input id="custAddress" class="input" placeholder="Street or area">
-          </div>
-          <div style="grid-column: 1 / -1;">
-            <div class="tiny muted">Notes</div>
-            <textarea id="custNotes" rows="3" class="input" placeholder="Routine, meds, temperament, gate access, etc."></textarea>
-          </div>
-
-          <div style="display:none;">
-            <input id="hpField" class="input" placeholder="Leave blank">
-          </div>
+        <div class="grid2">
+          <label class="field">
+            <span class="label">Full name</span>
+            <input id="customerName" placeholder="Your name">
+          </label>
+          <label class="field">
+            <span class="label">Phone</span>
+            <input id="customerPhone" placeholder="e.g. 081 000 0000">
+          </label>
+        </div>
+        <div class="grid2 mt-3">
+          <label class="field">
+            <span class="label">Email</span>
+            <input id="customerEmail" placeholder="you@email.com">
+          </label>
+          <label class="field">
+            <span class="label">Address</span>
+            <input id="customerAddress" placeholder="Street, town">
+          </label>
         </div>
 
-        <div class="card" style="margin-top: 12px; background:rgba(8,28,20,0.50); border-color:rgba(176,141,87,0.18);">
-          <div class="tiny muted">Summary</div>
-          <div id="modalSummary" style="margin-top:8px; font-size: 13px; color: rgba(203,191,174,0.96);"></div>
+        <label class="field mt-3">
+          <span class="label">Notes (optional)</span>
+          <textarea id="customerNotes" placeholder="Anything we should know?"></textarea>
+        </label>
+
+        <div class="card mt-3">
+          <div class="row"><span>Selected sitter</span><strong id="bookingSitterOut">None</strong></div>
+          <div class="row mt-1"><span>Total estimate</span><strong id="bookingTotalOut">R0</strong></div>
+          <div class="row mt-1"><span>Deposit required</span><strong id="bookingDepositOut">R0</strong></div>
         </div>
 
-        <div style="display:flex; align-items:center; justify-content:space-between; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
-          <div class="tiny muted">By requesting, you agree to deposit terms.</div>
-          <button id="submitBooking" class="btn btn-primary" type="button">Send Request</button>
+        <div class="ctaRow mt-3">
+          <button class="btn btnPrimary" id="btnSubmitBooking">Submit booking request</button>
+          <div class="hint" id="bookingResult"></div>
         </div>
-
-        <div id="submitStatus" class="tiny muted" style="margin-top: 10px;"></div>
       </div>
     </div>
   </div>
 
-<script>
-  /* =========================================================
-    CONFIG (FUNCTIONAL)
-  ========================================================== */
-  const CONFIG = {
-    businessName: "PetGuardian Care",
-    depositPercent: 0.50,
-    apiBaseUrl: "https://script.google.com/macros/s/AKfycbzfqeIQFLpa155Gf-454kbaSQUEw9RpiqISwnPbSkfYPV-aU6LZlbTbkG5jv-sHe6jp/exec",
-    apiKey: ""
-  };
+  <script>
+    /********************
+     * CONFIG (EDIT ME)
+     ********************/
+    const CONFIG = {
+      // Paste your Apps Script Web App /exec URL here
+      apiBaseUrl: "https://script.google.com/macros/s/AKfycbzfqeIQFLpa155Gf-454kbaSQUEw9RpiqISwnPbSkfYPV-aU6LZlbTbkG5jv-sHe6jp/exec",
 
-  const PRICES = {
-    base: { dayHourly: 60, night: 150, fullDay: 320 },
-    travelPerDay: { sabie: 0, wr: 30, nel: 60 },
-    peakMultiplier: 1.15,
+      // Assets (keep files in same GitHub folder as index.html)
+      logoUrl: "logo.png",
+      bgUrl: "bg.jpeg",
+      facePreviews: ["face1.png", "face2.png", "face3.png"],
 
-    add: {
-      updatePackPerDay: 50,
-      checkin: 50,
-      walkPerMinute: 1,
-      medsPerDay: 50,
-      puppyCarePerDay: 100,
-      homecarePerDay: 30,
-      foodSuppliesCreditPerDay: 50,
-      extraDogPerDay: 50,
-      extraCatPerDay: 30,
-      keyTrip: 50,
-      petTaxi: 150
-    },
+      // Deposit percent
+      depositPercent: 0.50,
 
-    longStay: { blockDays: 10, factor: 0.9 }
-  };
-
-  let pkg = "day";
-  let selectedStaff = null;
-  let lastAvailabilityReqId = 0;
-
-  const el = (id) => document.getElementById(id);
-
-  function money(n){
-    const v = Math.round(Number(n) || 0);
-    return "R" + v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
-  function escapeHtml(str) {
-    return String(str || "").replace(/[&<>"']/g, (m) => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[m]));
-  }
-
-  function daysBetween(start, end) {
-    if (!start || !end) return 1;
-    const s = new Date(start);
-    const e = new Date(end);
-    const diff = Math.round((e - s) / (1000*60*60*24)) + 1;
-    return Math.max(1, diff);
-  }
-
-  function isPeakDate(dateObj){
-    const m = dateObj.getMonth();
-    const d = dateObj.getDate();
-    if (m === 5 || m === 6) return true;
-    if (m === 11) return true;
-    if (m === 0 && d <= 15) return true;
-    return false;
-  }
-
-  function bookingHasPeak(startStr, endStr){
-    if (!startStr || !endStr) return false;
-    const s = new Date(startStr);
-    const e = new Date(endStr);
-    s.setHours(0,0,0,0);
-    e.setHours(0,0,0,0);
-    for (let dt = new Date(s); dt <= e; dt.setDate(dt.getDate()+1)){
-      if (isPeakDate(dt)) return true;
-    }
-    return false;
-  }
-
-  function weightedDays(days) {
-    const { blockDays, factor } = PRICES.longStay;
-    const blocks = Math.floor(days / blockDays);
-    const rem = days % blockDays;
-    if (blocks === 0) return days;
-    const series = blockDays * (1 - Math.pow(factor, blocks)) / (1 - factor);
-    return series + rem * Math.pow(factor, blocks);
-  }
-
-  function includedPetCount(dogs, cats) {
-    if (dogs > 0) return { incDogs: 1, incCats: 0 };
-    if (cats > 0) return { incDogs: 0, incCats: 1 };
-    return { incDogs: 0, incCats: 0 };
-  }
-
-  function pkgLabel() {
-    if (pkg === "day") return "Day Visits";
-    if (pkg === "night") return "Overnight";
-    return "Full-time";
-  }
-  function zoneLabel() {
-    return el("zone").selectedOptions[0].textContent;
-  }
-
-  function setPkgUI() {
-    document.querySelectorAll(".seg-btn").forEach(b => {
-      const active = b.dataset.pkg === pkg;
-      b.classList.toggle("active", active);
-    });
-
-    const wrap = el("hoursWrap");
-    const slider = el("hours");
-    if (pkg === "day"){
-      wrap.classList.remove("inactive");
-      wrap.classList.add("active");
-      slider.disabled = false;
-    } else {
-      wrap.classList.add("inactive");  // keeps reserved space
-      wrap.classList.remove("active");
-      slider.disabled = true;
-    }
-  }
-
-  /* =========================================================
-    JSONP callbacks (pricing, availability, booking)
-  ========================================================== */
-  window.pgPricingCallback = function(payload){
-    if (!payload || payload.ok !== true) {
-      el("pricingStatus").textContent = "Pricing: using defaults (Pricing tab not found)";
-      calc();
-      return;
-    }
-    const p = payload.pricing || {};
-    applyPricingFromSheet(p);
-    el("pricingStatus").textContent = "Pricing: loaded from sheet";
-    calc();
-  };
-
-  function applyPricingFromSheet(p){
-    const num = (v, fallback) => {
-      const n = Number(v);
-      return Number.isFinite(n) ? n : fallback;
+      // If true, show debug text in console
+      debug: false
     };
 
-    PRICES.base.dayHourly = num(p.BASE_DAY_HOURLY, PRICES.base.dayHourly);
-    PRICES.base.night = num(p.BASE_NIGHT, PRICES.base.night);
-    PRICES.base.fullDay = num(p.BASE_FULLDAY, PRICES.base.fullDay);
+    /********************
+     * DEFAULT PRICES (overridden by sheet pricing)
+     ********************/
+    const PRICES = {
+      base: { dayHourly: 60, night: 200, fullDay: 320 },
+      travelPerDay: { sabie: 0, wr: 30, nel: 60 },
+      peakMultiplier: 1.15,
+      longStay: { blockDays: 10, factor: 0.9, capBlocks: 2 },
+      controls: { includedPets: 1, maxDailyCap: 600 },
+      add: {
+        extraDogPerDay: 20,
+        extraCatPerDay: 10,
+        checkinPerDay: 50,
 
-    PRICES.travelPerDay.sabie = num(p.TRAVEL_SABIE, PRICES.travelPerDay.sabie);
-    PRICES.travelPerDay.wr = num(p.TRAVEL_WR, PRICES.travelPerDay.wr);
-    PRICES.travelPerDay.nel = num(p.TRAVEL_NEL, PRICES.travelPerDay.nel);
+        updatesBasicPerDay: 0,
+        updatesPhotosPerDay: 10,
+        updatesLogbookPerDay: 25,
 
-    PRICES.peakMultiplier = num(p.PEAK_MULTIPLIER, PRICES.peakMultiplier);
+        medsPerDay: 30,
+        puppyCarePerDay: 30,
+        highcarePerDay: 100,
+        reactivePerDay: 50,
 
-    PRICES.longStay.blockDays = num(p.DISCOUNT_BLOCK_DAYS, PRICES.longStay.blockDays);
-    PRICES.longStay.factor = num(p.DISCOUNT_FACTOR, PRICES.longStay.factor);
+        homecarePerDay: 30,
+        conciergePerDay: 50,
 
-    PRICES.add.updatePackPerDay = num(p.ADD_UPDATE_PACK_PER_DAY, PRICES.add.updatePackPerDay);
-    PRICES.add.checkin = num(p.ADD_CHECKIN, PRICES.add.checkin);
+        playPerDay: 10,
+        trainPerDay: 25,
+        brushPerDay: 15,
+        poolPerDay: 30,
 
-    PRICES.add.medsPerDay = num(p.ADD_ORAL_MEDS_PER_DAY, PRICES.add.medsPerDay);
-    PRICES.add.puppyCarePerDay = num(p.ADD_PUPPY_CARE_PER_DAY, PRICES.add.puppyCarePerDay);
-    PRICES.add.homecarePerDay = num(p.ADD_HOMECARE_PER_DAY, PRICES.add.homecarePerDay);
-    PRICES.add.foodSuppliesCreditPerDay = num(p.ADD_FOOD_SUPPLIES_CREDIT_PER_DAY, PRICES.add.foodSuppliesCreditPerDay);
+        walkPerMinute: 1,
 
-    PRICES.add.extraDogPerDay = num(p.ADD_EXTRA_DOG_PER_DAY, PRICES.add.extraDogPerDay);
-    PRICES.add.extraCatPerDay = num(p.ADD_EXTRA_CAT_PER_DAY, PRICES.add.extraCatPerDay);
+        pantryCreditPerDay: 50,
 
-    PRICES.add.keyTrip = num(p.ADD_KEYTRIP_ONE_TIME, PRICES.add.keyTrip);
-    PRICES.add.petTaxi = num(p.ADD_PETTAXI_ONE_TIME, PRICES.add.petTaxi);
-  }
-
-  function fetchPricing(){
-    if (!CONFIG.apiBaseUrl) return;
-    const old = document.getElementById("jsonpPricing");
-    if (old) old.remove();
-
-    const url = new URL(CONFIG.apiBaseUrl);
-    url.searchParams.set("action", "pricing");
-    url.searchParams.set("reqId", String(Date.now()));
-    url.searchParams.set("callback", "pgPricingCallback");
-    if (CONFIG.apiKey) url.searchParams.set("apiKey", CONFIG.apiKey);
-
-    const script = document.createElement("script");
-    script.id = "jsonpPricing";
-    script.src = url.toString();
-    script.onerror = () => { el("pricingStatus").textContent = "Pricing: using defaults (could not load)"; calc(); };
-    document.body.appendChild(script);
-  }
-
-  window.pgAvailabilityCallback = function(payload) {
-    if (!payload || payload.reqId != lastAvailabilityReqId) return;
-    const list = payload.staff || [];
-    renderStaffCarousel(list);
-    el("staffStatus").textContent = list.length ? "Sitters available" : "None available";
-    el("staffEmpty").classList.toggle("hidden", list.length !== 0);
-  };
-
-  function fetchAvailability() {
-    if (!CONFIG.apiBaseUrl) {
-      el("staffStatus").textContent = "API not connected";
-      return;
-    }
-    el("staffStatus").textContent = "Checking…";
-
-    const start = el("startDate").value;
-    const end = el("endDate").value;
-    const zone = el("zone").value;
-
-    lastAvailabilityReqId += 1;
-    const reqId = lastAvailabilityReqId;
-
-    const old = document.getElementById("jsonpAvail");
-    if (old) old.remove();
-
-    const url = new URL(CONFIG.apiBaseUrl);
-    url.searchParams.set("action", "availability");
-    url.searchParams.set("start", start);
-    url.searchParams.set("end", end);
-    url.searchParams.set("pkg", pkg);
-    url.searchParams.set("zone", zone);
-    url.searchParams.set("reqId", String(reqId));
-    url.searchParams.set("callback", "pgAvailabilityCallback");
-    if (CONFIG.apiKey) url.searchParams.set("apiKey", CONFIG.apiKey);
-
-    const script = document.createElement("script");
-    script.id = "jsonpAvail";
-    script.src = url.toString();
-    script.onerror = () => el("staffStatus").textContent = "Could not load availability";
-    document.body.appendChild(script);
-  }
-
-  window.pgBookingCallback = function(payload) {
-    if (!payload || payload.ok !== true) {
-      el("submitStatus").textContent = (payload && payload.error) ? payload.error : "Booking failed. Please try again.";
-      return;
-    }
-    el("submitStatus").textContent =
-      "Request sent. Check your email for the invoice or estimate. If you do not receive it, WhatsApp us with your name and dates.";
-    setTimeout(() => closeModal(), 1600);
-  };
-
-  /* =========================================================
-    Add-ons calculations
-  ========================================================== */
-  function calc() {
-    const start = el("startDate").value;
-    const end = el("endDate").value;
-    const days = daysBetween(start, end);
-    el("daysOut").textContent = days;
-
-    const zone = el("zone").value;
-    const travel = Number(PRICES.travelPerDay[zone] || 0);
-
-    const peakApplied = bookingHasPeak(start, end);
-    const peakMult = peakApplied ? PRICES.peakMultiplier : 1;
-
-    el("peakNote").textContent = peakApplied ? "Peak pricing applied automatically." : "No peak dates detected.";
-    el("peakAppliedOut").textContent = peakApplied
-      ? "Peak dates detected in your booking range."
-      : "No peak dates detected in your booking range.";
-
-    const wDays = weightedDays(days);
-
-    const dogs = Math.max(0, parseInt(el("dogs").value || "0", 10));
-    const cats = Math.max(0, parseInt(el("cats").value || "0", 10));
-    const { incDogs, incCats } = includedPetCount(dogs, cats);
-    const extraDogs = Math.max(0, dogs - incDogs);
-    const extraCats = Math.max(0, cats - incCats);
-
-    const hours = parseInt(el("hours").value || "1", 10);
-    el("hoursOut").textContent = hours;
-
-    const updates = parseInt(el("updates").value || "0", 10);
-    el("updatesOut").textContent = updates;
-
-    const checkins = parseInt(el("checkins").value || "0", 10);
-    el("checkinsOut").textContent = checkins;
-
-    const walkMin = parseInt(el("walkMinutes").value || "0", 10);
-    el("walkMinOut").textContent = walkMin;
-
-    const walkCostPerDay = walkMin * PRICES.add.walkPerMinute;
-    el("walkCostOut").textContent = money(walkCostPerDay);
-
-    const meds = el("meds").checked;
-    const puppy = el("puppy").checked;
-    const homecare = el("homecare").checked;
-
-    const foodAllowed = el("foodSupplies").checked;
-    el("foodNote").classList.toggle("hidden", !foodAllowed);
-
-    const keys = Math.max(0, parseInt(el("keys").value || "0", 10));
-    const taxi = Math.max(0, parseInt(el("taxi").value || "0", 10));
-
-    let basePerDay = 0;
-    if (pkg === "day") basePerDay = hours * PRICES.base.dayHourly;
-    if (pkg === "night") basePerDay = PRICES.base.night;
-    if (pkg === "full") basePerDay = PRICES.base.fullDay;
-
-    const checkinUnit = PRICES.add.checkin + (travel > 0 ? travel : 0);
-
-    const addOnsPerDay =
-      (updates * PRICES.add.updatePackPerDay) +
-      (checkins * checkinUnit) +
-      walkCostPerDay +
-      (meds ? PRICES.add.medsPerDay : 0) +
-      (puppy ? PRICES.add.puppyCarePerDay : 0) +
-      (homecare ? PRICES.add.homecarePerDay : 0) +
-      (foodAllowed ? -PRICES.add.foodSuppliesCreditPerDay : 0) +
-      (extraDogs * PRICES.add.extraDogPerDay) +
-      (extraCats * PRICES.add.extraCatPerDay) +
-      travel;
-
-    const oneTime = (keys * PRICES.add.keyTrip) + (taxi * PRICES.add.petTaxi);
-
-    const dailyAfterPeak = (basePerDay + addOnsPerDay) * peakMult;
-    const stayTotal = dailyAfterPeak * wDays;
-    const total = stayTotal + oneTime;
-
-    const noDiscountTotal = dailyAfterPeak * days + oneTime;
-    const discountAmt = Math.max(0, noDiscountTotal - total);
-
-    const deposit = total * CONFIG.depositPercent;
-    const balance = total - deposit;
-
-    el("totalOut").textContent = money(total);
-    el("depositOut").textContent = money(deposit);
-    el("balanceOut").textContent = money(balance);
-
-    el("baseOut").textContent = money((basePerDay * peakMult) * wDays);
-    el("addonsOut").textContent = money((addOnsPerDay * peakMult) * wDays);
-    el("oneTimeOut").textContent = money(oneTime);
-    el("discountOut").textContent = "-" + money(discountAmt);
-
-    // Summary string (simple, keeps layout tight)
-    const parts = [];
-    if (updates) parts.push(`Updates x${updates}`);
-    if (checkins) parts.push(`Check-ins x${checkins}`);
-    if (walkMin) parts.push(`Walk ${walkMin} min`);
-    if (meds) parts.push("Meds");
-    if (puppy) parts.push("Puppy care");
-    if (homecare) parts.push("Home care");
-    if (foodAllowed) parts.push("Food credit");
-    if (keys) parts.push(`Key trips x${keys}`);
-    if (taxi) parts.push(`Pet taxi x${taxi}`);
-    el("addonsSummary").textContent = parts.length ? `Add-ons: ${parts.join(" • ")}` : "Add-ons: none selected yet";
-
-    return {
-      total, deposit, balance, days, wDays, peakApplied,
-      inputs: {
-        pkg, start, end, zone,
-        dogs, cats,
-        hours,
-        updates,
-        checkins,
-        walkMinutes: walkMin,
-        meds,
-        puppy,
-        homecare,
-        foodAllowed,
-        keys,
-        taxi
+        meetOneTime: 0,
+        keyTripOneTime: 50,
+        petTaxiTripOneTime: 150,
+        petTaxiKm: 5,
+        bathOneTime: 150,
+        cameraOneTime: 100,
+        cleanOneTime: 150
       }
     };
-  }
 
-  /* =========================================================
-    Booking modal
-  ========================================================== */
-  function openModal() {
-    const pricing = calc();
-    const staffText = selectedStaff ? `${selectedStaff.name} (selected)` : "Not selected yet";
-
-    el("modalSummary").innerHTML =
-      `Package: <b>${escapeHtml(pkgLabel())}</b><br>` +
-      `Dates: <b>${escapeHtml(pricing.inputs.start)}</b> to <b>${escapeHtml(pricing.inputs.end)}</b> (${pricing.days} days)<br>` +
-      `Zone: <b>${escapeHtml(zoneLabel())}</b><br>` +
-      `Sitter: <b>${escapeHtml(staffText)}</b><br>` +
-      `Walk time/day: <b>${pricing.inputs.walkMinutes} min</b><br><br>` +
-      `Total: <b>${money(pricing.total)}</b><br>` +
-      `Deposit (50%): <b>${money(pricing.deposit)}</b><br>` +
-      `Balance: <b>${money(pricing.balance)}</b>`;
-
-    el("submitStatus").textContent = "";
-    el("modalWrap").classList.remove("hidden");
-  }
-  function closeModal() {
-    el("modalWrap").classList.add("hidden");
-  }
-
-  function validateBookingForm() {
-    const name = el("custName").value.trim();
-    const phone = el("custPhone").value.trim();
-    const email = el("custEmail").value.trim();
-    const hp = el("hpField").value.trim();
-    if (hp) return { ok: false, msg: "Blocked." };
-    if (!name) return { ok: false, msg: "Enter your name." };
-    if (!phone) return { ok: false, msg: "Enter your phone number." };
-    if (!email || !email.includes("@")) return { ok: false, msg: "Enter a valid email." };
-    return { ok: true };
-  }
-
-  async function submitBooking() {
-    const v = validateBookingForm();
-    if (!v.ok) { el("submitStatus").textContent = v.msg; return; }
-
-    const hasCarouselOptions = el("staffCarousel").children.length > 0;
-    if (hasCarouselOptions && !selectedStaff) {
-      el("submitStatus").textContent = "Select a sitter before submitting.";
-      return;
-    }
-
-    const pricing = calc();
-    const notes = el("custNotes").value.trim().slice(0, 800);
-
-    el("submitStatus").textContent = "Sending…";
-
-    const payload = {
-      action: "booking",
-      apiKey: CONFIG.apiKey || "",
-      ts: new Date().toISOString(),
-
-      customerName: el("custName").value.trim(),
-      customerPhone: el("custPhone").value.trim(),
-      customerEmail: el("custEmail").value.trim(),
-      customerAddress: el("custAddress").value.trim(),
-      customerNotes: notes,
-
-      sitterId: selectedStaff ? (selectedStaff.id || "") : "",
-      sitterName: selectedStaff ? (selectedStaff.name || "") : "",
-
-      zone: el("zone").value,
-      zoneLabel: zoneLabel(),
-
-      pkg: pricing.inputs.pkg,
-      start: pricing.inputs.start,
-      end: pricing.inputs.end,
-      days: String(pricing.days),
-
-      total: String(Math.round(pricing.total)),
-      deposit: String(Math.round(pricing.deposit)),
-      balance: String(Math.round(pricing.balance)),
-
-      selectionsJson: JSON.stringify(pricing.inputs)
+    /********************
+     * STATE
+     ********************/
+    const state = {
+      pkg: "day",
+      selectedSitter: null,
+      sitters: [],
+      carouselIndex: 0,
+      apiOk: false,
+      pricingLoaded: false
     };
 
-    const old = document.getElementById("jsonpBook");
-    if (old) old.remove();
+    const el = (id) => document.getElementById(id);
 
-    const url = new URL(CONFIG.apiBaseUrl);
-    Object.entries(payload).forEach(([k, v]) => url.searchParams.set(k, String(v)));
-    url.searchParams.set("reqId", String(Date.now()));
-    url.searchParams.set("callback", "pgBookingCallback");
-
-    const script = document.createElement("script");
-    script.id = "jsonpBook";
-    script.src = url.toString();
-    script.onerror = () => el("submitStatus").textContent = "Could not send. Please try again.";
-    document.body.appendChild(script);
-  }
-
-  async function copyQuote() {
-    const pricing = calc();
-    const staffLine = selectedStaff ? `Sitter: ${selectedStaff.name}` : `Sitter: Not selected`;
-    const peakLine = pricing.peakApplied ? `Peak: Yes (auto)` : `Peak: No`;
-    const text =
-`${CONFIG.businessName} Quote Estimate
-Package: ${pkgLabel()}
-Dates: ${pricing.inputs.start} to ${pricing.inputs.end} (${pricing.days} days)
-Zone: ${zoneLabel()}
-${staffLine}
-${peakLine}
-Walk time/day: ${pricing.inputs.walkMinutes} min
-
-Total: ${money(pricing.total)}
-Deposit (50%): ${money(pricing.deposit)}
-Balance: ${money(pricing.balance)}
-
-Note: Final price confirmed after screening and availability.`;
-
-    try {
-      await navigator.clipboard.writeText(text);
-      el("copyBtn").textContent = "Copied";
-      setTimeout(()=> el("copyBtn").textContent="Copy Quote",1200);
-    } catch {
-      alert(text);
-    }
-  }
-
-  /* =========================================================
-    Sitters: 3-card carousel that works for 1,2,3+ sitters
-  ========================================================== */
-  let sitterList = [];
-  let sitterIndex = 0;
-
-  function renderStaffCarousel(staffList) {
-    const wrap = el("staffCarousel");
-    wrap.innerHTML = "";
-
-    const list = Array.isArray(staffList) ? staffList : [];
-
-    const prevId = selectedStaff && selectedStaff.id ? String(selectedStaff.id) : "";
-    if (prevId) {
-      selectedStaff = list.find(x => String(x.id) === prevId) || null;
+    function money(n){
+      const v = Math.round(Number(n || 0));
+      const s = v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return "R" + s;
     }
 
-    list.forEach((s) => {
-      const card = document.createElement("button");
-      card.type = "button";
-      card.style.display = "none";
-      card.addEventListener("click", () => { selectedStaff = s; updateSelectedSitterSummary(); });
-      wrap.appendChild(card);
-    });
+    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
 
-    updateSelectedSitterSummary();
-    renderSitterModalCarousel(list);
-  }
-
-  function updateSelectedSitterSummary(){
-    const box = document.getElementById("selectedSitterSummary");
-    if (!box) return;
-
-    if (!sitterList.length){
-      box.innerHTML = `
-        <div style="font-weight:900;">No sitters available</div>
-        <div class="tiny muted" style="margin-top:6px;">Try different dates or a different stay type.</div>
-      `;
-      return;
+    function daysBetween(start, end){
+      if (!start || !end) return 1;
+      const s = new Date(start);
+      const e = new Date(end);
+      s.setHours(0,0,0,0); e.setHours(0,0,0,0);
+      const diff = Math.round((e - s) / (1000*60*60*24)) + 1;
+      return Math.max(1, diff);
     }
 
-    if (!selectedStaff){
-      box.innerHTML = `
-        <div style="font-weight:900;">No sitter selected</div>
-        <div class="tiny muted" style="margin-top:6px;">You must select a sitter before requesting a booking.</div>
-      `;
-      return;
+    function isPeakDate(dateObj){
+      // Peak rule (can be upgraded later to fully custom ranges)
+      const m = dateObj.getMonth(); // 0=Jan
+      const d = dateObj.getDate();
+      if (m === 5 || m === 6) return true; // Jun, Jul
+      if (m === 11) return true;           // Dec
+      if (m === 0 && d <= 15) return true; // Jan 1-15
+      return false;
     }
 
-    box.innerHTML = `
-      <div style="display:flex; gap:12px; align-items:center;">
-        <div style="width:56px;height:56px;border-radius:18px;overflow:hidden;border:1px solid rgba(176,141,87,0.22);background:rgba(0,0,0,0.20);flex:0 0 auto;">
-          <img src="${escapeHtml(selectedStaff.photoUrl || '')}" alt="${escapeHtml(selectedStaff.name || 'Sitter')}" style="width:100%;height:100%;object-fit:cover;display:block;">
-        </div>
-        <div style="min-width:0;">
-          <div class="font-lux" style="font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(selectedStaff.name || 'Sitter')}</div>
-          <div class="tiny muted" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(selectedStaff.title || 'PetGuardian Care Sitter')}</div>
-          <div class="tiny muted" style="margin-top:6px;">Rating: <b>${escapeHtml(String(selectedStaff.rating || '5.0'))}</b></div>
-        </div>
-      </div>
-    `;
-  }
-
-  function setSitterIndex(i){
-    if (!sitterList.length) return;
-    const n = sitterList.length;
-    sitterIndex = (i % n + n) % n;
-    drawSitterStage();
-  }
-
-  function drawSitterStage(){
-    const stage = document.getElementById("sitterCarousel");
-    const dots = document.getElementById("sitterDots");
-    if (!stage || !dots) return;
-
-    stage.innerHTML = "";
-    dots.innerHTML = "";
-
-    const n = sitterList.length;
-    if (!n) return;
-
-    for (let i=0;i<n;i++){
-      const d = document.createElement("div");
-      d.className = "dot" + (i === sitterIndex ? " active" : "");
-      d.addEventListener("click", () => setSitterIndex(i));
-      dots.appendChild(d);
+    function bookingHasPeak(startStr, endStr){
+      if (!startStr || !endStr) return false;
+      const s = new Date(startStr);
+      const e = new Date(endStr);
+      s.setHours(0,0,0,0); e.setHours(0,0,0,0);
+      for (let dt = new Date(s); dt <= e; dt.setDate(dt.getDate()+1)){
+        if (isPeakDate(dt)) return true;
+      }
+      return false;
     }
 
-    const stageW = stage.clientWidth || 1000;
-    const shift = Math.min(390, Math.max(320, Math.round(stageW * 0.34)));
+    function weightedDays(days){
+      const block = Math.max(1, Number(PRICES.longStay.blockDays || 10));
+      const factor = Number(PRICES.longStay.factor || 0.9);
+      const capBlocks = Math.max(0, Number(PRICES.longStay.capBlocks ?? 2));
 
-    const makeCard = (data, x, scale, rot, opacity, z, blur, isCenter, clickFn) => {
-      const card = document.createElement("div");
-      card.className = "sCard";
-      card.style.zIndex = String(z);
-      card.style.opacity = String(opacity);
-      card.style.filter = blur ? `blur(${blur}px) brightness(0.92) saturate(0.92)` : "none";
-      card.style.transform = `translate(-50%, -50%) translateX(${x}px) scale(${scale}) rotateY(${rot}deg)`;
+      let remaining = days;
+      let total = 0;
+      let i = 0;
 
-      card.innerHTML = `
-        <div class="img">
-          <img src="${escapeHtml(data.photoUrl || "")}" alt="${escapeHtml(data.name || "Sitter")}">
-        </div>
-        <div class="pad">
-          <div class="sName font-lux">${escapeHtml(data.name || "Sitter")}</div>
-          <div class="sTitle">${escapeHtml(data.title || "PetGuardian Care Sitter")} · Rating ${escapeHtml(String(data.rating || "5.0"))}</div>
-          <div class="sBio">${escapeHtml(data.bio || "Professional sitter")}</div>
-          <div class="badgeRow">
-            <span class="badge">Verified</span>
-            <span class="badge">ID checked</span>
-            <span class="badge">Background check</span>
+      while (remaining > 0){
+        const chunk = Math.min(block, remaining);
+        const exp = Math.min(i, capBlocks); // cap at 2 steps: 1, 0.9, 0.81, then stays at 0.81
+        const mult = Math.pow(factor, exp);
+        total += chunk * mult;
+        remaining -= chunk;
+        i += 1;
+      }
+      return total;
+    }
+
+    function includedPetCount(dogs, cats){
+      // Included pet is 1 total. Allocate inclusion to dogs first if any.
+      const inc = Math.max(0, Number(PRICES.controls.includedPets || 1));
+      if (inc <= 0) return { incDogs: 0, incCats: 0 };
+      if (dogs > 0) return { incDogs: Math.min(dogs, inc), incCats: 0 };
+      return { incDogs: 0, incCats: Math.min(cats, inc) };
+    }
+
+    function jsonp(params){
+      return new Promise((resolve, reject) => {
+        if (!CONFIG.apiBaseUrl){
+          reject(new Error("Missing CONFIG.apiBaseUrl"));
+          return;
+        }
+        const cb = "pgCb_" + Date.now() + "_" + Math.random().toString(16).slice(2);
+        const url = new URL(CONFIG.apiBaseUrl);
+        Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, String(v)));
+        url.searchParams.set("callback", cb);
+        url.searchParams.set("reqId", String(Date.now()));
+
+        let done = false;
+        const script = document.createElement("script");
+        script.async = true;
+        script.src = url.toString();
+
+        const timer = setTimeout(() => {
+          if (done) return;
+          done = true;
+          cleanup();
+          reject(new Error("Request timeout"));
+        }, 14000);
+
+        function cleanup(){
+          clearTimeout(timer);
+          try { delete window[cb]; } catch(e){}
+          try { script.remove(); } catch(e){}
+        }
+
+        window[cb] = (data) => {
+          if (done) return;
+          done = true;
+          cleanup();
+          resolve(data);
+        };
+
+        script.onerror = () => {
+          if (done) return;
+          done = true;
+          cleanup();
+          reject(new Error("Network error"));
+        };
+
+        document.body.appendChild(script);
+      });
+    }
+
+    function setApiStatus(ok, msg){
+      const dot = el("apiDot");
+      const label = el("apiStatus");
+      dot.classList.remove("ok","bad");
+      dot.classList.add(ok ? "ok" : "bad");
+      label.textContent = msg;
+    }
+
+    async function pingApi(){
+      try{
+        const res = await jsonp({}); // no action returns online message
+        state.apiOk = !!res && res.ok !== false;
+        setApiStatus(true, "API: online");
+      }catch(err){
+        state.apiOk = false;
+        setApiStatus(false, "API: check URL");
+        if (CONFIG.debug) console.error(err);
+      }
+    }
+
+    function applyPricingFromSheet(p){
+      const num = (v, fallback) => {
+        const n = Number(v);
+        return Number.isFinite(n) ? n : fallback;
+      };
+
+      // Base
+      PRICES.base.dayHourly = num(p.BASE_DAY_HOURLY, PRICES.base.dayHourly);
+      PRICES.base.night = num(p.BASE_NIGHT, PRICES.base.night);
+      PRICES.base.fullDay = num(p.BASE_FULLDAY, PRICES.base.fullDay);
+
+      // Travel
+      PRICES.travelPerDay.sabie = num(p.TRAVEL_SABIE, PRICES.travelPerDay.sabie);
+      PRICES.travelPerDay.wr = num(p.TRAVEL_WR, PRICES.travelPerDay.wr);
+      PRICES.travelPerDay.nel = num(p.TRAVEL_NEL, PRICES.travelPerDay.nel);
+
+      // Controls
+      PRICES.controls.includedPets = num(p.INCLUDED_PETS, PRICES.controls.includedPets);
+      PRICES.controls.maxDailyCap = num(p.MAX_DAILY_CAP, PRICES.controls.maxDailyCap);
+      PRICES.peakMultiplier = num(p.PEAK_MULTIPLIER, PRICES.peakMultiplier);
+
+      PRICES.longStay.blockDays = num(p.DISCOUNT_BLOCK_DAYS, PRICES.longStay.blockDays);
+      PRICES.longStay.factor = num(p.DISCOUNT_FACTOR, PRICES.longStay.factor);
+
+      // Add-ons and fees
+      PRICES.add.extraDogPerDay = num(p.ADD_EXTRA_DOG_PER_DAY, PRICES.add.extraDogPerDay);
+      PRICES.add.extraCatPerDay = num(p.ADD_EXTRA_CAT_PER_DAY, PRICES.add.extraCatPerDay);
+
+      PRICES.add.checkinPerDay = num(p.ADD_CHECKIN, PRICES.add.checkinPerDay);
+
+      PRICES.add.updatesBasicPerDay = num(p.ADD_UPDATES_BASIC_PER_DAY, PRICES.add.updatesBasicPerDay);
+      PRICES.add.updatesPhotosPerDay = num(p.ADD_UPDATES_PHOTOS_PER_DAY, PRICES.add.updatesPhotosPerDay);
+      PRICES.add.updatesLogbookPerDay = num(p.ADD_UPDATES_LOGBOOK_PER_DAY, PRICES.add.updatesLogbookPerDay);
+
+      PRICES.add.medsPerDay = num(p.ADD_ORAL_MEDS_PER_DAY, PRICES.add.medsPerDay);
+      PRICES.add.puppyCarePerDay = num(p.ADD_PUPPY_CARE_PER_DAY, PRICES.add.puppyCarePerDay);
+      PRICES.add.highcarePerDay = num(p.ADD_HIGHCARE_PER_DAY, PRICES.add.highcarePerDay);
+      PRICES.add.reactivePerDay = num(p.ADD_REACTIVE_PER_DAY, PRICES.add.reactivePerDay);
+
+      PRICES.add.homecarePerDay = num(p.ADD_HOMECARE_PER_DAY, PRICES.add.homecarePerDay);
+      PRICES.add.conciergePerDay = num(p.ADD_HOME_CONCIERGE_PER_DAY, PRICES.add.conciergePerDay);
+
+      PRICES.add.playPerDay = num(p.ADD_PLAY_PER_DAY, PRICES.add.playPerDay);
+      PRICES.add.trainPerDay = num(p.ADD_TRAIN_PER_DAY, PRICES.add.trainPerDay);
+      PRICES.add.brushPerDay = num(p.ADD_GROOM_BRUSH_PER_DAY, PRICES.add.brushPerDay);
+      PRICES.add.poolPerDay = num(p.ADD_POOL_PER_DAY, PRICES.add.poolPerDay);
+
+      PRICES.add.walkPerMinute = num(p.ADD_WALK_PER_MINUTE, PRICES.add.walkPerMinute);
+
+      PRICES.add.pantryCreditPerDay = num(p.PANTRY_CREDIT_PER_DAY, PRICES.add.pantryCreditPerDay);
+
+      PRICES.add.meetOneTime = num(p.ONE_MEET_AND_GREET, PRICES.add.meetOneTime);
+      PRICES.add.keyTripOneTime = num(p.ADD_KEYTRIP_ONE_TIME, PRICES.add.keyTripOneTime);
+      PRICES.add.petTaxiTripOneTime = num(p.ADD_PETTAXI_ONE_TIME, PRICES.add.petTaxiTripOneTime);
+      PRICES.add.petTaxiKm = num(p.ADD_PETTAXI_PER_KM, PRICES.add.petTaxiKm);
+
+      PRICES.add.bathOneTime = num(p.ADD_BATH_ONE_TIME, PRICES.add.bathOneTime);
+      PRICES.add.cameraOneTime = num(p.ADD_CAMERA_ONE_TIME, PRICES.add.cameraOneTime);
+      PRICES.add.cleanOneTime = num(p.ADD_CLEAN_ONE_TIME, PRICES.add.cleanOneTime);
+    }
+
+    async function fetchPricing(){
+      try{
+        const res = await jsonp({ action: "pricing" });
+        if (res && res.ok && res.pricing){
+          applyPricingFromSheet(res.pricing);
+          state.pricingLoaded = true;
+          renderPriceHints();
+          recalc();
+        }
+      }catch(err){
+        if (CONFIG.debug) console.error(err);
+        state.pricingLoaded = false;
+      }
+    }
+
+    async function fetchAvailability(){
+      const start = el("startDate").value;
+      const end = el("endDate").value;
+      const zone = el("zone").value;
+      const pkg = state.pkg;
+
+      el("availabilityHint").textContent = "Checking sitter availability...";
+      el("carouselHint").textContent = "Checking sitter availability...";
+
+      try{
+        const res = await jsonp({ action:"availability", start, end, zone, pkg });
+        const staff = (res && res.ok && Array.isArray(res.staff)) ? res.staff : [];
+        state.sitters = staff;
+        state.carouselIndex = 0;
+
+        if (!staff.length){
+          el("availabilityHint").textContent = "No sitters available for this range. Adjust dates, zone, or stay type.";
+          el("carouselHint").textContent = "No sitters available for this range.";
+        } else {
+          el("availabilityHint").textContent = staff.length + " sitters available. Choose a sitter to continue.";
+          el("carouselHint").textContent = "Use Prev/Next. Click the center card to select.";
+        }
+
+        // If current sitter not in list, clear selection
+        if (state.selectedSitter && !staff.some(s => String(s.id) === String(state.selectedSitter.id))){
+          state.selectedSitter = null;
+          renderSelectedSitter();
+        }
+
+        renderCarousel();
+      }catch(err){
+        el("availabilityHint").textContent = "Availability could not load. Check API status at the top.";
+        el("carouselHint").textContent = "Availability could not load. Check API status.";
+        if (CONFIG.debug) console.error(err);
+      }
+    }
+
+    function renderPriceHints(){
+      el("dayHourlyOut").textContent = Math.round(PRICES.base.dayHourly);
+      el("nightOut").textContent = Math.round(PRICES.base.night);
+      el("fullOut").textContent = Math.round(PRICES.base.fullDay);
+
+      el("travelOut").textContent = Math.round(PRICES.travelPerDay[el("zone").value] || 0);
+
+      el("updBasicOut").textContent = Math.round(PRICES.add.updatesBasicPerDay);
+      el("updPhotosOut").textContent = Math.round(PRICES.add.updatesPhotosPerDay);
+      el("updLogOut").textContent = Math.round(PRICES.add.updatesLogbookPerDay);
+
+      el("walkRateOut").textContent = Math.round(PRICES.add.walkPerMinute);
+      el("checkinPriceOut").textContent = Math.round(PRICES.add.checkinPerDay);
+
+      el("keyPriceOut").textContent = Math.round(PRICES.add.keyTripOneTime);
+      el("taxiPriceOut").textContent = Math.round(PRICES.add.petTaxiTripOneTime);
+      el("taxiKmPriceOut").textContent = Math.round(PRICES.add.petTaxiKm);
+    }
+
+    function currentUpdateTier(){
+      const active = document.querySelector(".radioCard.active[data-upd]");
+      return active ? active.getAttribute("data-upd") : "basic";
+    }
+
+    function setUpdateTier(tier){
+      document.querySelectorAll(".radioCard[data-upd]").forEach(c => {
+        c.classList.toggle("active", c.getAttribute("data-upd") === tier);
+      });
+      recalc();
+    }
+
+    function getUpdatePerDay(){
+      const tier = currentUpdateTier();
+      if (tier === "photos") return PRICES.add.updatesPhotosPerDay;
+      if (tier === "logbook") return PRICES.add.updatesLogbookPerDay;
+      return PRICES.add.updatesBasicPerDay;
+    }
+
+    function getNumber(id){
+      const v = Number(el(id).value);
+      return Number.isFinite(v) ? v : 0;
+    }
+
+    function recalc(){
+      // Outputs
+      const start = el("startDate").value;
+      const end = el("endDate").value;
+      const days = daysBetween(start, end);
+      el("daysOut").textContent = String(days);
+
+      const zone = el("zone").value;
+      const travel = Number(PRICES.travelPerDay[zone] || 0);
+      el("travelOut").textContent = String(Math.round(travel));
+
+      const peakApplied = bookingHasPeak(start, end);
+      const peakMult = peakApplied ? Number(PRICES.peakMultiplier || 1) : 1;
+
+      el("peakNote").textContent = peakApplied ? "(peak pricing applied)" : "";
+      el("peakAppliedOut").textContent = peakApplied
+        ? "Peak dates detected in your booking range (June to July, or Dec to 15 Jan)."
+        : "No peak dates detected in your booking range.";
+
+      // Inputs
+      const dogs = Math.max(0, parseInt(el("dogs").value || "0", 10));
+      const cats = Math.max(0, parseInt(el("cats").value || "0", 10));
+      const { incDogs, incCats } = includedPetCount(dogs, cats);
+      const extraDogs = Math.max(0, dogs - incDogs);
+      const extraCats = Math.max(0, cats - incCats);
+
+      const hours = clamp(parseInt(el("hours").value || "1", 10), 1, 12);
+      el("hoursOut").textContent = String(hours);
+
+      const puppy = !!el("puppy").checked;
+      const meds = !!el("meds").checked;
+
+      const walkMin = clamp(parseInt(el("walkMinutes").value || "0", 10), 0, 600);
+      el("walkMinutesOut").textContent = String(walkMin);
+      const walkCostPerDay = walkMin * Number(PRICES.add.walkPerMinute || 0);
+      el("walkCostOut").textContent = money(walkCostPerDay);
+
+      const checkins = clamp(parseInt(el("checkins").value || "0", 10), 0, 20);
+      el("checkinsOut").textContent = String(checkins);
+
+      const highcare = !!el("highcare").checked;
+      const reactive = !!el("reactive").checked;
+      const play = !!el("play").checked;
+      const train = !!el("train").checked;
+      const brush = !!el("brush").checked;
+
+      const homecare = !!el("homecare").checked;
+      const concierge = !!el("concierge").checked;
+      const pool = !!el("pool").checked;
+
+      const camera = !!el("camera").checked;
+      const bath = !!el("bath").checked;
+      const clean = !!el("clean").checked;
+
+      const pantry = !!el("pantry").checked;
+
+      const keys = clamp(parseInt(el("keys").value || "0", 10), 0, 20);
+      el("keysOut").textContent = String(keys);
+
+      const taxi = clamp(parseInt(el("taxi").value || "0", 10), 0, 20);
+      el("taxiOut").textContent = String(taxi);
+
+      const taxiKm = Math.max(0, parseInt(el("taxiKm").value || "0", 10));
+
+      const meet = !!el("meet").checked;
+
+      // Base per day (or per night)
+      let basePerDay = 0;
+      if (state.pkg === "day") basePerDay = hours * Number(PRICES.base.dayHourly || 0);
+      if (state.pkg === "night") basePerDay = Number(PRICES.base.night || 0);
+      if (state.pkg === "full") basePerDay = Number(PRICES.base.fullDay || 0);
+
+      const updatePerDay = getUpdatePerDay();
+
+      const perDayAddOns =
+        (updatePerDay) +
+        (checkins * Number(PRICES.add.checkinPerDay || 0)) +
+        walkCostPerDay +
+        (meds ? Number(PRICES.add.medsPerDay || 0) : 0) +
+        (puppy ? Number(PRICES.add.puppyCarePerDay || 0) : 0) +
+        (highcare ? Number(PRICES.add.highcarePerDay || 0) : 0) +
+        (reactive ? Number(PRICES.add.reactivePerDay || 0) : 0) +
+        (play ? Number(PRICES.add.playPerDay || 0) : 0) +
+        (train ? Number(PRICES.add.trainPerDay || 0) : 0) +
+        (brush ? Number(PRICES.add.brushPerDay || 0) : 0) +
+        (homecare ? Number(PRICES.add.homecarePerDay || 0) : 0) +
+        (concierge ? Number(PRICES.add.conciergePerDay || 0) : 0) +
+        (pool ? Number(PRICES.add.poolPerDay || 0) : 0) +
+        (pantry ? -Number(PRICES.add.pantryCreditPerDay || 0) : 0) +
+        (extraDogs * Number(PRICES.add.extraDogPerDay || 0)) +
+        (extraCats * Number(PRICES.add.extraCatPerDay || 0));
+
+      const perDaySubtotalPrePeak = basePerDay + travel + perDayAddOns;
+      const perDayAfterPeak = perDaySubtotalPrePeak * peakMult;
+
+      const cap = Number(PRICES.controls.maxDailyCap || 0);
+      const cappedPerDay = (cap > 0) ? Math.min(cap, perDayAfterPeak) : perDayAfterPeak;
+
+      // Long stay
+      const wDays = weightedDays(days);
+      const stayTotal = cappedPerDay * wDays;
+
+      // One-time items (not multiplied by days)
+      const oneTime =
+        (meet ? Number(PRICES.add.meetOneTime || 0) : 0) +
+        (keys * Number(PRICES.add.keyTripOneTime || 0)) +
+        (taxi * Number(PRICES.add.petTaxiTripOneTime || 0)) +
+        (taxiKm * Number(PRICES.add.petTaxiKm || 0)) +
+        (bath ? Number(PRICES.add.bathOneTime || 0) : 0) +
+        (camera ? Number(PRICES.add.cameraOneTime || 0) : 0) +
+        (clean ? Number(PRICES.add.cleanOneTime || 0) : 0);
+
+      const total = stayTotal + oneTime;
+
+      // Discount amount for display
+      const noDiscountTotal = cappedPerDay * days + oneTime;
+      const discountAmt = Math.max(0, noDiscountTotal - total);
+
+      const deposit = total * Number(CONFIG.depositPercent || 0.5);
+      const balance = total - deposit;
+
+      el("totalOut").textContent = money(total);
+      el("depositOut").textContent = money(deposit);
+      el("balanceOut").textContent = money(balance);
+
+      // Summary rows
+      // Base stay component (with peak, with long stay)
+      const baseAfterPeak = (basePerDay * peakMult);
+      const baseTotal = baseAfterPeak * wDays;
+
+      // Add-ons + travel (with peak, with long stay)
+      const addonsTravelAfterPeak = ((perDayAddOns + travel) * peakMult);
+      const addonsTotal = addonsTravelAfterPeak * wDays;
+
+      el("baseOut").textContent = money(baseTotal);
+      el("addonsOut").textContent = money(addonsTotal);
+      el("discountOut").textContent = discountAmt > 0 ? ("-" + money(discountAmt)) : money(0);
+      el("oneTimeOut").textContent = money(oneTime);
+
+      // Warnings
+      const warns = [];
+      if (!state.selectedSitter) warns.push("Select a sitter to submit booking.");
+      el("quoteWarnings").textContent = warns.join(" ");
+
+      // Update booking modal outputs
+      el("bookingTotalOut").textContent = money(total);
+      el("bookingDepositOut").textContent = money(deposit);
+      el("bookingSitterOut").textContent = state.selectedSitter ? state.selectedSitter.name : "None";
+
+      // Render itemized breakdown (based on day multipliers, and discount line)
+      renderLineItems({
+        days, peakMult, discountAmt,
+        extraDogs, extraCats, travel,
+        updateTier: currentUpdateTier(),
+        updatePerDay,
+        checkins, walkMin, walkCostPerDay,
+        meds, puppy, highcare, reactive, play, train, brush,
+        homecare, concierge, pool,
+        pantry,
+        keys, taxi, taxiKm, meet, bath, camera, clean
+      });
+    }
+
+    function renderLineItems(ctx){
+      const body = el("lineItemsBody");
+      body.innerHTML = "";
+
+      const peakMult = ctx.peakMult || 1;
+      const days = ctx.days || 1;
+
+      const lines = [];
+
+      // Per-day items
+      const addLinePerDay = (title, unit, meta, total) => {
+        if (!total || Math.abs(total) < 0.0001) return;
+        lines.push({ title, meta, total });
+      };
+
+      const addLineOneTime = (title, meta, total) => {
+        if (!total || Math.abs(total) < 0.0001) return;
+        lines.push({ title, meta, total });
+      };
+
+      // Travel
+      addLinePerDay(
+        "Travel fee (zone)",
+        ctx.travel,
+        money(ctx.travel) + " x " + days + " day(s)" + (peakMult !== 1 ? " x peak" : ""),
+        (ctx.travel * days * peakMult)
+      );
+
+      // Extra pets
+      if (ctx.extraDogs > 0){
+        addLinePerDay(
+          "Additional dogs",
+          PRICES.add.extraDogPerDay,
+          "R" + Math.round(PRICES.add.extraDogPerDay) + "/day x " + ctx.extraDogs + " dog(s) x " + days + " day(s)" + (peakMult !== 1 ? " x peak" : ""),
+          (ctx.extraDogs * PRICES.add.extraDogPerDay * days * peakMult)
+        );
+      }
+      if (ctx.extraCats > 0){
+        addLinePerDay(
+          "Additional cats",
+          PRICES.add.extraCatPerDay,
+          "R" + Math.round(PRICES.add.extraCatPerDay) + "/day x " + ctx.extraCats + " cat(s) x " + days + " day(s)" + (peakMult !== 1 ? " x peak" : ""),
+          (ctx.extraCats * PRICES.add.extraCatPerDay * days * peakMult)
+        );
+      }
+
+      // Updates
+      const updLabel = ctx.updateTier === "photos" ? "Updates: 2 photos per day" : (ctx.updateTier === "logbook" ? "Updates: full logbook" : "Updates: daily message");
+      addLinePerDay(
+        updLabel,
+        ctx.updatePerDay,
+        money(ctx.updatePerDay) + "/day x " + days + " day(s)" + (peakMult !== 1 ? " x peak" : ""),
+        (ctx.updatePerDay * days * peakMult)
+      );
+
+      // Check-ins
+      if (ctx.checkins > 0){
+        const unit = Number(PRICES.add.checkinPerDay || 0);
+        addLinePerDay(
+          "Extra check-ins",
+          unit,
+          "R" + Math.round(unit) + "/day x " + ctx.checkins + " per day x " + days + " day(s)" + (peakMult !== 1 ? " x peak" : ""),
+          (unit * ctx.checkins * days * peakMult)
+        );
+      }
+
+      // Walks
+      if (ctx.walkMin > 0){
+        const unit = Number(PRICES.add.walkPerMinute || 0);
+        addLinePerDay(
+          "Walk time",
+          unit,
+          "R" + Math.round(unit) + "/min x " + ctx.walkMin + " min/day x " + days + " day(s)" + (peakMult !== 1 ? " x peak" : ""),
+          (unit * ctx.walkMin * days * peakMult)
+        );
+      }
+
+      // Toggles per day
+      const togglePerDay = [
+        ["Oral meds", ctx.meds, PRICES.add.medsPerDay],
+        ["Puppy care", ctx.puppy, PRICES.add.puppyCarePerDay],
+        ["High-care routine", ctx.highcare, PRICES.add.highcarePerDay],
+        ["Reactive handling", ctx.reactive, PRICES.add.reactivePerDay],
+        ["Play and enrichment", ctx.play, PRICES.add.playPerDay],
+        ["Training reinforcement", ctx.train, PRICES.add.trainPerDay],
+        ["Brush and coat care", ctx.brush, PRICES.add.brushPerDay],
+        ["Plants and chores pack", ctx.homecare, PRICES.add.homecarePerDay],
+        ["Home concierge", ctx.concierge, PRICES.add.conciergePerDay],
+        ["Pool check", ctx.pool, PRICES.add.poolPerDay],
+      ];
+      togglePerDay.forEach(([label, on, price]) => {
+        if (!on) return;
+        const unit = Number(price || 0);
+        addLinePerDay(
+          label,
+          unit,
+          money(unit) + "/day x " + days + " day(s)" + (peakMult !== 1 ? " x peak" : ""),
+          (unit * days * peakMult)
+        );
+      });
+
+      // Pantry credit (negative)
+      if (ctx.pantry){
+        const unit = Number(PRICES.add.pantryCreditPerDay || 0);
+        addLinePerDay(
+          "Pantry use credit",
+          -unit,
+          "-" + money(unit) + "/day x " + days + " day(s)" + (peakMult !== 1 ? " x peak" : ""),
+          (-unit * days * peakMult)
+        );
+      }
+
+      // One-time items
+      if (ctx.meet){
+        addLineOneTime(
+          "Meet and greet",
+          money(Number(PRICES.add.meetOneTime || 0)) + " one-time",
+          Number(PRICES.add.meetOneTime || 0)
+        );
+      }
+      if (ctx.keys > 0){
+        const unit = Number(PRICES.add.keyTripOneTime || 0);
+        addLineOneTime(
+          "Key pickup/drop-off",
+          money(unit) + " x " + ctx.keys + " trip(s)",
+          unit * ctx.keys
+        );
+      }
+      if (ctx.taxi > 0){
+        const unit = Number(PRICES.add.petTaxiTripOneTime || 0);
+        addLineOneTime(
+          "Pet taxi (base)",
+          money(unit) + " x " + ctx.taxi + " trip(s)",
+          unit * ctx.taxi
+        );
+      }
+      if (ctx.taxiKm > 0){
+        const unit = Number(PRICES.add.petTaxiKm || 0);
+        addLineOneTime(
+          "Pet taxi (distance)",
+          "R" + Math.round(unit) + "/km x " + ctx.taxiKm + " km",
+          unit * ctx.taxiKm
+        );
+      }
+      if (ctx.bath){
+        addLineOneTime(
+          "Bath (basic)",
+          money(Number(PRICES.add.bathOneTime || 0)) + " one-time",
+          Number(PRICES.add.bathOneTime || 0)
+        );
+      }
+      if (ctx.camera){
+        addLineOneTime(
+          "Pet camera setup/check",
+          money(Number(PRICES.add.cameraOneTime || 0)) + " one-time",
+          Number(PRICES.add.cameraOneTime || 0)
+        );
+      }
+      if (ctx.clean){
+        addLineOneTime(
+          "Light clean and linen",
+          money(Number(PRICES.add.cleanOneTime || 0)) + " one-time",
+          Number(PRICES.add.cleanOneTime || 0)
+        );
+      }
+
+      // Long stay discount line is already shown above, but user asked breakdown - so include here too
+      if (ctx.discountAmt > 0){
+        addLineOneTime(
+          "Long-stay discount",
+          "Auto applied by day blocks",
+          -ctx.discountAmt
+        );
+      }
+
+      if (!lines.length){
+        body.innerHTML = '<div class="text-[12px] opacity-70">No add-ons selected yet.</div>';
+        return;
+      }
+
+      lines.forEach(li => {
+        const wrap = document.createElement("div");
+        wrap.className = "liRow";
+        const left = document.createElement("div");
+        left.innerHTML = '<div class="liTitle"></div><div class="liMeta"></div>';
+        left.querySelector(".liTitle").textContent = li.title;
+        left.querySelector(".liMeta").textContent = li.meta;
+
+        const amt = document.createElement("div");
+        amt.className = "liAmt";
+        const n = Number(li.total || 0);
+        amt.textContent = (n < 0) ? ("-" + money(Math.abs(n))) : money(n);
+
+        wrap.appendChild(left);
+        wrap.appendChild(amt);
+        body.appendChild(wrap);
+      });
+    }
+
+    function openModal(id){ el(id).classList.add("active"); }
+    function closeModal(id){ el(id).classList.remove("active"); }
+
+    function setPkg(pkg){
+      state.pkg = pkg;
+      document.querySelectorAll(".pkgBtn").forEach(b => b.classList.toggle("active", b.getAttribute("data-pkg") === pkg));
+
+      // Hour slider only relevant for day visits
+      el("hours").disabled = (pkg !== "day");
+      el("hours").style.opacity = (pkg === "day") ? "1" : "0.35";
+
+      fetchAvailability();
+      recalc();
+    }
+
+    function renderSelectedSitter(){
+      const sitter = state.selectedSitter;
+      if (!sitter){
+        el("selectedSitterName").textContent = "No sitter selected";
+        el("selectedSitterMeta").textContent = "Choose a sitter to continue";
+        el("sitterBtnTitle").textContent = "Choose sitter";
+        el("sitterBtnSub").textContent = "Verified selection required";
+        return;
+      }
+      el("selectedSitterName").textContent = sitter.name || "Selected sitter";
+      const rating = sitter.rating ? ("Rating " + sitter.rating) : "Verified sitter";
+      el("selectedSitterMeta").textContent = rating;
+      el("sitterBtnTitle").textContent = "Sitter selected";
+      el("sitterBtnSub").textContent = sitter.name || "Change sitter";
+      recalc();
+    }
+
+    function normalizedSitter(s){
+      return {
+        id: s.id ?? s.staffId ?? s.email ?? s.name,
+        name: s.name ?? s.fullName ?? "Sitter",
+        rating: s.rating ?? s.score ?? "",
+        role: s.role ?? s.title ?? "Pet Sitter",
+        verified: (s.verified ?? s.idVerified ?? true),
+        background: (s.backgroundChecked ?? s.background ?? false),
+        bio: s.bio ?? s.description ?? s.notes ?? "Calm, reliable care with safety-first routines.",
+        photoUrl: s.photoUrl ?? s.photo ?? s.image ?? ""
+      };
+    }
+
+    function renderCarousel(){
+      const vp = el("carouselViewport");
+      vp.innerHTML = "";
+
+      const staff = (state.sitters || []).map(normalizedSitter);
+      if (!staff.length){
+        el("carouselHint").textContent = "No sitters available for this range.";
+        return;
+      }
+
+      const idx = clamp(state.carouselIndex, 0, staff.length - 1);
+      state.carouselIndex = idx;
+
+      // Prepare 3 cards: prev, current, next
+      const positions = [
+        { offset: -1, scale: 0.86, opacity: 0.50, z: 1, index: (idx - 1 + staff.length) % staff.length },
+        { offset: 0,  scale: 1.00, opacity: 1.00, z: 3, index: idx },
+        { offset: 1,  scale: 0.86, opacity: 0.50, z: 1, index: (idx + 1) % staff.length }
+      ];
+
+      positions.forEach(pos => {
+        const sitter = staff[pos.index];
+        const card = document.createElement("div");
+        card.className = "sCard";
+        card.style.setProperty("--offset", String(pos.offset));
+        card.style.setProperty("--scale", String(pos.scale));
+        card.style.setProperty("--opacity", String(pos.opacity));
+        card.style.setProperty("--z", String(pos.z));
+
+        card.innerHTML = `
+          <div class="img">
+            ${sitter.photoUrl
+              ? `<img src="${sitter.photoUrl}" alt="${escapeHtml(sitter.name)}">`
+              : `<div style="height:100%; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.55); font-weight:800;">No photo</div>`
+            }
           </div>
-        </div>
-      `;
+          <div class="body">
+            <div class="sName">${escapeHtml(sitter.name)}</div>
+            <div class="sMeta">${escapeHtml(sitter.role)}${sitter.rating ? " · Rating " + escapeHtml(String(sitter.rating)) : ""}</div>
+            <div class="sMeta" style="opacity:.88;">${escapeHtml(sitter.bio).slice(0, 90)}${sitter.bio && sitter.bio.length > 90 ? "..." : ""}</div>
+            <div class="tags">
+              <span class="tag">Verified</span>
+              ${sitter.background ? '<span class="tag">Background checked</span>' : '<span class="tag">Safe booking</span>'}
+            </div>
+          </div>
+        `;
 
-      card.addEventListener("click", clickFn);
-      stage.appendChild(card);
-    };
+        card.addEventListener("click", () => {
+          if (pos.offset === 0){
+            state.selectedSitter = sitter;
+            renderSelectedSitter();
+            closeModal("modalSitters");
+          } else {
+            // Move carousel
+            if (pos.offset < 0) prevSitter();
+            if (pos.offset > 0) nextSitter();
+          }
+        });
 
-    if (n === 1){
-      const curr = sitterList[0];
-      makeCard(curr, 0, 1.0, 0, 1.0, 3, 0, true, () => {
-        selectedStaff = curr;
-        updateSelectedSitterSummary();
-        closeSitterModal();
+        vp.appendChild(card);
       });
-      return;
+
+      el("carouselHint").textContent = "Click the center card to select. Use Prev/Next to browse.";
     }
 
-    if (n === 2){
-      const curr = sitterList[sitterIndex];
-      const other = sitterList[(sitterIndex + 1) % 2];
+    function prevSitter(){
+      if (!state.sitters || !state.sitters.length) return;
+      state.carouselIndex = (state.carouselIndex - 1 + state.sitters.length) % state.sitters.length;
+      renderCarousel();
+    }
+    function nextSitter(){
+      if (!state.sitters || !state.sitters.length) return;
+      state.carouselIndex = (state.carouselIndex + 1) % state.sitters.length;
+      renderCarousel();
+    }
 
-      makeCard(other, shift * 0.60, 0.86, -14, 0.55, 1, 0.6, false, () => setSitterIndex(sitterIndex + 1));
-      makeCard(curr, 0, 1.0, 0, 1.0, 3, 0, true, () => {
-        selectedStaff = curr;
-        updateSelectedSitterSummary();
-        closeSitterModal();
+    function escapeHtml(str){
+      return String(str || "").replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+    }
+
+    function setTab(tab){
+      document.querySelectorAll("#addonTabs .tab").forEach(t => t.classList.toggle("active", t.getAttribute("data-tab") === tab));
+      ["care","home","transport","discounts"].forEach(name => {
+        const pane = el("tab-" + name);
+        if (pane) pane.style.display = (name === tab) ? "" : "none";
       });
-      return;
     }
 
-    const prev = sitterList[(sitterIndex - 1 + n) % n];
-    const curr = sitterList[sitterIndex];
-    const next = sitterList[(sitterIndex + 1) % n];
-
-    makeCard(prev, -shift, 0.84, 16, 0.56, 1, 0.6, false, () => setSitterIndex(sitterIndex - 1));
-    makeCard(curr, 0, 1.0, 0, 1.0, 3, 0, true, () => {
-      selectedStaff = curr;
-      updateSelectedSitterSummary();
-      closeSitterModal();
-    });
-    makeCard(next, shift, 0.84, -16, 0.56, 2, 0.6, false, () => setSitterIndex(sitterIndex + 1));
-  }
-
-  function renderSitterModalCarousel(list){
-    sitterList = Array.isArray(list) ? list : [];
-    const status = document.getElementById("sitterModalStatus");
-    if (status){
-      status.textContent = sitterList.length ? "Click center card to select" : "No sitters available for these dates.";
+    function stepperAdjust(id, dir){
+      const input = el(id);
+      const v = clamp(parseInt(input.value || "0", 10) + dir, 0, 999);
+      input.value = String(v);
+      // mirror output text
+      if (id === "checkins") el("checkinsOut").textContent = String(v);
+      if (id === "keys") el("keysOut").textContent = String(v);
+      if (id === "taxi") el("taxiOut").textContent = String(v);
+      recalc();
     }
 
-    if (!sitterList.length){
-      drawSitterStage();
-      return;
-    }
+    function copyQuote(){
+      const start = el("startDate").value;
+      const end = el("endDate").value;
+      const zone = el("zone").value;
+      const dogs = el("dogs").value;
+      const cats = el("cats").value;
+      const total = el("totalOut").textContent;
+      const sitter = state.selectedSitter ? state.selectedSitter.name : "None";
 
-    if (selectedStaff && selectedStaff.id){
-      const idx = sitterList.findIndex(x => String(x.id) === String(selectedStaff.id));
-      sitterIndex = idx >= 0 ? idx : 0;
-    } else {
-      sitterIndex = 0;
-    }
+      const text =
+`PetGuardian Care Quote
+Stay type: ${state.pkg}
+Dates: ${start} to ${end}
+Zone: ${zone}
+Pets: Dogs ${dogs}, Cats ${cats}
+Sitter: ${sitter}
+Total estimate: ${total}`;
 
-    drawSitterStage();
-  }
-
-  /* =========================================================
-    Modal controls
-  ========================================================== */
-  const addonsModalWrap = document.getElementById("addonsModalWrap");
-  const sitterModalWrap = document.getElementById("sitterModalWrap");
-  const howWrap = document.getElementById("howWrap");
-
-  function openAddonsModal(){ addonsModalWrap.classList.remove("hidden"); }
-  function closeAddonsModal(){ addonsModalWrap.classList.add("hidden"); }
-
-  function openSitterModal(){ sitterModalWrap.classList.remove("hidden"); drawSitterStage(); }
-  function closeSitterModal(){ sitterModalWrap.classList.add("hidden"); }
-
-  function openHow(){ howWrap.classList.remove("hidden"); }
-  function closeHow(){ howWrap.classList.add("hidden"); }
-
-  document.getElementById("openAddonsBtn")?.addEventListener("click", openAddonsModal);
-  document.getElementById("closeAddonsBtn")?.addEventListener("click", closeAddonsModal);
-
-  document.getElementById("openSitterBtn")?.addEventListener("click", openSitterModal);
-  document.getElementById("closeSitterBtn")?.addEventListener("click", closeSitterModal);
-
-  document.getElementById("howBtn")?.addEventListener("click", openHow);
-  document.getElementById("closeHowBtn")?.addEventListener("click", closeHow);
-
-  document.getElementById("sitterPrevBtn")?.addEventListener("click", () => setSitterIndex(sitterIndex - 1));
-  document.getElementById("sitterNextBtn")?.addEventListener("click", () => setSitterIndex(sitterIndex + 1));
-  document.getElementById("selectCenterBtn")?.addEventListener("click", () => {
-    if (!sitterList.length) return;
-    const curr = sitterList[sitterIndex];
-    selectedStaff = curr;
-    updateSelectedSitterSummary();
-    closeSitterModal();
-  });
-
-  document.getElementById("clearSitterBtn")?.addEventListener("click", () => {
-    selectedStaff = null;
-    updateSelectedSitterSummary();
-  });
-
-  // Close on overlay click
-  [addonsModalWrap, sitterModalWrap, howWrap, el("modalWrap")].forEach((w) => {
-    if (!w) return;
-    w.addEventListener("click", (e) => {
-      if (e.target !== w) return;
-      if (w === addonsModalWrap) closeAddonsModal();
-      if (w === sitterModalWrap) closeSitterModal();
-      if (w === howWrap) closeHow();
-      if (w === el("modalWrap")) closeModal();
-    });
-  });
-
-  /* =========================================================
-    Attach events
-  ========================================================== */
-  function attach() {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth()+1).padStart(2,"0");
-    const dd = String(today.getDate()).padStart(2,"0");
-    el("startDate").value = `${yyyy}-${mm}-${dd}`;
-    el("endDate").value = `${yyyy}-${mm}-${dd}`;
-
-    document.querySelectorAll(".seg-btn").forEach(b => {
-      b.addEventListener("click", () => {
-        pkg = b.dataset.pkg;
-        setPkgUI();
-        calc();
-        fetchAvailability();
+      navigator.clipboard.writeText(text).then(() => {
+        el("btnCopy").textContent = "Copied";
+        setTimeout(() => el("btnCopy").textContent = "Copy Quote", 1100);
+      }).catch(() => {
+        alert("Copy failed. Your browser may block clipboard access.");
       });
-    });
+    }
 
-    [
-      "startDate","endDate","zone","dogs","cats",
-      "updates","checkins","walkMinutes",
-      "meds","puppy","homecare","keys","taxi","hours","foodSupplies"
-    ].forEach(id => el(id).addEventListener("input", () => {
-      calc();
-      if (["startDate","endDate","zone"].includes(id)) fetchAvailability();
-    }));
+    function openBooking(){
+      el("bookingResult").textContent = "";
+      openModal("modalBooking");
+      recalc();
+    }
 
-    el("copyBtn").addEventListener("click", copyQuote);
-    el("requestBtn").addEventListener("click", openModal);
-    el("requestBtn2").addEventListener("click", openModal);
-    el("closeModal").addEventListener("click", closeModal);
-    el("submitBooking").addEventListener("click", submitBooking);
+    async function submitBooking(){
+      const sitter = state.selectedSitter;
+      if (!sitter){
+        el("bookingResult").textContent = "Please select a sitter first.";
+        return;
+      }
 
-    setPkgUI();
-    fetchPricing();
-    calc();
-    fetchAvailability();
+      const customerName = el("customerName").value.trim();
+      const customerPhone = el("customerPhone").value.trim();
+      const customerEmail = el("customerEmail").value.trim();
+      const customerAddress = el("customerAddress").value.trim();
+      const customerNotes = el("customerNotes").value.trim();
 
-    // redraw carousel on resize
-    window.addEventListener("resize", () => {
-      if (!sitterModalWrap.classList.contains("hidden")) drawSitterStage();
-    });
-  }
+      if (!customerName || !customerPhone || !customerEmail){
+        el("bookingResult").textContent = "Please fill name, phone, and email.";
+        return;
+      }
 
-  attach();
-</script>
+      // Build selections JSON (small, but informative)
+      const selections = {
+        pkg: state.pkg,
+        hours: Number(el("hours").value || 0),
+        zone: el("zone").value,
+        pets: { dogs: Number(el("dogs").value||0), cats: Number(el("cats").value||0) },
+        updateTier: currentUpdateTier(),
+        checkinsPerDay: Number(el("checkins").value||0),
+        walkMinutesPerDay: Number(el("walkMinutes").value||0),
+        toggles: {
+          meds: el("meds").checked,
+          puppy: el("puppy").checked,
+          highcare: el("highcare").checked,
+          reactive: el("reactive").checked,
+          play: el("play").checked,
+          train: el("train").checked,
+          brush: el("brush").checked,
+          homecare: el("homecare").checked,
+          concierge: el("concierge").checked,
+          pool: el("pool").checked,
+          pantry: el("pantry").checked
+        },
+        transport: {
+          keys: Number(el("keys").value||0),
+          taxiTrips: Number(el("taxi").value||0),
+          taxiKm: Number(el("taxiKm").value||0),
+          meet: el("meet").checked,
+          bath: el("bath").checked,
+          camera: el("camera").checked,
+          clean: el("clean").checked
+        }
+      };
+
+      const start = el("startDate").value;
+      const end = el("endDate").value;
+      const days = daysBetween(start, end);
+
+      const totalNum = Number(el("totalOut").textContent.replace(/[^0-9]/g,"")) || 0;
+      const depositNum = Number(el("depositOut").textContent.replace(/[^0-9]/g,"")) || 0;
+      const balanceNum = Number(el("balanceOut").textContent.replace(/[^0-9]/g,"")) || 0;
+
+      el("bookingResult").textContent = "Submitting booking request...";
+
+      try{
+        const res = await jsonp({
+          action: "booking",
+          ts: new Date().toISOString(),
+          customerName, customerPhone, customerEmail,
+          customerAddress, customerNotes,
+          sitterId: sitter.id,
+          sitterName: sitter.name,
+          zone: el("zone").value,
+          zoneLabel: el("zone").value,
+          pkg: state.pkg,
+          start, end,
+          days,
+          total: totalNum,
+          deposit: depositNum,
+          balance: balanceNum,
+          selectionsJson: JSON.stringify(selections)
+        });
+
+        if (res && res.ok){
+          el("bookingResult").textContent = "Booking request sent successfully.";
+          // refresh availability (sitters may be blocked automatically)
+          fetchAvailability();
+        } else {
+          el("bookingResult").textContent = "Booking failed: " + (res && res.error ? res.error : "Unknown error");
+        }
+      }catch(err){
+        el("bookingResult").textContent = "Booking failed. Check API status and try again.";
+        if (CONFIG.debug) console.error(err);
+      }
+    }
+
+    function wire(){
+      // Top buttons
+      el("btnPricingInfo").addEventListener("click", () => openModal("modalPricing"));
+      el("btnClosePricing").addEventListener("click", () => closeModal("modalPricing"));
+
+      el("btnOpenAddons").addEventListener("click", () => openModal("modalAddons"));
+      el("btnCloseAddons").addEventListener("click", () => closeModal("modalAddons"));
+
+      el("btnOpenSitters").addEventListener("click", () => openModal("modalSitters"));
+      el("btnCloseSitters").addEventListener("click", () => closeModal("modalSitters"));
+
+      el("btnPrev").addEventListener("click", prevSitter);
+      el("btnNext").addEventListener("click", nextSitter);
+      el("btnSelectCenter").addEventListener("click", () => {
+        const staff = (state.sitters || []).map(normalizedSitter);
+        if (!staff.length) return;
+        const sitter = normalizedSitter(state.sitters[state.carouselIndex] || staff[0]);
+        state.selectedSitter = sitter;
+        renderSelectedSitter();
+        closeModal("modalSitters");
+      });
+
+      el("btnCopy").addEventListener("click", copyQuote);
+      el("btnOpenBooking").addEventListener("click", openBooking);
+      el("btnRequestBooking").addEventListener("click", openBooking);
+
+      el("btnCloseBooking").addEventListener("click", () => closeModal("modalBooking"));
+      el("btnSubmitBooking").addEventListener("click", submitBooking);
+
+      // Change sitter shortcut
+      el("btnChangeSitter").addEventListener("click", () => openModal("modalSitters"));
+
+      // Package selection
+      document.querySelectorAll(".pkgBtn").forEach(b => {
+        b.addEventListener("click", () => setPkg(b.getAttribute("data-pkg")));
+      });
+
+      // Inputs that change availability
+      ["startDate","endDate","zone"].forEach(id => {
+        el(id).addEventListener("change", () => {
+          renderPriceHints();
+          fetchAvailability();
+          recalc();
+        });
+      });
+
+      // Inputs that affect price
+      ["hours","dogs","cats","walkMinutes","taxiKm"].forEach(id => {
+        el(id).addEventListener("input", () => {
+          if (id === "hours") el("hoursOut").textContent = el("hours").value;
+          if (id === "walkMinutes"){
+            el("walkMinutesOut").textContent = el("walkMinutes").value;
+            el("walkCostOut").textContent = money(Number(el("walkMinutes").value) * Number(PRICES.add.walkPerMinute||0));
+          }
+          recalc();
+        });
+      });
+
+      ["puppy","meds","highcare","reactive","play","train","brush","homecare","concierge","pool","camera","bath","clean","pantry","meet"].forEach(id => {
+        el(id).addEventListener("change", recalc);
+      });
+
+      // Add-on tabs
+      document.querySelectorAll("#addonTabs .tab").forEach(t => {
+        t.addEventListener("click", () => setTab(t.getAttribute("data-tab")));
+      });
+
+      // Update method selection
+      document.querySelectorAll(".radioCard[data-upd]").forEach(c => {
+        c.addEventListener("click", () => setUpdateTier(c.getAttribute("data-upd")));
+      });
+
+      // Steppers
+      document.querySelectorAll("[data-stepper]").forEach(btn => {
+        btn.addEventListener("click", () => stepperAdjust(btn.getAttribute("data-stepper"), Number(btn.getAttribute("data-dir"))));
+      });
+
+      // Numeric stepper input manual typing
+      ["checkins","keys","taxi"].forEach(id => {
+        el(id).addEventListener("input", () => {
+          el(id).value = String(clamp(parseInt(el(id).value || "0", 10), 0, 999));
+          if (id === "checkins") el("checkinsOut").textContent = el(id).value;
+          if (id === "keys") el("keysOut").textContent = el(id).value;
+          if (id === "taxi") el("taxiOut").textContent = el(id).value;
+          recalc();
+        });
+      });
+
+      // Close modals when clicking outside modal content
+      ["modalPricing","modalAddons","modalSitters","modalBooking"].forEach(mid => {
+        el(mid).addEventListener("click", (e) => {
+          if (e.target === el(mid)) closeModal(mid);
+        });
+      });
+    }
+
+    function setDefaultDates(){
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2,"0");
+      const dd = String(now.getDate()).padStart(2,"0");
+      const today = `${yyyy}-${mm}-${dd}`;
+      el("startDate").value = today;
+      el("endDate").value = today;
+    }
+
+    async function boot(){
+      // Ensure logo is used
+      document.querySelector(".logoWrap img").src = CONFIG.logoUrl;
+
+      // Preview faces on button
+      (CONFIG.facePreviews || []).slice(0,3).forEach((src, i) => {
+        const img = document.getElementById("facePrev" + i);
+        if (img) img.src = src;
+      });
+
+      setDefaultDates();
+      wire();
+
+      await pingApi();
+      await fetchPricing();
+      renderPriceHints();
+      await fetchAvailability();
+      renderSelectedSitter();
+      recalc();
+    }
+
+    boot();
+  </script>
 </body>
 </html>
