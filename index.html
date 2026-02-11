@@ -390,35 +390,50 @@
     }
 
     .chooseSitterBtn{
-      height: 44px;
-      padding: 0 14px 0 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(232,210,162,0.22);
-      background: rgba(255,255,255,0.05);
+      min-height: 56px;
+      padding: 10px 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(232,210,162,0.26);
+      background: rgba(255,255,255,0.06);
       display:flex;
       align-items:center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 14px;
       cursor:pointer;
       transition: background .12s ease, transform .12s ease, border-color .12s ease;
     }
-    .chooseSitterBtn:hover{ background: rgba(255,255,255,0.07); border-color: rgba(232,210,162,0.34); transform: translateY(-1px); }
+    .chooseSitterBtn:hover{ background: rgba(255,255,255,0.085); border-color: rgba(232,210,162,0.38); transform: translateY(-1px); }
     .chooseSitterBtn:active{ transform: translateY(0); }
-    .avatarStack{
-      display:flex;
-      align-items:center;
-    }
+    .chooseSitterLeft{ display:flex; align-items:center; gap: 12px; min-width: 0; }
+    .avatarStack{ display:flex; align-items:center; gap: 10px; flex: 0 0 auto; }
     .avatarStack img{
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       border-radius: 999px;
-      border: 2px solid rgba(6,16,12,0.86);
+      border: 2px solid rgba(6,16,12,0.92);
       object-fit: cover;
       background: rgba(255,255,255,0.10);
-      box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.28);
     }
-    .avatarStack img:not(:first-child){ margin-left: -10px; }
-
+    .sitterBtnText{ min-width: 0; }
+    .sitterBtnTitle{ font-size: 13px; font-weight: 900; line-height: 1.1; letter-spacing: .2px; }
+    .sitterBtnSub{ font-size: 12px; opacity: 0.78; line-height: 1.15; margin-top: 3px; }
+    .chooseSitterCta{
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(232,210,162,0.28);
+      background: rgba(0,0,0,0.16);
+      color: rgba(232,210,162,0.98);
+      flex: 0 0 auto;
+    }
+    @media (max-width: 420px){
+      .chooseSitterBtn{ min-height: 52px; padding: 10px 12px; }
+      .avatarStack{ gap: 8px; }
+      .avatarStack img{ width: 30px; height: 30px; }
+    }
     .right{
       border-radius: var(--radius);
       border: 1px solid rgba(232, 210, 162, 0.16);
@@ -930,20 +945,20 @@
           </div>
 
           <!-- Step 4 -->
-          <div class="grid2 mt-3">
-            <div class="card">
-              <div class="stepTitle">
-                <div class="leftSide">
-                  <div class="stepBadge">4</div>
-                  <div>
-                    <h3>Add-ons and sitter</h3>
-                    <div class="sub">Premium add-ons, clear totals, verified staff.</div>
+                <button class="chooseSitterBtn" id="btnOpenSitters" type="button" aria-haspopup="dialog">
+                  <div class="chooseSitterLeft">
+                    <div class="avatarStack" aria-hidden="true">
+                      <img id="facePrev0" src="face1.png" onerror="this.style.display='none'">
+                      <img id="facePrev1" src="face2.png" onerror="this.style.display='none'">
+                      <img id="facePrev2" src="face3.png" onerror="this.style.display='none'">
+                    </div>
+                    <div class="sitterBtnText">
+                      <div class="sitterBtnTitle" id="sitterBtnTitle">Choose sitter</div>
+                      <div class="sitterBtnSub" id="sitterBtnSub">Verified selection required</div>
+                    </div>
                   </div>
-                </div>
-                <div class="label">No scroll on desktop</div>
-              </div>
-
-              <div class="grid2 mt-2">
+                  <div class="chooseSitterCta">Browse</div>
+                </button>
                 <button class="btn btnPrimary" id="btnOpenAddons">Customize add-ons</button>
                 <button class="chooseSitterBtn" id="btnOpenSitters">
                   <div class="flex items-center gap-3">
