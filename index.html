@@ -5,6 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PetGuardian Care | Care Estimate</title>
 
+  <!-- =========================
+       CONFIG (EDIT ME)
+       All editable variables live here.
+       ========================= -->
+  <script>
+  const CONFIG = {
+    // Paste your Apps Script Web App /exec URL here
+    apiBaseUrl: "https://script.google.com/macros/s/AKfycbzfqeIQFLpa155Gf-454kbaSQUEw9RpiqISwnPbSkfYPV-aU6LZlbTbkG5jv-sHe6jp/exec",
+  
+    // Assets (keep files in same GitHub folder as index.html)
+    logoUrl: "logo.png",
+    bgUrl: "bg.jpeg",
+    facePreviews: ["face1.png", "face2.png", "face3.png"],
+  
+    // Deposit percent
+    depositPercent: 0.50,
+  
+    // If true, show debug text in console
+    debug: false
+  };
+  </script>
+
+
   <script src="https://cdn.tailwindcss.com"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1679,24 +1702,6 @@
   </div>
 
   <script>
-    /********************
-     * CONFIG (EDIT ME)
-     ********************/
-    const CONFIG = {
-      // Paste your Apps Script Web App /exec URL here
-      apiBaseUrl: "https://script.google.com/macros/s/AKfycbzfqeIQFLpa155Gf-454kbaSQUEw9RpiqISwnPbSkfYPV-aU6LZlbTbkG5jv-sHe6jp/exec",
-
-      // Assets (keep files in same GitHub folder as index.html)
-      logoUrl: "logo.png",
-      bgUrl: "bg.jpeg",
-      facePreviews: ["face1.png", "face2.png", "face3.png"],
-
-      // Deposit percent
-      depositPercent: 0.50,
-
-      // If true, show debug text in console
-      debug: false
-    };
 
     /********************
      * DEFAULT PRICES (overridden by sheet pricing)
