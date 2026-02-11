@@ -152,6 +152,11 @@
       background: rgba(255,255,255,0.04);
       backdrop-filter: blur(8px);
     }
+  .apiPill{ cursor:pointer; border: 1px solid rgba(232,210,162,0.22); }
+  .apiPill:hover{ border-color: rgba(232,210,162,0.34); background: rgba(255,255,255,0.07); }
+  .apiPill:focus{ outline: 2px solid rgba(232,210,162,0.22); outline-offset: 2px; }
+  .apiPill:active{ transform: translateY(0.5px); }
+
 
     .btn{
       display:inline-flex;
@@ -932,10 +937,10 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <span class="pill">
+        <button class="pill apiPill" id="apiPill" type="button" aria-haspopup="dialog" title="API status">
           <span class="statusDot" id="apiDot"></span>
           <span id="apiStatus">API: checking</span>
-        </span>
+        </button>
 
         <button class="btn" id="btnPricingInfo">How pricing works</button>
         <button class="btn" id="btnCopy">Copy Quote</button>
@@ -1369,7 +1374,7 @@
               </div>
             </div>
 
-            <div class="card">
+            <div class="card" id="cardCheckins">
               <div class="stepTitle">
                 <div class="leftSide">
                   <div class="stepBadge">C</div>
@@ -1678,7 +1683,35 @@
     </div>
   </div>
 
-  <script>
+  
+  <!-- API Help Modal -->
+  <div class="overlay" id="modalApi">
+    <div class="modal">
+      <div class="modalHeader">
+        <h3>API connection help</h3>
+        <button class="btn" id="btnCloseApi" style="height:36px;">Close</button>
+      </div>
+      <div class="modalBody">
+        <p class="muted" style="margin-top:0;">Your phone could not reach the PetGuardian pricing API.</p>
+        <div class="card" style="padding:14px; margin: 10px 0;">
+          <div style="font-weight:800; margin-bottom:6px;">Try these fixes on Android</div>
+          <ul class="bul">
+            <li>Switch between Wi-Fi and mobile data and refresh the page.</li>
+            <li>Disable Private DNS: Settings → Network & internet → Private DNS → Automatic/Off.</li>
+            <li>Disable any ad blocker or VPN that may block script.google.com.</li>
+            <li>Hard refresh the site with: <span class="mono">?v=1</span> appended to the URL.</li>
+          </ul>
+        </div>
+        <div class="muted">You can open a direct API test. If it loads, the URL is correct.</div>
+      </div>
+      <div class="modalFooter" style="display:flex; gap:10px; justify-content:flex-end;">
+        <button class="btn" id="btnOpenApiTest">Open API test</button>
+        <button class="btn primary" id="btnCopyApiUrl">Copy API URL</button>
+      </div>
+    </div>
+  </div>
+
+<script>
     /********************
      * CONFIG (EDIT ME)
      ********************/
@@ -2467,10 +2500,27 @@
         hoursEl.style.opacity = (pkg === "day") ? "1" : "0.35";
       }
 
+      updateAddonsVisibility();
       renderStaySummary();
       fetchAvailability();
       recalc();
     }
+
+
+    function updateAddonsVisibility(){
+      // Extra check-ins only apply to Day Visits and Overnight
+      const showCheckins = (state.pkg !== "full");
+      const card = el("cardCheckins");
+      if (card) card.style.display = showCheckins ? "" : "none";
+
+      if (!showCheckins){
+        const inp = el("checkins");
+        if (inp) inp.value = "0";
+        const out = el("checkinsOut");
+        if (out) out.textContent = "0";
+      }
+    }
+
 
     function renderSelectedSitter(){
       const sitter = state.selectedSitter;
@@ -2742,11 +2792,33 @@ Total estimate: ${total}`;
       });
 
 
-      el("btnOpenAddons").addEventListener("click", () => openModal("modalAddons"));
+      el("btnOpenAddons").addEventListener("click", () => { updateAddonsVisibility(); openModal("modalAddons"); });
       el("btnCloseAddons").addEventListener("click", () => closeModal("modalAddons"));
 
       el("btnOpenSitters").addEventListener("click", () => openModal("modalSitters"));
       el("btnCloseSitters").addEventListener("click", () => closeModal("modalSitters"));
+
+      // API pill click (shows help if offline)
+      el("apiPill").addEventListener("click", () => {
+        if (!state.apiOk) openModal("modalApi");
+      });
+      el("btnCloseApi").addEventListener("click", () => closeModal("modalApi"));
+      el("btnOpenApiTest").addEventListener("click", () => {
+        const base = String(CONFIG.apiBaseUrl || "").trim();
+        if (!base) return;
+        const url = base + (base.includes("?") ? "&" : "?") + "callback=cbTest&reqId=" + Date.now();
+        window.open(url, "_blank");
+      });
+      el("btnCopyApiUrl").addEventListener("click", async () => {
+        const base = String(CONFIG.apiBaseUrl || "").trim();
+        try{
+          await navigator.clipboard.writeText(base);
+          el("btnCopyApiUrl").textContent = "Copied";
+          setTimeout(()=> el("btnCopyApiUrl").textContent = "Copy API URL", 1200);
+        }catch(e){
+          alert(base);
+        }
+      });
 
       el("btnPrev").addEventListener("click", prevSitter);
       el("btnNext").addEventListener("click", nextSitter);
