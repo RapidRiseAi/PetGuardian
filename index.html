@@ -2004,24 +2004,30 @@
       return String(raw || "").trim().replace(/\/+$/,"");
     }
 
-    function buildApiBaseCandidates(){
-      const bases = [];
-      const raw = normalizeBaseUrl(CONFIG.apiBaseUrl);
-      if(!raw) return bases;
-
-      bases.push(raw);
+    function expandApiBase(raw){
+      const base = normalizeBaseUrl(raw);
+      if(!base) return [];
+      const out = [base];
 
       // If it's the standard Apps Script web app URL, add /u/{n}/ variants
-      const m = raw.match(/^https:\/\/script\.google\.com\/macros\/s\/([^\/]+)\/exec(?:\?.*)?$/i);
+      const m = base.match(/^https:\/\/script\.google\.com\/macros\/s\/([^\/]+)\/exec(?:\?.*)?$/i);
       if(m){
         const id = m[1];
         for(let i=0;i<=2;i++){
-          bases.push(`https://script.google.com/macros/u/${i}/s/${id}/exec`);
+          out.push(`https://script.google.com/macros/u/${i}/s/${id}/exec`);
         }
         // Sometimes an account-bound cookie causes redirects; authuser=-1 can force anonymous
-        bases.push(`https://script.google.com/macros/s/${id}/exec?authuser=-1`);
-        bases.push(`https://script.google.com/macros/u/0/s/${id}/exec?authuser=-1`);
+        out.push(`https://script.google.com/macros/s/${id}/exec?authuser=-1`);
+        out.push(`https://script.google.com/macros/u/0/s/${id}/exec?authuser=-1`);
       }
+      return out;
+    }
+
+    function buildApiBaseCandidates(){
+      const bases = [
+        ...expandApiBase(CONFIG.apiBaseUrl),
+        ...expandApiBase(CONFIG.appsScriptExecUrl)
+      ];
 
       // Dedupe while preserving order
       return bases.filter((v, i) => v && bases.indexOf(v) === i);
@@ -2095,14 +2101,13 @@
     async function jsonp(params){
       const candidates = buildApiBaseCandidates();
 
-      // Prefer cached working base first, but ignore stale/old values when CONFIG changed
-      const configured = (CONFIG.apiBaseUrl || "").trim();
-      const configNorm = normalizeBaseUrl(configured);
+      // Prefer cached working base first, but ignore stale/old values that no longer exist in candidates
       let preferred = getApiBaseWorking();
       if(preferred){
         try {
           const prefNorm = normalizeBaseUrl(preferred);
-          if(configNorm && prefNorm && prefNorm !== configNorm) preferred = null;
+          const match = candidates.some(c => normalizeBaseUrl(c) === prefNorm);
+          if(!match) preferred = null;
         } catch(e){ preferred = null; }
       }
       if(preferred && !candidates.includes(preferred)) candidates.unshift(preferred);
