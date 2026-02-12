@@ -1510,7 +1510,7 @@
           </div>
 
           <div class="grid2 mt-3">
-            <div class="card">
+            <div class="card" id="walkMinutesCard" data-walk-hide="1">
               <div class="stepTitle">
                 <div class="leftSide">
                   <div class="stepBadge">B</div>
@@ -2399,7 +2399,8 @@
 
       const puppy = !!el("puppy").checked;
       const meds = !!el("meds").checked;
-      const walkMin = clamp(parseInt(el("walkMinutes").value || "0", 10), 0, 600);
+      const walkMinRaw = clamp(parseInt(el("walkMinutes").value || "0", 10), 0, 600);
+      const walkMin = walkMode ? 0 : walkMinRaw;
       el("walkMinutesOut").textContent = String(walkMin);
       const walkCostPerDay = walkMin * Number(PRICES.add.walkPerMinute || 0);
       el("walkCostOut").textContent = money(walkCostPerDay);
@@ -2719,6 +2720,13 @@
     function openModal(id){ el(id).classList.add("active"); }
     function closeModal(id){ el(id).classList.remove("active"); }
 
+    function resetWalkMinutesAddon(){
+      const walkSlider = el("walkMinutes");
+      if (walkSlider) walkSlider.value = "0";
+      if (el("walkMinutesOut")) el("walkMinutesOut").textContent = "0";
+      if (el("walkCostOut")) el("walkCostOut").textContent = money(0);
+    }
+
     function syncModeUI(){
       const walkMode = isWalkMode();
       if (el("dateRangeFields")) el("dateRangeFields").style.display = walkMode ? "none" : "";
@@ -2761,6 +2769,8 @@
         hoursEl.disabled = (pkg !== "day");
         hoursEl.style.opacity = (pkg === "day") ? "1" : "0.35";
       }
+
+      if (pkg === "walk") resetWalkMinutesAddon();
 
       syncModeUI();
       syncConditionalAddOns();
@@ -2956,7 +2966,7 @@ Total estimate: ${total}`;
         pets: { dogs: Number(el("dogs").value||0), cats: isWalkMode() ? 0 : Number(el("cats").value||0) },
         updateTier: currentUpdateTier(),
         checkinsPerDay: Number(el("checkins").value||0),
-        walkMinutesPerDay: Number(el("walkMinutes").value||0),
+        walkMinutesPerDay: isWalkMode() ? 0 : Number(el("walkMinutes").value||0),
         toggles: {
           meds: el("meds").checked,
           puppy: el("puppy").checked,
