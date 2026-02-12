@@ -2033,18 +2033,47 @@
       return bases.filter((v, i) => v && bases.indexOf(v) === i);
     }
 
+    const API_BASE_CACHE_KEY = "pg_api_base_working_v2";
+    const LEGACY_API_BASE_CACHE_KEY = "pg_api_base_working";
+    const API_BASE_CACHE_MAX_AGE_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
+
+    function getApiBaseCacheSignature(){
+      return buildApiBaseCandidates().map(normalizeBaseUrl).join("|");
+    }
+
     let _apiBaseWorking = null;
     function getApiBaseWorking(){
       if(_apiBaseWorking) return _apiBaseWorking;
       try{
-        const stored = localStorage.getItem("pg_api_base_working");
-        if(stored) _apiBaseWorking = stored;
+        const raw = localStorage.getItem(API_BASE_CACHE_KEY);
+        if(raw){
+          const parsed = JSON.parse(raw);
+          const ageMs = Date.now() - Number(parsed?.savedAt || 0);
+          const cachedSignature = String(parsed?.signature || "");
+          const currentSignature = getApiBaseCacheSignature();
+          const cachedUrl = normalizeBaseUrl(parsed?.url || "");
+
+          if(cachedUrl && cachedSignature === currentSignature && ageMs >= 0 && ageMs <= API_BASE_CACHE_MAX_AGE_MS){
+            _apiBaseWorking = cachedUrl;
+          }
+        }
       }catch(e){}
+
+      // One-time cleanup of older cache format to prevent stale API URLs from breaking normal tabs.
+      try{ localStorage.removeItem(LEGACY_API_BASE_CACHE_KEY); }catch(e){}
+
       return _apiBaseWorking || normalizeBaseUrl(CONFIG.apiBaseUrl);
     }
     function setApiBaseWorking(url){
-      _apiBaseWorking = url;
-      try{ localStorage.setItem("pg_api_base_working", url); }catch(e){}
+      const normalized = normalizeBaseUrl(url);
+      _apiBaseWorking = normalized;
+      try{
+        localStorage.setItem(API_BASE_CACHE_KEY, JSON.stringify({
+          url: normalized,
+          signature: getApiBaseCacheSignature(),
+          savedAt: Date.now()
+        }));
+      }catch(e){}
     }
 
     function jsonpOnce(baseUrl, params){
@@ -2064,6 +2093,8 @@
         let done = false;
         const script = document.createElement("script");
         script.async = true;
+        script.crossOrigin = "anonymous";
+        script.referrerPolicy = "no-referrer";
         script.src = url.toString();
 
         const cleanup = () => {
