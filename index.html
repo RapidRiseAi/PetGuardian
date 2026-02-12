@@ -2101,8 +2101,7 @@
     async function jsonp(params){
       const configured = buildApiBaseCandidates();
 
-      // Prefer stable configured order first (usually Worker), then cached base, then remaining candidates.
-      // This avoids sticky bad cache behavior that can appear in normal tabs while incognito still works.
+      // Prefer cached working base first, but ignore stale/old values that no longer exist in candidates
       const candidates = [];
       const addCandidate = (raw) => {
         const c = normalizeBaseUrl(raw);
@@ -2115,8 +2114,8 @@
       if (preferred){
         try {
           const prefNorm = normalizeBaseUrl(preferred);
-          const match = configured.some(c => normalizeBaseUrl(c) === prefNorm);
-          if (!match) preferred = null;
+          const match = candidates.some(c => normalizeBaseUrl(c) === prefNorm);
+          if(!match) preferred = null;
         } catch(e){ preferred = null; }
       }
       if (preferred) addCandidate(preferred);
