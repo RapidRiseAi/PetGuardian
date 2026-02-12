@@ -1116,8 +1116,18 @@
                     <input type="date" id="walkStartDate">
                   </label>
                   <label class="field">
-                    <span class="label">Number of weeks</span>
-                    <input type="number" id="walkWeeks" min="1" max="52" step="1" value="1">
+                    <span class="label">Billing option</span>
+                    <select id="walkBillingOption">
+                      <option value="once_off">Once-off</option>
+                      <option value="weekly_recurring">Weekly recurring</option>
+                      <option value="monthly_subscription">Monthly subscription</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="grid2 mt-3">
+                  <label class="field" id="walkWeeksField" style="display:none;">
+                    <span class="label">Weeks</span>
+                    <input type="number" id="walkWeeks" min="1" max="12" step="1" value="1">
                   </label>
                 </div>
                 <div class="mt-3">
@@ -1146,7 +1156,7 @@
                   </div>
                   <input id="walkMinutesPerWalk" type="range" min="5" max="120" step="5" value="30">
                 </div>
-                <div class="hint mt-2">End date auto-calculated: <span id="walkEndDateOut">--</span>. Total walks: <span id="walkTotalOut">0</span>.</div>
+                <div class="hint mt-2">End date auto-calculated: <span id="walkEndDateOut">--</span>. <span id="walkTotalsSummary">Total walks: <span id="walkTotalOut">0</span>.</span></div>
               </div>
 
               <label class="field mt-3">
@@ -1183,6 +1193,15 @@
                   <span class="label">Cats</span>
                   <input id="cats" type="number" min="0" step="1" value="0">
                 </div>
+              </div>
+
+              <div class="field mt-3" id="walkTravelEstimateField" style="display:none;">
+                <div class="stepTitle" style="margin-bottom:8px;">
+                  <div class="leftSide"><h3>Travel estimate per walk</h3></div>
+                  <div class="label">R<span id="walkTravelEstimateOut">25</span></div>
+                </div>
+                <input id="walkTravelEstimatePerWalk" type="range" min="0" max="50" step="1" value="25">
+                <div class="hint mt-2">Travel estimate ranges from R0 to R50 per walk depending on location and will be confirmed afterwards.</div>
               </div>
 
               <div class="grid2 mt-3">
@@ -1293,6 +1312,7 @@
           <div class="row"><span id="discountRowLabel">Long-stay discount</span><strong id="discountOut">R0</strong></div>
           <div class="row"><span>One-time fees</span><strong id="oneTimeOut">R0</strong></div>
         </div>
+        <div class="hint mt-2" id="monthlyEstimateNote" style="display:none;">Monthly subscription is estimated using 4.3 weeks per month. Actual calendar months vary.</div>
 
         <div class="lineItems">
           <div class="lineItemsHeader">
@@ -1926,6 +1946,10 @@
       return `${y}-${m}-${d}`;
     }
     function selectedWalkDaysCount(){ return Math.max(0, state.walkDays.length); }
+    function getWalkBillingOption(){
+      const raw = el("walkBillingOption")?.value || "once_off";
+      return ["once_off","weekly_recurring","monthly_subscription"].includes(raw) ? raw : "once_off";
+    }
 
     function isPeakDate(dateObj){
       // Peak rule (can be upgraded later to fully custom ranges)
@@ -1980,24 +2004,30 @@
       return String(raw || "").trim().replace(/\/+$/,"");
     }
 
-    function buildApiBaseCandidates(){
-      const bases = [];
-      const raw = normalizeBaseUrl(CONFIG.apiBaseUrl);
-      if(!raw) return bases;
-
-      bases.push(raw);
+    function expandApiBase(raw){
+      const base = normalizeBaseUrl(raw);
+      if(!base) return [];
+      const out = [base];
 
       // If it's the standard Apps Script web app URL, add /u/{n}/ variants
-      const m = raw.match(/^https:\/\/script\.google\.com\/macros\/s\/([^\/]+)\/exec(?:\?.*)?$/i);
+      const m = base.match(/^https:\/\/script\.google\.com\/macros\/s\/([^\/]+)\/exec(?:\?.*)?$/i);
       if(m){
         const id = m[1];
         for(let i=0;i<=2;i++){
-          bases.push(`https://script.google.com/macros/u/${i}/s/${id}/exec`);
+          out.push(`https://script.google.com/macros/u/${i}/s/${id}/exec`);
         }
         // Sometimes an account-bound cookie causes redirects; authuser=-1 can force anonymous
-        bases.push(`https://script.google.com/macros/s/${id}/exec?authuser=-1`);
-        bases.push(`https://script.google.com/macros/u/0/s/${id}/exec?authuser=-1`);
+        out.push(`https://script.google.com/macros/s/${id}/exec?authuser=-1`);
+        out.push(`https://script.google.com/macros/u/0/s/${id}/exec?authuser=-1`);
       }
+      return out;
+    }
+
+    function buildApiBaseCandidates(){
+      const bases = [
+        ...expandApiBase(CONFIG.apiBaseUrl),
+        ...expandApiBase(CONFIG.appsScriptExecUrl)
+      ];
 
       // Dedupe while preserving order
       return bases.filter((v, i) => v && bases.indexOf(v) === i);
@@ -2071,14 +2101,13 @@
     async function jsonp(params){
       const candidates = buildApiBaseCandidates();
 
-      // Prefer cached working base first, but ignore stale/old values when CONFIG changed
-      const configured = (CONFIG.apiBaseUrl || "").trim();
-      const configNorm = normalizeBaseUrl(configured);
+      // Prefer cached working base first, but ignore stale/old values that no longer exist in candidates
       let preferred = getApiBaseWorking();
       if(preferred){
         try {
           const prefNorm = normalizeBaseUrl(preferred);
-          if(configNorm && prefNorm && prefNorm !== configNorm) preferred = null;
+          const match = candidates.some(c => normalizeBaseUrl(c) === prefNorm);
+          if(!match) preferred = null;
         } catch(e){ preferred = null; }
       }
       if(preferred && !candidates.includes(preferred)) candidates.unshift(preferred);
@@ -2320,7 +2349,7 @@
         if (subTextEl) subTextEl.textContent = "Scheduled walks by week/day/time.";
         if (hoursPill) hoursPill.classList.add("isHidden");
         if (rateEl) rateEl.textContent = "R1/min/walk/dog";
-        if (el("dayOnlyHint")) el("dayOnlyHint").textContent = "Travel is charged per walk by zone.";
+        if (el("dayOnlyHint")) el("dayOnlyHint").textContent = "Travel estimate ranges from R0 to R50 per walk and is confirmed afterwards.";
       }
     }
 
@@ -2353,6 +2382,8 @@
       const walkMode = isWalkMode();
       const zone = el("zone").value;
       const travel = Number(PRICES.travelPerDay[zone] || 0);
+      const billingOption = getWalkBillingOption();
+      syncWalkBillingUI();
 
       // schedule values
       let start = el("startDate").value;
@@ -2361,11 +2392,15 @@
       let peakApplied = bookingHasPeak(start, end);
       let peakMult = peakApplied ? Number(PRICES.peakMultiplier || 1) : 1;
 
-      const walkWeeks = clamp(parseInt(el("walkWeeks")?.value || "1", 10), 1, 52);
+      const walkWeeksInput = clamp(parseInt(el("walkWeeks")?.value || "1", 10), 1, 12);
+      const walkWeeks = (billingOption === "weekly_recurring") ? walkWeeksInput : 1;
       const walksPerDay = clamp(parseInt(el("walksPerDay")?.value || "1", 10), 1, 8);
       const walkMinutesPerWalk = clamp(parseInt(el("walkMinutesPerWalk")?.value || "30", 10), 5, 120);
+      const walkTravelEstimatePerWalk = clamp(parseInt(el("walkTravelEstimatePerWalk")?.value || "25", 10), 0, 50);
       const selectedDays = selectedWalkDaysCount();
-      const totalWalks = walkWeeks * selectedDays * walksPerDay;
+      const weeklyWalks = selectedDays * walksPerDay;
+      const totalWalks = walkWeeks * weeklyWalks;
+      const billedWalks = (billingOption === "monthly_subscription") ? (weeklyWalks * 4.3) : totalWalks;
 
       if (walkMode){
         start = el("walkStartDate").value || el("startDate").value;
@@ -2378,15 +2413,22 @@
         peakMult = 1;
         if (el("cats")) el("cats").value = "0";
         if (el("walkEndDateOut")) el("walkEndDateOut").textContent = end;
-        if (el("walkTotalOut")) el("walkTotalOut").textContent = String(totalWalks);
+        if (el("walkTotalOut")) el("walkTotalOut").textContent = (billingOption === "monthly_subscription") ? billedWalks.toFixed(1) : String(totalWalks);
+        if (el("walkTotalsSummary")) {
+          el("walkTotalsSummary").textContent = (billingOption === "monthly_subscription")
+            ? `Weekly walks: ${weeklyWalks}. Billed walks (4.3 weeks): ${billedWalks.toFixed(1)}.`
+            : `Total walks: ${totalWalks}.`;
+        }
         if (el("walkMinutesPerWalkOut")) el("walkMinutesPerWalkOut").textContent = String(walkMinutesPerWalk);
+        if (el("walkTravelEstimateOut")) el("walkTravelEstimateOut").textContent = String(walkTravelEstimatePerWalk);
+        if (el("walkWeeks")) el("walkWeeks").value = String(walkWeeks);
       }
 
-      el("daysOut").textContent = String(walkMode ? totalWalks : days);
-      el("travelOut").textContent = String(Math.round(travel));
+      el("daysOut").textContent = String(walkMode ? ((billingOption === "monthly_subscription") ? billedWalks.toFixed(1) : totalWalks) : days);
+      el("travelOut").textContent = String(Math.round(walkMode ? walkTravelEstimatePerWalk : travel));
       el("peakNote").textContent = walkMode ? "Walk schedule" : (peakApplied ? "Peak pricing" : "Standard dates");
       el("peakAppliedOut").textContent = walkMode
-        ? "Walk mode: end date is auto-calculated from weeks. Long-stay discounts are disabled."
+        ? "Walk mode: end date is auto-calculated from your billing option and schedule. Long-stay discounts are disabled."
         : (peakApplied ? "Peak dates detected in your booking range (June to July, or Dec to 15 Jan)." : "No peak dates detected in your booking range.");
 
       const dogs = Math.max(0, parseInt(el("dogs").value || "0", 10));
@@ -2429,8 +2471,9 @@
       let total = 0, deposit = 0, balance = 0, discountAmt = 0, baseTotal = 0, addonsTotal = 0, oneTime = 0;
 
       if (walkMode){
-        baseTotal = dogs * walkMinutesPerWalk * totalWalks * 1;
-        addonsTotal = travel * totalWalks;
+        const perWalkBase = dogs * walkMinutesPerWalk * 1;
+        baseTotal = perWalkBase * billedWalks;
+        addonsTotal = walkTravelEstimatePerWalk * billedWalks;
         oneTime = 0;
         total = baseTotal + addonsTotal;
       } else {
@@ -2478,6 +2521,9 @@
       el("addonsOut").textContent = money(addonsTotal);
       el("discountOut").textContent = discountAmt > 0 ? ("-" + money(discountAmt)) : money(0);
       el("oneTimeOut").textContent = money(oneTime);
+      if (el("monthlyEstimateNote")) {
+        el("monthlyEstimateNote").style.display = (walkMode && billingOption === "monthly_subscription") ? "" : "none";
+      }
       el("bookingTotalOut").textContent = money(total);
       el("bookingDepositOut").textContent = money(deposit);
       el("bookingSitterOut").textContent = state.selectedSitter ? state.selectedSitter.name : "None";
@@ -2491,7 +2537,8 @@
         updateTier: currentUpdateTier(), updatePerDay: getUpdatePerDay(), checkins, walkMin,
         meds, puppy, highcare, reactive, play, train, brush, homecare, concierge, pool, pantry,
         keys, taxi, taxiKm, meet, bath, camera, clean,
-        walkWeeks, walksPerDay, walkMinutesPerWalk, totalWalks, dogs
+        walkWeeks, walksPerDay, walkMinutesPerWalk, totalWalks, dogs,
+        billingOption, weeklyWalks, billedWalks, walkTravelEstimatePerWalk
       });
     }
 
@@ -2501,16 +2548,19 @@
       body.innerHTML = "";
 
       if (ctx.walkMode){
+        const walkCountLabel = (ctx.billingOption === "monthly_subscription")
+          ? `Billed walks (4.3 weeks): ${ctx.billedWalks.toFixed(1)}`
+          : `${ctx.totalWalks} walk(s)`;
         const lines = [
           {
             title: "Dog walks base",
-            meta: `${ctx.dogs} dog(s) x ${ctx.walkMinutesPerWalk} min x ${ctx.totalWalks} walk(s)`,
-            total: ctx.dogs * ctx.walkMinutesPerWalk * ctx.totalWalks
+            meta: `${ctx.dogs} dog(s) x ${ctx.walkMinutesPerWalk} min x ${walkCountLabel}`,
+            total: ctx.dogs * ctx.walkMinutesPerWalk * ctx.billedWalks
           },
           {
-            title: "Travel fee (zone)",
-            meta: `${money(ctx.travel)} per walk x ${ctx.totalWalks} walk(s)`,
-            total: ctx.travel * ctx.totalWalks
+            title: "Estimated travel (R0–R50 per walk)",
+            meta: `R${ctx.walkTravelEstimatePerWalk} per walk x ${walkCountLabel}`,
+            total: ctx.walkTravelEstimatePerWalk * ctx.billedWalks
           }
         ];
         lines.forEach(li => {
@@ -2731,8 +2781,9 @@
       const walkMode = isWalkMode();
       if (el("dateRangeFields")) el("dateRangeFields").style.display = walkMode ? "none" : "";
       if (el("walkScheduleFields")) el("walkScheduleFields").style.display = walkMode ? "" : "none";
+      syncWalkBillingUI();
       if (el("catsField")) el("catsField").style.display = walkMode ? "none" : "";
-      if (el("travelLabel")) el("travelLabel").textContent = walkMode ? "Travel per walk" : "Travel per day";
+      if (el("travelLabel")) el("travelLabel").textContent = walkMode ? "Travel estimate per walk" : "Travel per day";
       if (el("daysLabel")) el("daysLabel").textContent = walkMode ? "Walks" : "Days";
       if (el("baseRowLabel")) el("baseRowLabel").textContent = walkMode ? "Walks base" : "Base stay";
       if (el("discountRowLabel")) el("discountRowLabel").textContent = walkMode ? "Discount" : "Long-stay discount";
@@ -2743,6 +2794,14 @@
       if (walkMode && (el("tab-home")?.style.display !== "none" || el("tab-transport")?.style.display !== "none" || el("tab-discounts")?.style.display !== "none")){
         setTab("care");
       }
+    }
+
+    function syncWalkBillingUI(){
+      const walkMode = isWalkMode();
+      const billingOption = getWalkBillingOption();
+      if (el("walkWeeksField")) el("walkWeeksField").style.display = (walkMode && billingOption === "weekly_recurring") ? "" : "none";
+      if (el("walkTravelEstimateField")) el("walkTravelEstimateField").style.display = walkMode ? "" : "none";
+      if (billingOption !== "weekly_recurring" && el("walkWeeks")) el("walkWeeks").value = "1";
     }
 
     function syncConditionalAddOns(){
@@ -2991,14 +3050,24 @@ Total estimate: ${total}`;
         }
       };
       if (isWalkMode()){
+        const billingOption = getWalkBillingOption();
+        const selectedDaysCount = selectedWalkDaysCount();
+        const walksPerSelectedDay = Number(el("walksPerDay").value || 1);
+        const weeklyWalks = selectedDaysCount * walksPerSelectedDay;
+        const weeks = billingOption === "weekly_recurring" ? Number(el("walkWeeks").value || 1) : 1;
+        const billedWalks = billingOption === "monthly_subscription" ? (weeklyWalks * 4.3) : (weeklyWalks * weeks);
         selections.walkSchedule = {
+          billingOption,
           startDate: el("walkStartDate").value || el("startDate").value,
-          weeks: Number(el("walkWeeks").value || 1),
+          weeks,
           daysSelected: state.walkDays,
-          walksPerDay: Number(el("walksPerDay").value || 1),
+          walksPerSelectedDay,
           timeWindow: el("walkTimeWindow").value,
           minutesPerWalk: Number(el("walkMinutesPerWalk").value || 30),
-          totalWalks: Number(el("walkTotalOut").textContent || 0)
+          weeklyWalks,
+          billedWalks,
+          totalWalks: billedWalks,
+          travelEstimatePerWalk: Number(el("walkTravelEstimatePerWalk").value || 25)
         };
       }
 
@@ -3013,6 +3082,7 @@ Total estimate: ${total}`;
       el("bookingResult").textContent = "Submitting booking request...";
 
       try{
+        const walkSchedule = isWalkMode() ? (selections.walkSchedule || {}) : {};
         const res = await jsonp({
           action: "booking",
           ts: new Date().toISOString(),
@@ -3025,11 +3095,19 @@ Total estimate: ${total}`;
           pkg: state.pkg,
           start, end,
           days,
+          billingOption: walkSchedule.billingOption || "",
+          weeklyWalks: walkSchedule.weeklyWalks ?? "",
+          billedWalks: walkSchedule.billedWalks ?? "",
+          travelEstimatePerWalk: walkSchedule.travelEstimatePerWalk ?? "",
+          minutesPerWalk: walkSchedule.minutesPerWalk ?? "",
+          walkDaysSelected: (walkSchedule.daysSelected || []).join(","),
+          walksPerSelectedDay: walkSchedule.walksPerSelectedDay ?? "",
+          weeks: walkSchedule.weeks ?? "",
           total: totalNum,
           deposit: depositNum,
           balance: balanceNum,
           selectionsJson: JSON.stringify(selections),
-          walkScheduleJson: isWalkMode() ? JSON.stringify(selections.walkSchedule || {}) : ""
+          walkScheduleJson: isWalkMode() ? JSON.stringify(walkSchedule) : ""
         });
 
         if (res && res.ok){
@@ -3115,7 +3193,7 @@ Total estimate: ${total}`;
       });
 
       // Inputs that change availability
-      ["startDate","endDate","zone","walkStartDate","walkWeeks","walksPerDay","walkTimeWindow"].forEach(id => {
+      ["startDate","endDate","zone","walkStartDate","walkWeeks","walksPerDay","walkTimeWindow","walkBillingOption"].forEach(id => {
         el(id).addEventListener("change", () => {
           renderPriceHints();
           recalc();
@@ -3124,7 +3202,7 @@ Total estimate: ${total}`;
       });
 
       // Inputs that affect price
-      ["hours","dogs","cats","walkMinutes","taxiKm","walkMinutesPerWalk"].forEach(id => {
+      ["hours","dogs","cats","walkMinutes","taxiKm","walkMinutesPerWalk","walkTravelEstimatePerWalk"].forEach(id => {
         el(id).addEventListener("input", () => {
           if (id === "hours"){
             el("hoursOut").textContent = el("hours").value;
