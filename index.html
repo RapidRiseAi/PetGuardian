@@ -41,20 +41,22 @@
       <section class="left">
         <div class="leftScroll">
           <div class="stepAccordion">
-            <div class="card stepCard" data-step-card="1">
-              <button class="stepHeader" type="button" data-step-toggle="1" aria-expanded="true">
-                <div class="leftSide">
-                  <div class="stepBadge">1</div>
-                  <div>
-                    <h3>Product options</h3>
-                    <div class="sub">Choose the product option. Add-ons apply on top.</div>
+            <div class="card stepCard card-lifted" data-step-card="1">
+              <div class="stepHeader">
+                <button class="stepHeaderMain" type="button" data-step-toggle="1" aria-expanded="true">
+                  <div class="leftSide">
+                    <div class="stepBadge">1</div>
+                    <div>
+                      <h3>Product options</h3>
+                      <div class="sub">Choose the product option. Add-ons apply on top.</div>
+                    </div>
                   </div>
-                </div>
+                </button>
                 <div class="stepHeaderRight">
                   <div class="pill" id="peakNote"></div>
-                  <span class="stepEditLink">Edit</span><span class="stepChevron">▾</span>
+                  <button type="button" class="btn-accent-soft btn-edit" data-step-edit-header="1">Edit</button><span class="stepChevron">▾</span>
                 </div>
-              </button>
+              </div>
               <div class="stepSummary" data-step-summary="1"></div>
               <div class="stepBody" data-step-body="1">
                 <button class="stayBtn" id="btnOpenStay" type="button" aria-haspopup="dialog">
@@ -81,20 +83,22 @@
               </div>
             </div>
 
-            <div class="card stepCard" data-step-card="2">
-              <button class="stepHeader" type="button" data-step-toggle="2" aria-expanded="false">
-                <div class="leftSide">
-                  <div class="stepBadge">2</div>
-                  <div>
-                    <h3 id="scheduleTitle">When and where?</h3>
-                    <div class="sub" id="scheduleSub">Peak dates and long-stay discounts are calculated automatically.</div>
+            <div class="card stepCard card-lifted" data-step-card="2">
+              <div class="stepHeader">
+                <button class="stepHeaderMain" type="button" data-step-toggle="2" aria-expanded="false">
+                  <div class="leftSide">
+                    <div class="stepBadge">2</div>
+                    <div>
+                      <h3 id="scheduleTitle">When and where?</h3>
+                      <div class="sub" id="scheduleSub">Peak dates and long-stay discounts are calculated automatically.</div>
+                    </div>
                   </div>
-                </div>
+                </button>
                 <div class="stepHeaderRight">
                   <div class="label"><span id="daysLabel">Days</span>: <span id="daysOut">1</span></div>
-                  <span class="stepEditLink">Edit</span><span class="stepChevron">▾</span>
+                  <button type="button" class="btn-accent-soft btn-edit" data-step-edit-header="2">Edit</button><span class="stepChevron">▾</span>
                 </div>
-              </button>
+              </div>
               <div class="stepSummary" data-step-summary="2"></div>
               <div class="stepBody" data-step-body="2">
                 <div class="grid2" id="dateRangeFields">
@@ -173,20 +177,22 @@
               </div>
             </div>
 
-            <div class="card stepCard" data-step-card="3">
-              <button class="stepHeader" type="button" data-step-toggle="3" aria-expanded="false">
-                <div class="leftSide">
-                  <div class="stepBadge">3</div>
-                  <div>
-                    <h3>Pets and essentials</h3>
-                    <div class="sub">First pet included. Extra pets add a daily care fee.</div>
+            <div class="card stepCard card-lifted" data-step-card="3">
+              <div class="stepHeader">
+                <button class="stepHeaderMain" type="button" data-step-toggle="3" aria-expanded="false">
+                  <div class="leftSide">
+                    <div class="stepBadge">3</div>
+                    <div>
+                      <h3>Pets and essentials</h3>
+                      <div class="sub">First pet included. Extra pets add a daily care fee.</div>
+                    </div>
                   </div>
-                </div>
+                </button>
                 <div class="stepHeaderRight">
                   <div class="label"><span id="travelLabel">Travel per day</span>: R<span id="travelOut">0</span></div>
-                  <span class="stepEditLink">Edit</span><span class="stepChevron">▾</span>
+                  <button type="button" class="btn-accent-soft btn-edit" data-step-edit-header="3">Edit</button><span class="stepChevron">▾</span>
                 </div>
-              </button>
+              </div>
               <div class="stepSummary" data-step-summary="3"></div>
               <div class="stepBody" data-step-body="3">
                 <div class="grid2 petsGrid">
@@ -242,20 +248,22 @@
               </div>
             </div>
 
-            <div class="card stepCard" data-step-card="4">
-              <button class="stepHeader" type="button" data-step-toggle="4" aria-expanded="false">
-                <div class="leftSide">
-                  <div class="stepBadge">4</div>
-                  <div>
-                    <h3>Add-ons and sitter</h3>
-                    <div class="sub">Customize add-ons, then choose a verified sitter to submit your request.</div>
+            <div class="card stepCard card-lifted" data-step-card="4">
+              <div class="stepHeader">
+                <button class="stepHeaderMain" type="button" data-step-toggle="4" aria-expanded="false">
+                  <div class="leftSide">
+                    <div class="stepBadge">4</div>
+                    <div>
+                      <h3>Add-ons and sitter</h3>
+                      <div class="sub">Customize add-ons, then choose a verified sitter to submit your request.</div>
+                    </div>
                   </div>
-                </div>
+                </button>
                 <div class="stepHeaderRight">
                   <div class="pill" id="sittersCountPill">Sitters: --</div>
-                  <span class="stepEditLink">Edit</span><span class="stepChevron">▾</span>
+                  <button type="button" class="btn-accent-soft btn-edit" data-step-edit-header="4">Edit</button><span class="stepChevron">▾</span>
                 </div>
-              </button>
+              </div>
               <div class="stepSummary" data-step-summary="4"></div>
               <div class="stepBody" data-step-body="4">
                 <div class="actionRow">
@@ -318,7 +326,7 @@
         </div>
       </section>
 
-      <aside class="right card quoteCard">
+      <aside class="right card quoteCard card-lifted">
         <div class="quoteTop">
           <div>
             <h2>Your Care Quote</h2>
@@ -329,20 +337,20 @@
         <div class="hint" id="quoteWarnings"></div>
 
         <div class="rows">
-          <div class="row rowItem"><span class="iconBox" aria-hidden="true">•</span><span class="rowLabel" id="baseRowLabel">Base stay</span><strong id="baseOut">R0</strong></div>
-          <div class="row rowItem"><span class="iconBox" aria-hidden="true">+</span><span class="rowLabel">Add-ons</span><strong id="addonsOut">R0</strong></div>
-          <div class="row rowItem"><span class="iconBox" aria-hidden="true">◦</span><span class="rowLabel" id="discountRowLabel">Discounts</span><strong id="discountOut">R0</strong></div>
+          <div class="row rowItem row-tile"><span class="iconBox" aria-hidden="true">•</span><span class="rowLabel" id="baseRowLabel">Base stay</span><strong id="baseOut">R0</strong></div>
+          <div class="row rowItem row-tile"><span class="iconBox" aria-hidden="true">+</span><span class="rowLabel">Add-ons</span><strong id="addonsOut">R0</strong></div>
+          <div class="row rowItem row-tile"><span class="iconBox" aria-hidden="true">◦</span><span class="rowLabel" id="discountRowLabel">Long-stay discount</span><strong id="discountOut">R0</strong></div>
         </div>
         <div class="hint mt-2" id="monthlyEstimateNote" style="display:none;">Monthly subscription is estimated using 4.3 weeks per month. Actual calendar months vary.</div>
 
         <div class="lineItems" id="fullBreakdown">
-          <button type="button" class="lineItemsHeader" id="fullBreakdownToggle" aria-expanded="false" aria-controls="fullBreakdownPanel">
-            <span class="iconBox" aria-hidden="true"><span class="lineDot"></span></span>
+          <button type="button" class="lineItemsHeader breakdown-toggle" id="fullBreakdownToggle" aria-expanded="false" aria-controls="fullBreakdownPanel">
+            <span class="iconBox breakdownIcon" aria-hidden="true"><span class="lineDot"></span></span>
             <span class="rowLabel">Full breakdown</span>
             <span class="label">Unit x multiplier</span>
             <span class="lineChevron" aria-hidden="true">⌄</span>
           </button>
-          <div class="lineItemsBody" id="fullBreakdownPanel" hidden>
+          <div class="lineItemsBody breakdown-panel" id="fullBreakdownPanel" hidden>
             <div class="row"><span>One-time fees</span><strong id="oneTimeOut">R0</strong></div>
             <div id="lineItemsBody">
               <div class="label">No add-ons selected yet.</div>
@@ -366,7 +374,7 @@
 
   <!-- Pricing info modal -->
   <div class="modalOverlay" id="modalPricing">
-    <div class="modal">
+    <div class="modal card-lifted">
       <div class="modalHeader">
         <h3>How pricing works</h3>
         <button class="btn" id="btnClosePricing" style="height:36px;">Close</button>
@@ -418,7 +426,7 @@
 
   <!-- Product options modal -->
   <div class="modalOverlay" id="modalStay">
-    <div class="modal modalWide">
+    <div class="modal modalWide card-lifted">
       <div class="modalHeader">
         <h3>Choose product option</h3>
         <button class="iconClose" id="btnCloseStay" type="button" aria-label="Close product options">✕</button>
@@ -822,7 +830,7 @@
 
           <div class="modalFooter">
             <button class="btn" id="btnPrev">Prev</button>
-            <button class="btn btnPrimary" id="btnSelectCenter">Select Center</button>
+            <button class="btn btnPrimary" id="btnSelectCenter">Select sitter</button>
             <button class="btn" id="btnNext">Next</button>
           </div>
 
