@@ -474,3 +474,42 @@ button:hover,.btn:hover{opacity:1 !important;}
   .stepHeader{flex-wrap:wrap;}
   .stepHeaderRight{width:100%;justify-content:space-between;}
 }
+
+/* Premium step card collapsed layout */
+.stepHeader{
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:start;
+  gap:10px;
+  padding:16px 16px 14px;
+}
+.stepHeaderMain{align-items:flex-start;}
+.stepHeader h3{font-size:15.5px;font-weight:600;color:var(--text);}
+.stepHeaderRight{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.stepMetaChip{
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:999px;
+  padding:6px 10px;
+  font-size:12px;
+  color:var(--text-2);
+  white-space:nowrap;
+}
+.btn-edit{height:30px;font-size:12px;padding:0 11px;}
+
+.stepCard .stepBody{padding:0 16px 18px;}
+.stepCard[data-collapsed="1"] .stepBody{display:none;}
+.stepCard[data-collapsed="1"] .stepHeader .sub{display:none;}
+.stepSummary{display:none;padding:0 16px 16px;}
+.stepCard[data-collapsed="1"] .stepSummary{display:block;}
+.stepSummaryHelper{font-size:12px;color:var(--text-3);margin-top:3px;}
+.stepSummaryValue{font-size:14px;font-weight:550;color:var(--text-2);margin-top:9px;line-height:1.45;}
+
+@media (max-width:520px){
+  .stepHeader{grid-template-columns:1fr;}
+  .stepHeaderRight{justify-content:flex-start;}
+}
