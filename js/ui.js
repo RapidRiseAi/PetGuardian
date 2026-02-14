@@ -57,23 +57,52 @@ function stepIsComplete(step){
 
 function stepSummaryText(step){
   if (step === 1){
-    const title = el("stayTitle")?.textContent || "Product";
+    const title = el("stayTitle")?.textContent || "Selected";
     const hours = clamp(parseInt(el("hours")?.value || "4", 10), 1, 12);
-    return (state.pkg === "day") ? `${title}, ${hours} hours` : title;
+    return (state.pkg === "day") ? `${title} · ${hours} hours` : title;
   }
   if (step === 2){
     const zone = el("zone")?.selectedOptions?.[0]?.textContent || "No zone";
-    const start = el("startDate")?.value || "--";
-    const end = el("endDate")?.value || "--";
-    return `${start} to ${end}, ${zone}`;
+    const start = el("startDate")?.value || "";
+    const end = el("endDate")?.value || "";
+    const dateRange = formatDateRange(start, end);
+    const daysValue = el("daysOut")?.textContent || "";
+    const dayLabel = (Number(daysValue) === 1) ? "day" : "days";
+    return [dateRange, zone, daysValue ? `${daysValue} ${dayLabel}` : ""].filter(Boolean).join(" · ");
   }
   if (step === 3){
     const dogs = Math.max(0, parseInt(el("dogs")?.value || "0", 10));
     const cats = isWalkMode() ? 0 : Math.max(0, parseInt(el("cats")?.value || "0", 10));
-    return `Dogs ${dogs}, Cats ${cats}, Puppy care ${el("puppy")?.checked ? "on" : "off"}, Oral meds ${el("meds")?.checked ? "on" : "off"}`;
+    const tags = [];
+    if (el("puppy")?.checked) tags.push("Puppy care");
+    if (el("meds")?.checked) tags.push("Oral meds");
+    return [`${dogs} dog${dogs === 1 ? "" : "s"}`, `${cats} cat${cats === 1 ? "" : "s"}`, ...tags].join(" · ");
   }
   const addonCount = ["highcare","reactive","play","train","brush","homecare","concierge","pool","camera","bath","clean","pantry","meet"].filter((id) => !!el(id)?.checked).length;
-  return `${addonCount} add-ons, ${state.selectedSitter ? "sitter selected" : "sitter not selected"}`;
+  return `${addonCount} add-on${addonCount === 1 ? "" : "s"} · ${state.selectedSitter ? (state.selectedSitter.name || "Sitter selected") : "No sitter selected"}`;
+}
+
+function stepHelperText(step){
+  if (step === 1) return "Choose the product option. Add-ons apply on top.";
+  if (step === 2) return "Peak dates and long-stay discounts are calculated automatically.";
+  if (step === 3) return "First pet included. Extra pets add a daily care fee.";
+  return "Customize add-ons, then choose a verified sitter to submit your request.";
+}
+
+function formatDateHuman(isoDate){
+  if (!isoDate) return "";
+  const d = new Date(`${isoDate}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function formatDateRange(startIso, endIso){
+  const start = formatDateHuman(startIso);
+  const end = formatDateHuman(endIso);
+  if (!start && !end) return "No dates selected";
+  if (start && end && start === end) return start;
+  if (start && end) return `${start} → ${end}`;
+  return start || end;
 }
 
 function stepValidationMessage(step){
@@ -93,19 +122,15 @@ function setOpenStep(step){
     const toggle = card.querySelector("[data-step-toggle]");
     if (toggle) toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
     const summary = card.querySelector(`[data-step-summary='${n}']`);
-    const title = card.querySelector("h3")?.textContent || `Step ${n}`;
     if (summary){
       if (!isOpen){
-        summary.innerHTML = `<span class="stepSummaryTitle">${escapeHtml(title)}</span><span class="stepSummaryText">${escapeHtml(stepSummaryText(n))}</span><button type="button" class="btn btnTertiary" data-step-edit="${n}">Edit</button>`;
+        summary.innerHTML = `<div class="stepSummaryHelper">${escapeHtml(stepHelperText(n))}</div><div class="stepSummaryValue">${escapeHtml(stepSummaryText(n))}</div>`;
       } else {
         summary.textContent = "";
       }
     }
   });
   refreshStepDoneState();
-  document.querySelectorAll("[data-step-edit]").forEach((btn) => {
-    btn.addEventListener("click", () => setOpenStep(Number(btn.getAttribute("data-step-edit"))));
-  });
 }
 
 // Done-only accordion behavior: editing values never collapses a panel.
@@ -536,7 +561,7 @@ function recalc(){
     walkWeeks, walksPerDay, walkMinutesPerWalk, totalWalks, dogs,
     billingOption, weeklyWalks, billedWalks, walkTravelEstimatePerWalk
   });
-  refreshStepDoneState();
+  setOpenStep(stepState.open);
 }
 
 
