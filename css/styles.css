@@ -17,7 +17,18 @@
 }
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:1.5;color:var(--text);background:radial-gradient(1200px 600px at 20% 0%, rgba(14,165,164,0.10), transparent 55%), linear-gradient(#0A0A0A,#0A0A0A)}
+body{margin:0;min-height:100vh;font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:1.5;color:var(--text);background:transparent;position:relative}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:
+    radial-gradient(900px 600px at 18% 0%, rgba(14,165,164,0.10), transparent 55%),
+    radial-gradient(700px 500px at 90% 10%, rgba(255,255,255,0.04), transparent 60%),
+    linear-gradient(#0A0A0A, #0A0A0A);
+}
 .shell{width:min(1280px,calc(100vw - 24px));margin:12px auto 20px;background:var(--surface-1);border:1px solid var(--border);border-radius:20px}
 .topbar{display:flex;justify-content:space-between;gap:16px;padding:16px 18px;border-bottom:1px solid var(--divider)}
 .brand{display:flex;align-items:center;gap:12px;min-width:0}.logoWrap{width:44px;height:44px;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:var(--surface-2)}
@@ -143,10 +154,7 @@ html,body{
   -moz-osx-font-smoothing:grayscale;
 }
 body{
-  background:
-    radial-gradient(900px 600px at 18% 0%, rgba(14,165,164,0.10), transparent 55%),
-    radial-gradient(700px 500px at 90% 10%, rgba(255,255,255,0.04), transparent 60%),
-    linear-gradient(#0A0A0A, #0A0A0A);
+  background:transparent;
 }
 .shell{
   background:transparent;
