@@ -1145,6 +1145,7 @@ function wire(){
     breakdownToggle.addEventListener("click", () => {
       const expanded = breakdownToggle.getAttribute("aria-expanded") === "true";
       breakdownToggle.setAttribute("aria-expanded", expanded ? "false" : "true");
+      breakdownToggle.classList.toggle("is-open", !expanded);
       breakdownPanel.hidden = expanded;
     });
   }
@@ -1154,6 +1155,13 @@ function wire(){
   });
   document.querySelectorAll("[data-step-done]").forEach((btn) => {
     btn.addEventListener("click", () => completeStep(Number(btn.getAttribute("data-step-done"))));
+  });
+
+  document.querySelectorAll("[data-step-edit-header]").forEach((btn) => {
+    btn.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      setOpenStep(Number(btn.getAttribute("data-step-edit-header")));
+    });
   });
 
   // Top buttons
