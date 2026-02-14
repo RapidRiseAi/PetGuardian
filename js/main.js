@@ -13,6 +13,11 @@
  * CHANGELOG (refactor):
  * - Split former single-file CSS and JS into /css and /js ES modules.
  * - Preserved init order by running the original boot flow from ui.js.
+ *
+ * UI sanity notes (Nike clean premium refresh):
+ * - css/styles.css now uses tokenized dark theme values, unified controls, and calmer spacing.
+ * - index.html keeps all business and API hooks, while adding accordion step wrappers and pet steppers.
+ * - js/ui.js adds progressive disclosure behavior only, without changing pricing or API request logic.
  */
 
 import { boot } from "./ui.js";
