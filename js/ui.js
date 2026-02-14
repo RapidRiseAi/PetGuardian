@@ -32,6 +32,21 @@ function setApiStatus(ok, msg){
   label.textContent = msg;
 }
 
+function renderSitterAvatarStack(){
+  const stack = el("sitterAvatarStack");
+  if (!stack) return;
+  const sitterCount = Array.isArray(state.sitters) ? state.sitters.length : 0;
+  const maxShown = 3;
+  const shownCount = Math.min(maxShown, sitterCount || maxShown);
+  const placeholders = ["./face1.png", "./face2.png", "./face3.png"];
+  const avatars = placeholders.slice(0, shownCount)
+    .map((src, idx) => `<img class="avatar" src="${src}" alt="Sitter placeholder ${idx + 1}" loading="lazy">`)
+    .join("");
+  const moreCount = Math.max(0, sitterCount - maxShown);
+  const moreBubble = moreCount ? `<span class="avatarMore" aria-label="${moreCount} more sitters">+${moreCount}</span>` : "";
+  stack.innerHTML = avatars + moreBubble;
+}
+
 function stepIsComplete(step){
   if (step === 1){
     const hours = clamp(parseInt(el("hours")?.value || "4", 10), 1, 12);
@@ -158,10 +173,10 @@ async function pingApi(){
   try{
     const res = await jsonp({}); // no action returns online message
     state.apiOk = !!res && res.ok !== false;
-    setApiStatus(true, "API: online");
+    setApiStatus(true, "System online");
   }catch(err){
     state.apiOk = false;
-    setApiStatus(false, "API: check URL");
+    setApiStatus(false, "System offline");
     try{ const b = document.getElementById("apiPillBtn"); if(b) b.title = String(err && err.message ? err.message : "API request failed"); }catch(e){}
     if (CONFIG.debug) console.error(err);
   }
@@ -268,6 +283,8 @@ async function fetchAvailability(){
       el("availabilityHint").textContent = staff.length + " sitters available. Choose a sitter to continue.";
       el("carouselHint").textContent = "Use Prev/Next. Click the center card to select.";
     }
+
+    renderSitterAvatarStack();
 
     // If current sitter not in list, clear selection
     if (state.selectedSitter && !staff.some(s => String(s.id) === String(state.selectedSitter.id))){
@@ -906,6 +923,7 @@ function renderSelectedSitter(){
     el("sitterRequiredChip").hidden = false;
     el("sitterDetails").hidden = true;
     el("sitterInlineNote").style.display = "";
+    renderSitterAvatarStack();
     return;
   }
 
@@ -918,6 +936,7 @@ function renderSelectedSitter(){
   el("sitterDetails").hidden = false;
   el("sitterInlineNote").style.display = "none";
   if (el("sitterAvatar") && sitter.photoUrl) el("sitterAvatar").src = sitter.photoUrl;
+  renderSitterAvatarStack();
   recalc();
 }
 
