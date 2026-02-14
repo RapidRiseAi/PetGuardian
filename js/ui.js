@@ -4,8 +4,7 @@ import { money, clamp, daysBetween, addDaysIso, isPeakDate, bookingHasPeak, weig
 import { jsonp, getApiBaseWorking } from "./api.js";
 
 const el = (id) => document.getElementById(id);
-const stepState = { open: 1 };
-
+const stepState = { open: 1, pendingStay: state.pkg };
 
 
 function isWalkMode(){ return state.pkg === "walk"; }
@@ -58,18 +57,30 @@ function stepIsComplete(step){
 
 function stepSummaryText(step){
   if (step === 1){
-    return `${el("stayTitle")?.textContent || "Product"} • ${el("stayRate")?.textContent || ""}`;
+    const title = el("stayTitle")?.textContent || "Product";
+    const hours = clamp(parseInt(el("hours")?.value || "4", 10), 1, 12);
+    return (state.pkg === "day") ? `${title}, ${hours} hours` : title;
   }
   if (step === 2){
     const zone = el("zone")?.selectedOptions?.[0]?.textContent || "No zone";
-    return `${el("startDate")?.value || "--"} to ${el("endDate")?.value || "--"} • ${zone}`;
+    const start = el("startDate")?.value || "--";
+    const end = el("endDate")?.value || "--";
+    return `${start} to ${end}, ${zone}`;
   }
   if (step === 3){
     const dogs = Math.max(0, parseInt(el("dogs")?.value || "0", 10));
     const cats = isWalkMode() ? 0 : Math.max(0, parseInt(el("cats")?.value || "0", 10));
-    return `Dogs ${dogs}${isWalkMode() ? "" : ` • Cats ${cats}`}`;
+    return `Dogs ${dogs}, Cats ${cats}, Puppy care ${el("puppy")?.checked ? "on" : "off"}, Oral meds ${el("meds")?.checked ? "on" : "off"}`;
   }
-  return state.selectedSitter ? `Sitter: ${state.selectedSitter.name || "Selected"}` : "Select add-ons and sitter";
+  const addonCount = ["highcare","reactive","play","train","brush","homecare","concierge","pool","camera","bath","clean","pantry","meet"].filter((id) => !!el(id)?.checked).length;
+  return `${addonCount} add-ons, ${state.selectedSitter ? "sitter selected" : "sitter not selected"}`;
+}
+
+function stepValidationMessage(step){
+  if (step === 1) return stepIsComplete(step) ? "" : "Choose a product option to continue.";
+  if (step === 2) return stepIsComplete(step) ? "" : "Add dates and select a zone.";
+  if (step === 3) return stepIsComplete(step) ? "" : "Add at least one pet to continue.";
+  return stepIsComplete(step) ? "" : "Select a sitter to continue.";
 }
 
 function setOpenStep(step){
@@ -82,26 +93,40 @@ function setOpenStep(step){
     const toggle = card.querySelector("[data-step-toggle]");
     if (toggle) toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
     const summary = card.querySelector(`[data-step-summary='${n}']`);
+    const title = card.querySelector("h3")?.textContent || `Step ${n}`;
     if (summary){
-      if (stepIsComplete(n) && !isOpen){
-        summary.innerHTML = `<span>${escapeHtml(stepSummaryText(n))}</span><button type="button" class="btn btnTertiary" data-step-edit="${n}">Edit</button>`;
+      if (!isOpen){
+        summary.innerHTML = `<span class="stepSummaryTitle">${escapeHtml(title)}</span><span class="stepSummaryText">${escapeHtml(stepSummaryText(n))}</span><button type="button" class="btn btnTertiary" data-step-edit="${n}">Edit</button>`;
       } else {
         summary.textContent = "";
       }
     }
   });
+  refreshStepDoneState();
   document.querySelectorAll("[data-step-edit]").forEach((btn) => {
     btn.addEventListener("click", () => setOpenStep(Number(btn.getAttribute("data-step-edit"))));
   });
 }
 
-function syncStepProgress(){
-  const current = stepState.open;
-  if (stepIsComplete(current) && current < 4){
-    setOpenStep(current + 1);
+// Done-only accordion behavior: editing values never collapses a panel.
+// A panel closes only on explicit Done, or when the user intentionally opens another step.
+function completeStep(step){
+  if (!stepIsComplete(step)){
+    refreshStepDoneState();
     return;
   }
-  setOpenStep(current);
+  const nextStep = Math.min(4, step + 1);
+  setOpenStep(step < 4 ? nextStep : step);
+}
+
+function refreshStepDoneState(){
+  [1,2,3,4].forEach((n) => {
+    const doneBtn = document.querySelector(`[data-step-done='${n}']`);
+    const hint = document.querySelector(`[data-step-hint='${n}']`);
+    const valid = stepIsComplete(n);
+    if (doneBtn) doneBtn.disabled = !valid;
+    if (hint) hint.textContent = stepValidationMessage(n);
+  });
 }
 
 async function pingApi(){
@@ -511,7 +536,7 @@ function recalc(){
     walkWeeks, walksPerDay, walkMinutesPerWalk, totalWalks, dogs,
     billingOption, weeklyWalks, billedWalks, walkTravelEstimatePerWalk
   });
-  syncStepProgress();
+  refreshStepDoneState();
 }
 
 
@@ -792,7 +817,7 @@ function setPkg(pkg){
   state.pkg = pkg;
 
   // Highlight stay cards inside the stay modal
-  document.querySelectorAll(".stayCard").forEach(c => c.classList.toggle("active", c.getAttribute("data-pkg") === pkg));
+  selectStayCard(pkg);
 
   // Hour slider only relevant for day visits
   const hoursEl = el("hours");
@@ -808,6 +833,20 @@ function setPkg(pkg){
   renderStaySummary();
   fetchAvailability();
   recalc();
+}
+
+
+function selectStayCard(pkg){
+  stepState.pendingStay = pkg;
+  document.querySelectorAll(".stayCard").forEach((c) => c.classList.toggle("active", c.getAttribute("data-pkg") === pkg));
+  const confirmBtn = el("btnConfirmStay");
+  if (confirmBtn) confirmBtn.disabled = !pkg;
+}
+
+function confirmStaySelection(){
+  if (!stepState.pendingStay) return;
+  setPkg(stepState.pendingStay);
+  closeModal("modalStay");
 }
 
 function renderSelectedSitter(){
@@ -939,7 +978,7 @@ function stepperAdjust(id, dir){
   if (id === "keys") el("keysOut").textContent = String(v);
   if (id === "taxi") el("taxiOut").textContent = String(v);
   if (id === "hours") el("hoursOut").textContent = String(v);
-  syncStepProgress();
+  refreshStepDoneState();
   recalc();
 }
 
@@ -1103,6 +1142,9 @@ function wire(){
   document.querySelectorAll("[data-step-toggle]").forEach((btn) => {
     btn.addEventListener("click", () => setOpenStep(Number(btn.getAttribute("data-step-toggle"))));
   });
+  document.querySelectorAll("[data-step-done]").forEach((btn) => {
+    btn.addEventListener("click", () => completeStep(Number(btn.getAttribute("data-step-done"))));
+  });
 
   // Top buttons
   el("btnPricingInfo").addEventListener("click", () => openModal("modalPricing"));
@@ -1129,13 +1171,18 @@ function wire(){
     });
   }
 
-  el("btnOpenStay").addEventListener("click", () => openModal("modalStay"));
+  el("btnOpenStay").addEventListener("click", () => {
+    selectStayCard(state.pkg);
+    openModal("modalStay");
+  });
   el("btnCloseStay").addEventListener("click", () => closeModal("modalStay"));
-  document.querySelectorAll(".staySelect").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const pkg = btn.getAttribute("data-select");
-      if (pkg) setPkg(pkg);
-      closeModal("modalStay");
+  el("btnCancelStay").addEventListener("click", () => closeModal("modalStay"));
+  el("btnConfirmStay").addEventListener("click", confirmStaySelection);
+  document.querySelectorAll(".stayCard").forEach((card) => {
+    card.addEventListener("click", () => selectStayCard(card.getAttribute("data-pkg")));
+    card.addEventListener("dblclick", () => {
+      selectStayCard(card.getAttribute("data-pkg"));
+      confirmStaySelection();
     });
   });
 
@@ -1228,13 +1275,13 @@ function wire(){
       if (id === "checkins") el("checkinsOut").textContent = el(id).value;
       if (id === "keys") el("keysOut").textContent = el(id).value;
       if (id === "taxi") el("taxiOut").textContent = el(id).value;
-      syncStepProgress();
+      refreshStepDoneState();
       recalc();
     });
   });
 
   // Close modals when clicking outside modal content
-  ["modalPricing","modalAddons","modalSitters","modalBooking"].forEach(mid => {
+  ["modalPricing","modalAddons","modalSitters","modalBooking","modalStay"].forEach(mid => {
     el(mid).addEventListener("click", (e) => {
       if (e.target === el(mid)) closeModal(mid);
     });
@@ -1266,6 +1313,7 @@ export async function boot(){
   renderWalkDays();
   wire();
   setOpenStep(1);
+  selectStayCard(state.pkg);
 
   await pingApi();
   await fetchPricing();
