@@ -102,18 +102,18 @@
               <div class="stepSummary" data-step-summary="2"></div>
               <div class="stepBody" data-step-body="2">
                 <div class="grid2" id="dateRangeFields">
-                  <label class="field">
+                  <label class="field datePickerField" data-date-field="startDate">
                     <span class="label">Start date</span>
                     <input type="date" id="startDate">
                   </label>
-                  <label class="field">
+                  <label class="field datePickerField" data-date-field="endDate">
                     <span class="label">End date</span>
                     <input type="date" id="endDate">
                   </label>
                 </div>
                 <div id="walkScheduleFields" style="display:none;">
                   <div class="grid2">
-                    <label class="field">
+                    <label class="field datePickerField" data-date-field="walkStartDate">
                       <span class="label">Start date</span>
                       <input type="date" id="walkStartDate">
                     </label>
@@ -266,17 +266,20 @@
               </div>
               <div class="stepSummary" data-step-summary="4"></div>
               <div class="stepBody" data-step-body="4">
-                <div class="actionRow">
+                <div class="actionRow addonActionRow">
                   <button class="btn" id="btnOpenAddons" type="button">Customize add-ons</button>
+                  <div class="pill stepMetaChip addonCountChip" id="addonsCountChip">Add-ons: 0</div>
                 </div>
 
-                <div class="sitterSelector mt-3" id="sitterSelectorRow">
+                <div class="sitterSelector" id="sitterSelectorRow">
                   <div class="sitterRow">
-                    <div class="sitterLabelWrap">
-                      <div class="label">Sitter</div>
-                      <span class="requiredChip" id="sitterRequiredChip">Required</span>
+                    <div class="sitterMain">
+                      <div class="sitterLabelWrap">
+                        <div class="label">Sitter</div>
+                        <span class="requiredChip" id="sitterRequiredChip">Required</span>
+                      </div>
+                      <div class="sitterState" id="sitterStateSummary">Not selected</div>
                     </div>
-                    <div class="sitterState" id="sitterStateSummary">Not selected</div>
                     <button class="btn btn-accent-soft" id="btnSitterSelector" type="button" aria-haspopup="dialog">Browse sitters</button>
                   </div>
                   <div class="sitterDetails" id="sitterDetails" hidden>
