@@ -38,24 +38,34 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
   <style>
     :root{
+      --bg: #07130f;
+      --panel: rgba(10, 24, 19, 0.86);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.65);
+      --gold: #e8d2a2;
+      --goldHover: #f1dfb7;
+      --radius-sm: 12px;
+      --radius-md: 18px;
+      --radius-lg: 26px;
+      --shadow-soft: 0 10px 30px rgba(0,0,0,0.28);
+      --shadow-medium: 0 18px 50px rgba(0,0,0,0.42);
+      --space-1: 8px;
+      --space-2: 16px;
+      --space-3: 24px;
+      --space-4: 32px;
+      --focus-ring: rgba(232,210,162,0.38);
       --bg0: #07130f;
       --bg1: #0b1e17;
-      --card: rgba(10, 26, 20, 0.86);
-      --card2: rgba(9, 23, 18, 0.92);
-      --stroke: rgba(225, 205, 160, 0.16);
-      --stroke2: rgba(225, 205, 160, 0.24);
-      --gold: #e8d2a2;
       --gold2: #caa96a;
-      --txt: rgba(255,255,255,0.92);
-      --muted: rgba(255,255,255,0.65);
+      --txt: var(--text);
       --muted2: rgba(255,255,255,0.48);
-      --shadow: 0 18px 50px rgba(0,0,0,0.52);
-      --shadow2: 0 10px 30px rgba(0,0,0,0.35);
-      --radius: 22px;
+      --shadow: var(--shadow-medium);
+      --shadow2: var(--shadow-soft);
+      --radius: var(--radius-md);
     }
 
     html, body{ height: 100%; }
@@ -157,7 +167,7 @@
       line-height:1.05;
     }
     .brandTitle h1{
-      font-family: Cinzel, serif;
+      font-family: 'Playfair Display', serif;
       font-size: 20px;
       letter-spacing: 0.02em;
       margin:0;
@@ -177,12 +187,14 @@
       border-radius: 999px;
       font-size: 12px;
       color: rgba(255,255,255,0.82);
-      border: 1px solid rgba(232, 210, 162, 0.20);
+      border: 0;
       background: rgba(255,255,255,0.04);
       backdrop-filter: blur(8px);
     }
     .pillBtn{ cursor:pointer; }
     .pillBtn:focus{ outline: none; box-shadow: 0 0 0 3px rgba(232,210,162,0.16); }
+
+.chip{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;font-size:12px;color:rgba(255,255,255,0.82);background:rgba(255,255,255,0.04);}
 
 
     .btn{
@@ -195,20 +207,26 @@
       border-radius: 999px;
       font-weight: 600;
       font-size: 13px;
-      border: 1px solid rgba(232, 210, 162, 0.26);
+      border: 0;
       background: rgba(255,255,255,0.05);
       color: rgba(255,255,255,0.92);
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
       user-select:none;
     }
-    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.07); border-color: rgba(232,210,162,0.34); }
-    .btn:active{ transform: translateY(0); }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.08); box-shadow: var(--shadow-soft); }
+    .btn:active{ transform: translateY(1px) scale(0.99); }
     .btnPrimary{
       background: linear-gradient(180deg, rgba(232,210,162,0.96), rgba(202,169,106,0.92));
       color: #1b160c;
-      border: 1px solid rgba(255,255,255,0.12);
+      border: 0;
     }
-    .btnPrimary:hover{ background: linear-gradient(180deg, rgba(245,228,188,0.98), rgba(202,169,106,0.96)); }
+    .btnPrimary:hover{ background: linear-gradient(180deg, var(--goldHover), rgba(202,169,106,0.96)); }
+    .btnSecondary{ background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.9); }
+
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible{
+      outline: none;
+      box-shadow: 0 0 0 3px var(--focus-ring);
+    }
 
     .main{
       position: relative;
@@ -248,13 +266,15 @@
 
     .card{
       border-radius: 18px;
-      border: 1px solid rgba(232, 210, 162, 0.14);
+      border: 0;
       background: linear-gradient(180deg, rgba(7, 20, 15, 0.72), rgba(7, 20, 15, 0.52));
-      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      box-shadow: var(--shadow-soft);
       padding: 14px;
       position: relative;
       overflow: hidden;
     }
+    .card:hover{ transform: translateY(-2px); transition: transform .18s ease; }
+
     .card h3{
       font-size: 13px;
       font-weight: 700;
@@ -356,7 +376,7 @@
       height: 42px;
       padding: 0 12px;
       border-radius: 14px;
-      border: 1px solid rgba(232, 210, 162, 0.18);
+      border: 0;
       background: rgba(0,0,0,0.16);
       color: rgba(255,255,255,0.92);
       outline: none;
@@ -378,7 +398,7 @@
       gap: 10px;
       padding: 10px 12px;
       border-radius: 14px;
-      border: 1px solid rgba(232,210,162,0.14);
+      border: 0;
       background: rgba(255,255,255,0.03);
     }
     .toggle .tText{ min-width:0; }
@@ -396,7 +416,7 @@
       display:flex;
       align-items:center;
       gap: 8px;
-      border: 1px solid rgba(232,210,162,0.18);
+      border: 0;
       background: rgba(0,0,0,0.14);
       border-radius: 999px;
       padding: 6px 8px;
@@ -470,7 +490,7 @@
     .right{
       color: rgba(255,255,255,0.88);
       border-radius: var(--radius);
-      border: 1px solid rgba(232, 210, 162, 0.16);
+      border: 0;
       background: linear-gradient(180deg, rgba(7,20,15,0.72), rgba(7,20,15,0.54));
       box-shadow: 0 8px 24px rgba(0,0,0,0.25);
       padding: 14px;
@@ -487,15 +507,15 @@
       margin-bottom: 12px;
     }
     .quoteTop h2{
-      font-family: Cinzel, serif;
+      font-family: 'Playfair Display', serif;
       font-size: 16px;
       margin:0;
       letter-spacing: 0.02em;
       color: rgba(255,255,255,0.92);
     }
     .bigTotal{
-      font-family: Cinzel, serif;
-      font-size: 44px;
+      font-family: 'Playfair Display', serif;
+      font-size: 52px;
       line-height: 1;
       margin-top: 6px;
       color: rgba(232,210,162,0.98);
@@ -504,7 +524,7 @@
 
     .rows{
       margin-top: 6px;
-      border-top: 1px solid rgba(232,210,162,0.14);
+      border-top: 0;
       padding-top: 10px;
       display:flex;
       flex-direction: column;
@@ -528,7 +548,7 @@
 
     .lineItems{
       margin-top: 10px;
-      border: 1px solid rgba(232,210,162,0.12);
+      border: 0;
       border-radius: 16px;
       overflow: hidden;
       background: rgba(0,0,0,0.14);
@@ -589,7 +609,7 @@
       margin-top: 12px;
       padding: 12px;
       border-radius: 16px;
-      border: 1px solid rgba(232,210,162,0.14);
+      border: 0;
       background: rgba(255,255,255,0.03);
     }
     .depositBox .k{ font-size: 11px; color: var(--muted2); }
@@ -631,7 +651,7 @@
     }
     .modalHeader h3{
       margin:0;
-      font-family: Cinzel, serif;
+      font-family: Inter, system-ui, sans-serif;
       font-size: 16px;
       color: rgba(255,255,255,0.92);
       letter-spacing: 0.02em;
@@ -769,7 +789,7 @@
       gap: 6px;
     }
     .sName{
-      font-family: Cinzel, serif;
+      font-family: Inter, system-ui, sans-serif;
       font-size: 14px;
       letter-spacing: 0.01em;
       color: rgba(255,255,255,0.92);
@@ -834,6 +854,28 @@
     /* Reduce motion */
     @media (prefers-reduced-motion: reduce){
       .btn, .pkgBtn, .radioCard, .sCard{ transition: none !important; }
+    }
+
+    .stepHeader{ all:unset; display:flex; width:100%; cursor:pointer; }
+    .stepBody{ margin-top: 10px; }
+    .stepSummary{ display:none; margin-top:10px; font-size:12px; color:var(--muted); justify-content:space-between; align-items:center; gap:12px; }
+    .stepCard.is-collapsed .stepBody{ display:none; }
+    .stepCard.is-collapsed .stepSummary{ display:flex; }
+    .summaryChange{ color: var(--gold); text-decoration: underline; background:none; border:0; cursor:pointer; padding:0; }
+
+    .breakdownToggle{ width:100%; justify-content:space-between; }
+    .lineItems.is-collapsed .lineItemsBody{ display:none; }
+    .lineItems.is-collapsed .lineItemsHeader{ border-bottom:0; }
+    .trustStrip{ display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:8px; margin-top:10px; }
+    .trustStrip .chip{ justify-content:center; font-size:11px; }
+    .mobileStickyBar{ display:none; }
+
+    @media (max-width: 820px){
+      .topbar{ flex-wrap:wrap; gap:10px; }
+      .topbarActions{ width:100%; justify-content:flex-start; }
+      .mobileStickyBar{ position:fixed; left:0; right:0; bottom:0; z-index:60; display:flex; gap:12px; align-items:center; justify-content:space-between; padding:12px 14px; background:rgba(7,18,14,0.94); backdrop-filter:blur(8px); box-shadow:0 -10px 30px rgba(0,0,0,0.35); }
+      .mobileStickyTotal{ font-family:'Playfair Display',serif; font-size:24px; color:var(--gold); }
+      body{ padding-bottom:84px; }
     }
 
     /* Base stay button + modal */
@@ -1042,9 +1084,6 @@
           <span id="apiStatus">API: checking</span>
         </button>
 
-        <button class="btn" id="btnPricingInfo">How pricing works</button>
-        <button class="btn" id="btnCopy">Copy Quote</button>
-        <button class="btn btnPrimary" id="btnOpenBooking">Request Booking</button>
       </div>
     </div>
 
@@ -1052,7 +1091,7 @@
       <section class="left">
         <div class="leftScroll">
           <!-- Step 1 -->
-          <div class="card">
+          <div class="card stepCard" data-step="1">
             <div class="stepTitle">
               <div class="leftSide">
                 <div class="stepBadge">1</div>
@@ -1061,7 +1100,7 @@
                   <div class="sub">Choose the product option. Add-ons apply on top.</div>
                 </div>
               </div>
-              <div class="pill" id="peakNote"></div>
+              <div class="chip" id="peakNote"></div>
             </div>
 
             <button class="stayBtn" id="btnOpenStay" type="button" aria-haspopup="dialog">
@@ -1086,12 +1125,12 @@
 
 <div class="grid2 mt-3">
             <!-- Step 2 -->
-            <div class="card">
+            <div class="card stepCard" data-step="2">
               <div class="stepTitle">
                 <div class="leftSide">
                   <div class="stepBadge">2</div>
                   <div>
-                    <h3 id="scheduleTitle">When and where?</h3>
+                    <h3 id="scheduleTitle">Schedule</h3>
                     <div class="sub" id="scheduleSub">Peak dates and long-stay discounts are calculated automatically.</div>
                   </div>
                 </div>
@@ -1172,12 +1211,12 @@
             </div>
 
             <!-- Step 3 -->
-            <div class="card">
+            <div class="card stepCard" data-step="3">
               <div class="stepTitle">
                 <div class="leftSide">
                   <div class="stepBadge">3</div>
                   <div>
-                    <h3>Pets and essentials</h3>
+                    <h3>Pets</h3>
                     <div class="sub">First pet included. Extra pets add a daily care fee.</div>
                   </div>
                 </div>
@@ -1227,12 +1266,12 @@
           </div>
 
           <!-- Step 4 -->
-          <div class="card">
+          <div class="card stepCard" data-step="4">
             <div class="stepTitle">
               <div class="leftSide">
                 <div class="stepBadge">4</div>
                 <div>
-                  <h3>Add-ons and sitter</h3>
+                  <h3>Extras and sitter</h3>
                   <div class="sub">Customize add-ons, then choose a verified sitter to submit your request.</div>
                 </div>
               </div>
@@ -1270,7 +1309,7 @@
             </div>
           </div>
 
-<div class="card">
+<div class="card stepCard" data-step="5">
               <div class="stepTitle">
                 <div class="leftSide">
                   <div class="stepBadge">5</div>
@@ -1279,7 +1318,7 @@
                     <div class="sub">Built for trust: clear pricing, verified staff, secure booking flow.</div>
                   </div>
                 </div>
-                <div class="pill">Premium standard</div>
+                <div class="chip">Premium standard</div>
               </div>
 
               <ul class="text-[12px] opacity-80 leading-relaxed list-disc pl-5">
@@ -1299,9 +1338,10 @@
           <div>
             <h2>Your Care Quote</h2>
             <div class="bigTotal" id="totalOut">R0</div>
+            <div class="hint">Final price confirmed after sitter match and address review.</div>
           </div>
           <div class="text-right">
-            <div class="pill">Pricing loaded from sheet</div>
+            <div class="chip">Pricing loaded from sheet</div>
             <div class="hint mt-2" id="quoteWarnings"></div>
           </div>
         </div>
@@ -1314,7 +1354,9 @@
         </div>
         <div class="hint mt-2" id="monthlyEstimateNote" style="display:none;">Monthly subscription is estimated using 4.3 weeks per month. Actual calendar months vary.</div>
 
-        <div class="lineItems">
+        <button class="btn btnSecondary breakdownToggle" id="btnToggleBreakdown" type="button" aria-expanded="false">View breakdown <span id="breakdownChevron">▾</span></button>
+
+        <div class="lineItems is-collapsed" id="lineItemsWrap">
           <div class="lineItemsHeader">
             <div class="flex items-center gap-2">
               <span class="statusDot ok" id="lineDot"></span>
@@ -1335,10 +1377,27 @@
 
         <div class="ctaRow">
           <button class="btn btnPrimary" id="btnRequestBooking">Request Booking</button>
-          <div class="hint">Final price is confirmed after screening and sitter availability.</div>
+          <div class="grid2">
+            <button class="btn btnSecondary" id="btnPricingInfo">How pricing works</button>
+            <button class="btn btnSecondary" id="btnCopy">Copy Quote</button>
+          </div>
+          <button class="btn btnSecondary" id="btnOpenBooking">Request Booking form</button>
+          <div class="trustStrip">
+            <div class="chip">Verified sitters</div>
+            <div class="chip">Secure booking</div>
+            <div class="chip">Transparent pricing</div>
+          </div>
         </div>
       </aside>
     </div>
+  </div>
+
+  <div class="mobileStickyBar" id="mobileStickyBar" aria-hidden="true">
+    <div>
+      <div class="label">Current total</div>
+      <div class="mobileStickyTotal" id="mobileTotalOut">R0</div>
+    </div>
+    <button class="btn btnPrimary" id="btnRequestBookingMobile" type="button">Request Booking</button>
   </div>
 
   <!-- Pricing info modal -->
@@ -1784,7 +1843,7 @@
     <div class="modal">
       <div class="modalHeader">
         <div>
-          <div class="pill">PetGuardian Care <span style="opacity:.6">|</span> Sitters</div>
+          <div class="chip">PetGuardian Care <span style="opacity:.6">|</span> Sitters</div>
           <h3 style="margin-top:8px;">Choose your sitter</h3>
           <div class="sub" style="margin-top:6px;">3-card carousel. Center card is focus. Click center to select.</div>
         </div>
@@ -1914,7 +1973,8 @@
       sitters: [],
       carouselIndex: 0,
       apiOk: false,
-      pricingLoaded: false
+      pricingLoaded: false,
+      activeStep: 1
     };
 
     const el = (id) => document.getElementById(id);
@@ -2558,10 +2618,13 @@
       el("bookingTotalOut").textContent = money(total);
       el("bookingDepositOut").textContent = money(deposit);
       el("bookingSitterOut").textContent = state.selectedSitter ? state.selectedSitter.name : "None";
+      if (el("mobileTotalOut")) el("mobileTotalOut").textContent = money(total);
 
       const warns = [];
       if (!state.selectedSitter) warns.push("Select a sitter to submit booking.");
       el("quoteWarnings").textContent = warns.join(" ");
+
+      updateStepAccordion();
 
       renderLineItems({
         walkMode, days, peakMult, discountAmt, travel, extraDogs, extraCats,
@@ -3154,6 +3217,87 @@ Total estimate: ${total}`;
       }
     }
 
+
+
+    // Guided accordion UI for steps. This only changes presentation and keeps pricing logic untouched.
+    function initGuidedSteps(){
+      document.querySelectorAll('.stepCard').forEach((card) => {
+        const step = Number(card.getAttribute('data-step') || '1');
+        const title = card.querySelector('.stepTitle');
+        if (!title || title.closest('.stepHeader')) return;
+
+        const header = document.createElement('button');
+        header.type = 'button';
+        header.className = 'stepHeader';
+        header.setAttribute('aria-expanded', step === state.activeStep ? 'true' : 'false');
+        header.appendChild(title);
+        card.insertBefore(header, card.firstChild);
+
+        const body = document.createElement('div');
+        body.className = 'stepBody';
+        while (header.nextSibling) body.appendChild(header.nextSibling);
+        card.appendChild(body);
+
+        const summary = document.createElement('div');
+        summary.className = 'stepSummary';
+        summary.innerHTML = '<span data-summary-text>Pending</span><button type="button" class="summaryChange">Change</button>';
+        card.insertBefore(summary, body);
+
+        header.addEventListener('click', () => setActiveStep(step));
+        summary.querySelector('.summaryChange').addEventListener('click', () => setActiveStep(step));
+      });
+      updateStepAccordion();
+    }
+
+    function getStepSummary(step){
+      if (step === 1) return `${el('stayTitle')?.textContent || 'Product option'} selected`;
+      if (step === 2){
+        const walkMode = isWalkMode();
+        if (walkMode) return `${el('walkStartDate')?.value || 'Select date'} • ${el('walkBillingOption')?.selectedOptions?.[0]?.textContent || 'Billing'}`;
+        return `${el('startDate')?.value || 'Start'} to ${el('endDate')?.value || 'End'} • ${el('zone')?.selectedOptions?.[0]?.textContent || 'Zone'}`;
+      }
+      if (step === 3) return `${el('dogs')?.value || 0} dog(s) • ${el('cats')?.value || 0} cat(s)`;
+      if (step === 4) return state.selectedSitter ? `${state.selectedSitter.name} selected` : 'Sitter not selected';
+      return 'Trust and policy information';
+    }
+
+    function isStepComplete(step){
+      if (step === 2) return isWalkMode() ? !!el('walkStartDate')?.value : (!!el('startDate')?.value && !!el('endDate')?.value);
+      if (step === 4) return !!state.selectedSitter;
+      return true;
+    }
+
+    function setActiveStep(step){
+      state.activeStep = step;
+      updateStepAccordion();
+    }
+
+    function updateStepAccordion(){
+      document.querySelectorAll('.stepCard').forEach((card) => {
+        const step = Number(card.getAttribute('data-step') || '1');
+        const isActive = step === state.activeStep;
+        const complete = isStepComplete(step);
+        card.classList.toggle('is-collapsed', !isActive && complete);
+        const header = card.querySelector('.stepHeader');
+        if (header) header.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+        const summaryText = card.querySelector('[data-summary-text]');
+        if (summaryText) summaryText.textContent = getStepSummary(step);
+      });
+    }
+
+    function initBreakdownAccordion(){
+      const btn = el('btnToggleBreakdown');
+      const wrap = el('lineItemsWrap');
+      if (!btn || !wrap) return;
+      btn.addEventListener('click', () => {
+        wrap.classList.toggle('is-collapsed');
+        const expanded = !wrap.classList.contains('is-collapsed');
+        btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        btn.firstChild.textContent = expanded ? 'Hide breakdown ' : 'View breakdown ';
+        el('breakdownChevron').textContent = expanded ? '▴' : '▾';
+      });
+    }
+
     function wire(){
       // Top buttons
       el("btnPricingInfo").addEventListener("click", () => openModal("modalPricing"));
@@ -3211,6 +3355,7 @@ Total estimate: ${total}`;
       el("btnCopy").addEventListener("click", copyQuote);
       el("btnOpenBooking").addEventListener("click", openBooking);
       el("btnRequestBooking").addEventListener("click", openBooking);
+      if (el("btnRequestBookingMobile")) el("btnRequestBookingMobile").addEventListener("click", openBooking);
 
       el("btnCloseBooking").addEventListener("click", () => closeModal("modalBooking"));
       el("btnSubmitBooking").addEventListener("click", submitBooking);
@@ -3313,6 +3458,8 @@ Total estimate: ${total}`;
       setDefaultDates();
       renderWalkDays();
       wire();
+      initGuidedSteps();
+      initBreakdownAccordion();
 
       await pingApi();
       await fetchPricing();
