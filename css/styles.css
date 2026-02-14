@@ -513,3 +513,78 @@ button:hover,.btn:hover{opacity:1 !important;}
   .stepHeader{grid-template-columns:1fr;}
   .stepHeaderRight{justify-content:flex-start;}
 }
+
+/* Sitter selector refresh */
+.sitterSelector{
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px;
+  transition:box-shadow 180ms ease, border-color 180ms ease;
+}
+.sitterSelector.is-attention{
+  border-color:rgba(14,165,164,0.55);
+  box-shadow:0 0 0 4px rgba(14,165,164,0.16);
+}
+.sitterRow{
+  display:grid;
+  grid-template-columns:120px minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+}
+.sitterLabelWrap{display:flex;align-items:center;gap:8px;}
+.sitterState{font-size:13px;color:var(--text-2);}
+.sitterDetails{display:flex;align-items:center;gap:10px;margin-top:10px;}
+#sitterAvatar{
+  width:36px;
+  height:36px;
+  border-radius:999px;
+  object-fit:cover;
+  border:1px solid rgba(255,255,255,0.15);
+  background:var(--surface-2);
+}
+.requiredChip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  border:1px solid rgba(14,165,164,0.35);
+  background:rgba(14,165,164,0.16);
+  color:var(--text);
+  font-size:11px;
+  font-weight:600;
+  padding:3px 8px;
+}
+
+/* Modal opacity and backdrop solidity */
+.modalOverlay{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:14px;
+  background:rgba(0,0,0,0.70);
+  pointer-events:auto;
+  opacity:1;
+  filter:none;
+}
+.modalOverlay.active{display:flex;}
+.modal{
+  opacity:1;
+  background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)), #111111;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:18px;
+  box-shadow:0 18px 60px rgba(0,0,0,0.55);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+  filter:none;
+  mix-blend-mode:normal;
+}
+
+@media (max-width:820px){
+  .sitterRow{grid-template-columns:1fr;}
+  .sitterState{order:2;}
+  #btnSitterSelector{order:3;justify-self:flex-start;}
+}
