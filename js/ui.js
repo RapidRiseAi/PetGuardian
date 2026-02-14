@@ -1139,6 +1139,16 @@ async function submitBooking(){
 }
 
 function wire(){
+  const breakdownToggle = el("fullBreakdownToggle");
+  const breakdownPanel = el("fullBreakdownPanel");
+  if (breakdownToggle && breakdownPanel){
+    breakdownToggle.addEventListener("click", () => {
+      const expanded = breakdownToggle.getAttribute("aria-expanded") === "true";
+      breakdownToggle.setAttribute("aria-expanded", expanded ? "false" : "true");
+      breakdownPanel.hidden = expanded;
+    });
+  }
+
   document.querySelectorAll("[data-step-toggle]").forEach((btn) => {
     btn.addEventListener("click", () => setOpenStep(Number(btn.getAttribute("data-step-toggle"))));
   });

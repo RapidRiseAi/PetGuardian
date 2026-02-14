@@ -335,21 +335,20 @@
         </div>
         <div class="hint mt-2" id="monthlyEstimateNote" style="display:none;">Monthly subscription is estimated using 4.3 weeks per month. Actual calendar months vary.</div>
 
-        <details class="lineItems" id="fullBreakdown">
-          <summary class="lineItemsHeader rowItem">
-            <span class="iconBox" aria-hidden="true">›</span>
+        <div class="lineItems" id="fullBreakdown">
+          <button type="button" class="lineItemsHeader" id="fullBreakdownToggle" aria-expanded="false" aria-controls="fullBreakdownPanel">
+            <span class="iconBox" aria-hidden="true"><span class="lineDot"></span></span>
             <span class="rowLabel">Full breakdown</span>
             <span class="label">Unit x multiplier</span>
-          </summary>
-          <div class="lineItemsBody">
+            <span class="lineChevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="lineItemsBody" id="fullBreakdownPanel" hidden>
             <div class="row"><span>One-time fees</span><strong id="oneTimeOut">R0</strong></div>
             <div id="lineItemsBody">
               <div class="label">No add-ons selected yet.</div>
             </div>
           </div>
-        </details>
-
-        <div class="divider"></div>
+        </div>
 
         <div class="depositBox">
           <div class="row"><span class="k">Deposit required</span><span class="v" id="depositOut">R0</span></div>
