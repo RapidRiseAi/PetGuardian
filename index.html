@@ -52,7 +52,7 @@
                 </div>
                 <div class="stepHeaderRight">
                   <div class="pill" id="peakNote"></div>
-                  <span class="stepChevron">▾</span>
+                  <span class="stepEditLink">Edit</span><span class="stepChevron">▾</span>
                 </div>
               </button>
               <div class="stepSummary" data-step-summary="1"></div>
@@ -92,7 +92,7 @@
                 </div>
                 <div class="stepHeaderRight">
                   <div class="label"><span id="daysLabel">Days</span>: <span id="daysOut">1</span></div>
-                  <span class="stepChevron">▾</span>
+                  <span class="stepEditLink">Edit</span><span class="stepChevron">▾</span>
                 </div>
               </button>
               <div class="stepSummary" data-step-summary="2"></div>
@@ -184,7 +184,7 @@
                 </div>
                 <div class="stepHeaderRight">
                   <div class="label"><span id="travelLabel">Travel per day</span>: R<span id="travelOut">0</span></div>
-                  <span class="stepChevron">▾</span>
+                  <span class="stepEditLink">Edit</span><span class="stepChevron">▾</span>
                 </div>
               </button>
               <div class="stepSummary" data-step-summary="3"></div>
@@ -253,7 +253,7 @@
                 </div>
                 <div class="stepHeaderRight">
                   <div class="pill" id="sittersCountPill">Sitters: --</div>
-                  <span class="stepChevron">▾</span>
+                  <span class="stepEditLink">Edit</span><span class="stepChevron">▾</span>
                 </div>
               </button>
               <div class="stepSummary" data-step-summary="4"></div>
@@ -318,40 +318,38 @@
         </div>
       </section>
 
-      <aside class="right">
+      <aside class="right card quoteCard">
         <div class="quoteTop">
           <div>
             <h2>Your Care Quote</h2>
-            <div class="bigTotal" id="totalOut">R0</div>
           </div>
-          <div>
-            <div class="pill">Pricing loaded</div>
-            <div class="hint mt-2" id="quoteWarnings"></div>
-          </div>
+          <div class="pill">Pricing loaded</div>
         </div>
+        <div class="bigTotal" id="totalOut">R0</div>
+        <div class="hint" id="quoteWarnings"></div>
 
         <div class="rows">
-          <div class="row"><span id="baseRowLabel">Base stay</span><strong id="baseOut">R0</strong></div>
-          <div class="row"><span>Add-ons</span><strong id="addonsOut">R0</strong></div>
-          <div class="row"><span id="discountRowLabel">Discounts</span><strong id="discountOut">R0</strong></div>
+          <div class="row rowItem"><span class="iconBox" aria-hidden="true">•</span><span class="rowLabel" id="baseRowLabel">Base stay</span><strong id="baseOut">R0</strong></div>
+          <div class="row rowItem"><span class="iconBox" aria-hidden="true">+</span><span class="rowLabel">Add-ons</span><strong id="addonsOut">R0</strong></div>
+          <div class="row rowItem"><span class="iconBox" aria-hidden="true">◦</span><span class="rowLabel" id="discountRowLabel">Discounts</span><strong id="discountOut">R0</strong></div>
         </div>
         <div class="hint mt-2" id="monthlyEstimateNote" style="display:none;">Monthly subscription is estimated using 4.3 weeks per month. Actual calendar months vary.</div>
 
         <details class="lineItems" id="fullBreakdown">
-          <summary class="lineItemsHeader">
-            <div>
-              <span class="statusDot ok" id="lineDot"></span>
-              <span>Full breakdown</span>
-            </div>
-            <span>Unit x multiplier</span>
+          <summary class="lineItemsHeader rowItem">
+            <span class="iconBox" aria-hidden="true">›</span>
+            <span class="rowLabel">Full breakdown</span>
+            <span class="label">Unit x multiplier</span>
           </summary>
           <div class="lineItemsBody">
             <div class="row"><span>One-time fees</span><strong id="oneTimeOut">R0</strong></div>
             <div id="lineItemsBody">
-              <div class="text-[12px] opacity-70">No add-ons selected yet.</div>
+              <div class="label">No add-ons selected yet.</div>
             </div>
           </div>
         </details>
+
+        <div class="divider"></div>
 
         <div class="depositBox">
           <div class="row"><span class="k">Deposit required</span><span class="v" id="depositOut">R0</span></div>
