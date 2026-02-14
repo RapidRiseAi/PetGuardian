@@ -38,39 +38,24 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      /* Design tokens */
-      --bg: #07130f;
-      --panel: rgba(10, 26, 20, 0.84);
-      --text: rgba(255,255,255,0.92);
-      --muted: rgba(255,255,255,0.62);
-      --gold: #e8d2a2;
-      --goldHover: #f2ddb4;
-      --radiusSmall: 12px;
-      --radiusMedium: 18px;
-      --radiusLarge: 26px;
-      --shadowSoft: 0 14px 36px rgba(0,0,0,0.34);
-      --shadowMedium: 0 24px 60px rgba(0,0,0,0.48);
-      --space1: 8px;
-      --space2: 16px;
-      --space3: 24px;
-      --space4: 32px;
-      --focusRing: rgba(232,210,162,0.4);
-      --bg0: var(--bg);
+      --bg0: #07130f;
       --bg1: #0b1e17;
-      --card: var(--panel);
+      --card: rgba(10, 26, 20, 0.86);
       --card2: rgba(9, 23, 18, 0.92);
-      --stroke: rgba(225, 205, 160, 0.12);
-      --stroke2: rgba(225, 205, 160, 0.2);
+      --stroke: rgba(225, 205, 160, 0.16);
+      --stroke2: rgba(225, 205, 160, 0.24);
+      --gold: #e8d2a2;
       --gold2: #caa96a;
-      --txt: var(--text);
+      --txt: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.65);
       --muted2: rgba(255,255,255,0.48);
-      --shadow: var(--shadowMedium);
-      --shadow2: var(--shadowSoft);
-      --radius: var(--radiusLarge);
+      --shadow: 0 18px 50px rgba(0,0,0,0.52);
+      --shadow2: 0 10px 30px rgba(0,0,0,0.35);
+      --radius: 22px;
     }
 
     html, body{ height: 100%; }
@@ -1037,46 +1022,6 @@
       .modal{padding:14px;}
       .modalBody{padding:14px;}
     }
-
-    .brandTitle h1,.quoteTop h2,.bigTotal{ font-family: 'Playfair Display', serif; }
-    .leftScroll{ display:flex; flex-direction:column; gap:var(--space2); }
-    .grid2.mt-3{ margin-top: 0; }
-    .stepCard{ padding: 0; overflow: hidden; border: none; box-shadow: var(--shadowSoft); background: linear-gradient(180deg, rgba(10, 24, 18, 0.84), rgba(7, 19, 14, 0.88)); }
-    .stepHeaderBtn{ width:100%; background:transparent; border:none; color:inherit; padding:16px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; text-align:left; }
-    .stepHeaderBtn:focus-visible, .btn:focus-visible, .field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible, .toggle:focus-within, .chip:focus-visible, .accordionBtn:focus-visible{ outline:none; box-shadow: 0 0 0 3px var(--focusRing); }
-    .stepSummary{ display:none; font-size:12px; color:var(--muted); margin-top:4px; }
-    .stepCard.completed .stepSummary{ display:block; }
-    .stepBody{ padding: 0 18px 18px; border-top: 1px solid rgba(232,210,162,0.08); }
-    .stepCard.collapsed .stepBody{ display:none; }
-    .stepHeaderActions{ display:flex; align-items:center; gap:10px; }
-    .changeLink{ border:none; background:none; color:var(--gold); font-size:12px; padding:0; text-decoration:underline; cursor:pointer; }
-    .stepCard.active{ transform: translateY(-1px); }
-    .card:hover{ transform: translateY(-2px); transition: transform .2s ease; }
-    .btn{ transition: transform .18s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease; }
-    .btn:active{ transform: translateY(1px) scale(0.99); }
-    .btnSecondary{ background: rgba(255,255,255,0.02); border-color: rgba(232,210,162,0.16); }
-    .chip{ border-radius:999px; border:1px solid rgba(232,210,162,0.24); padding:8px 12px; background:rgba(255,255,255,0.04); font-size:12px; }
-    .tabs .tab{ border-radius: 999px; }
-    .quoteTop{ flex-direction:column; gap:8px; }
-    .bigTotal{ font-size:58px; }
-    .quoteDisclaimer{ font-size:11px; color:var(--muted); }
-    .lineItems{ border:none; background: rgba(0,0,0,0.1); }
-    .accordionBtn{ width:100%; display:flex; align-items:center; justify-content:space-between; border:none; background:rgba(255,255,255,0.03); color:inherit; padding:10px 12px; border-radius:14px; }
-    .lineItems.collapsed .lineItemsBody{ display:none; }
-    .depositBox{ border:1px solid rgba(232,210,162,0.10); background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)); }
-    .trustStrip{ display:grid; grid-template-columns:1fr; gap:8px; margin-top:10px; }
-    .trustItem{ font-size:11px; color:var(--muted); padding:6px 10px; border-radius:12px; background:rgba(255,255,255,0.03); }
-    .mobileStickyBar{ display:none; }
-    @media (max-width: 820px){
-      body{ padding-bottom: 90px; }
-      .topbarActions{ grid-template-columns:1fr 1fr; }
-      .mobileStickyBar{ display:flex; position:fixed; left:12px; right:12px; bottom:12px; z-index:20; border-radius:18px; padding:10px; gap:10px; align-items:center; justify-content:space-between; background:rgba(8,20,15,0.96); box-shadow:var(--shadowSoft); }
-      .mobileStickyBar .btnPrimary{ height:42px; }
-      .bigTotal{ font-size:50px; }
-    }
-    @media (prefers-reduced-motion: reduce){
-      *{ transition:none !important; animation:none !important; }
-    }
 </style>
 </head>
 
@@ -1146,7 +1091,7 @@
                 <div class="leftSide">
                   <div class="stepBadge">2</div>
                   <div>
-                    <h3 id="scheduleTitle">Schedule</h3>
+                    <h3 id="scheduleTitle">When and where?</h3>
                     <div class="sub" id="scheduleSub">Peak dates and long-stay discounts are calculated automatically.</div>
                   </div>
                 </div>
@@ -1232,7 +1177,7 @@
                 <div class="leftSide">
                   <div class="stepBadge">3</div>
                   <div>
-                    <h3>Pets</h3>
+                    <h3>Pets and essentials</h3>
                     <div class="sub">First pet included. Extra pets add a daily care fee.</div>
                   </div>
                 </div>
@@ -1287,7 +1232,7 @@
               <div class="leftSide">
                 <div class="stepBadge">4</div>
                 <div>
-                  <h3>Extras and sitter</h3>
+                  <h3>Add-ons and sitter</h3>
                   <div class="sub">Customize add-ons, then choose a verified sitter to submit your request.</div>
                 </div>
               </div>
@@ -1354,25 +1299,29 @@
           <div>
             <h2>Your Care Quote</h2>
             <div class="bigTotal" id="totalOut">R0</div>
-            <div class="quoteDisclaimer">Final price confirmed after sitter match and address review.</div>
           </div>
-          <div class="pill">Pricing loaded from sheet</div>
+          <div class="text-right">
+            <div class="pill">Pricing loaded from sheet</div>
+            <div class="hint mt-2" id="quoteWarnings"></div>
+          </div>
         </div>
-        <div class="hint" id="quoteWarnings"></div>
 
         <div class="rows">
-          <div class="row"><span id="baseRowLabel">Base stay</span><strong id="baseOut">R0.00</strong></div>
-          <div class="row"><span>Add-ons + travel</span><strong id="addonsOut">R0.00</strong></div>
-          <div class="row"><span id="discountRowLabel">Long-stay discount</span><strong id="discountOut">R0.00</strong></div>
-          <div class="row"><span>One-time fees</span><strong id="oneTimeOut">R0.00</strong></div>
+          <div class="row"><span id="baseRowLabel">Base stay</span><strong id="baseOut">R0</strong></div>
+          <div class="row"><span>Add-ons + travel</span><strong id="addonsOut">R0</strong></div>
+          <div class="row"><span id="discountRowLabel">Long-stay discount</span><strong id="discountOut">R0</strong></div>
+          <div class="row"><span>One-time fees</span><strong id="oneTimeOut">R0</strong></div>
         </div>
         <div class="hint mt-2" id="monthlyEstimateNote" style="display:none;">Monthly subscription is estimated using 4.3 weeks per month. Actual calendar months vary.</div>
 
-        <div class="lineItems collapsed" id="lineItemsWrap">
-          <button class="accordionBtn" type="button" id="btnToggleBreakdown" aria-expanded="false">
-            <span>View breakdown</span>
+        <div class="lineItems">
+          <div class="lineItemsHeader">
+            <div class="flex items-center gap-2">
+              <span class="statusDot ok" id="lineDot"></span>
+              <span class="font-extrabold">Add-on breakdown</span>
+            </div>
             <span class="text-[11px] opacity-70">Unit x multiplier</span>
-          </button>
+          </div>
           <div class="lineItemsBody" id="lineItemsBody">
             <div class="text-[12px] opacity-70">No add-ons selected yet.</div>
           </div>
@@ -1384,29 +1333,12 @@
           <div class="hint mt-2">50% deposit secures booking. Remaining 50% due after service.</div>
         </div>
 
-        <div class="trustStrip">
-          <div class="trustItem">Verified sitters</div>
-          <div class="trustItem">Secure booking</div>
-          <div class="trustItem">Transparent pricing</div>
-        </div>
-
         <div class="ctaRow">
           <button class="btn btnPrimary" id="btnRequestBooking">Request Booking</button>
-          <div class="smallRow">
-            <button class="btn btnSecondary" id="btnPricingInfoPanel" type="button">How pricing works</button>
-            <button class="btn btnSecondary" id="btnCopyPanel" type="button">Copy Quote</button>
-          </div>
+          <div class="hint">Final price is confirmed after screening and sitter availability.</div>
         </div>
       </aside>
     </div>
-  </div>
-
-  <div class="mobileStickyBar" id="mobileStickyBar">
-    <div>
-      <div class="label">Current total</div>
-      <div class="font-semibold" id="mobileTotalOut">R0</div>
-    </div>
-    <button class="btn btnPrimary" id="btnMobileBooking" type="button">Request Booking</button>
   </div>
 
   <!-- Pricing info modal -->
@@ -2453,84 +2385,6 @@
     }
 
 
-
-
-    // UI behavior: guided step accordion with editable summaries.
-    function setupStepAccordion(){
-      const cards = Array.from(document.querySelectorAll('.leftScroll > .card')).slice(0,5);
-      cards.forEach((card, idx) => {
-        if (card.querySelector('.stepHeaderBtn')) return;
-        card.classList.add('stepCard');
-        card.dataset.step = String(idx + 1);
-        const title = card.querySelector('h3') ? card.querySelector('h3').textContent.trim() : `Step ${idx+1}`;
-        const titleRow = card.querySelector('.stepTitle');
-        if (!titleRow) return;
-        titleRow.style.display = 'none';
-        const body = document.createElement('div');
-        body.className = 'stepBody';
-        while (card.children.length) {
-          const node = card.children[0];
-          if (node === titleRow) { card.removeChild(node); continue; }
-          body.appendChild(node);
-        }
-        const header = document.createElement('button');
-        header.type = 'button';
-        header.className = 'stepHeaderBtn';
-        header.setAttribute('aria-expanded', idx === 0 ? 'true' : 'false');
-        header.innerHTML = `<div><div class="stepBadge">${idx+1}</div></div><div style="flex:1"><div style="font-weight:700; font-size:14px">${escapeHtml(title)}</div><div class="stepSummary" id="stepSummary${idx+1}"></div></div><div class="stepHeaderActions"><span class="label">Step ${idx+1}</span><span class="changeLink">Change</span></div>`;
-        header.addEventListener('click', () => setActiveStep(idx+1));
-        card.appendChild(header);
-        card.appendChild(body);
-      });
-      setActiveStep(1);
-    }
-
-    function setActiveStep(step){
-      document.querySelectorAll('.stepCard').forEach(card => {
-        const active = Number(card.dataset.step) === step;
-        card.classList.toggle('active', active);
-        card.classList.toggle('collapsed', !active && card.classList.contains('completed'));
-        const btn = card.querySelector('.stepHeaderBtn');
-        if (btn) btn.setAttribute('aria-expanded', active ? 'true' : 'false');
-      });
-    }
-
-    function updateStepSummaries(){
-      const pkg = el('stayTitle')?.textContent || 'Not selected';
-      const days = el('daysOut')?.textContent || '1';
-      const dogs = el('dogs')?.value || '0';
-      const cats = el('cats')?.value || '0';
-      const sitter = state.selectedSitter ? state.selectedSitter.name : 'No sitter selected';
-      const data = [
-        pkg,
-        `${days} ${el('daysLabel')?.textContent || 'Days'}`,
-        `${dogs} dog(s), ${cats} cat(s)`,
-        sitter,
-        'Verified booking standards'
-      ];
-      document.querySelectorAll('.stepCard').forEach((card, idx) => {
-        const s = card.querySelector('.stepSummary');
-        if (s) s.textContent = data[idx] || '';
-        if (data[idx] && idx > 0) card.classList.add('completed');
-      });
-    }
-
-    // UI behavior: quote breakdown accordion + mobile sticky CTA sync.
-    function setupQuoteUI(){
-      const t = el('btnToggleBreakdown');
-      if (t){
-        t.addEventListener('click', () => {
-          const wrap = el('lineItemsWrap');
-          wrap.classList.toggle('collapsed');
-          t.setAttribute('aria-expanded', wrap.classList.contains('collapsed') ? 'false' : 'true');
-        });
-      }
-    }
-
-    function syncMobileBar(totalText){
-      if (el('mobileTotalOut')) el('mobileTotalOut').textContent = totalText;
-    }
-
     function currentUpdateTier(){
       const active = document.querySelector(".radioCard.active[data-upd]");
       return active ? active.getAttribute("data-upd") : "basic";
@@ -2691,8 +2545,7 @@
 
       deposit = total * Number(CONFIG.depositPercent || 0.5);
       balance = total - deposit;
-      const totalText = money(total);
-      el("totalOut").textContent = totalText;
+      el("totalOut").textContent = money(total);
       el("depositOut").textContent = money(deposit);
       el("balanceOut").textContent = money(balance);
       el("baseOut").textContent = money(baseTotal);
@@ -2709,9 +2562,6 @@
       const warns = [];
       if (!state.selectedSitter) warns.push("Select a sitter to submit booking.");
       el("quoteWarnings").textContent = warns.join(" ");
-
-      updateStepSummaries();
-      syncMobileBar(totalText);
 
       renderLineItems({
         walkMode, days, peakMult, discountAmt, travel, extraDogs, extraCats,
@@ -3359,11 +3209,8 @@ Total estimate: ${total}`;
       });
 
       el("btnCopy").addEventListener("click", copyQuote);
-      if (el("btnCopyPanel")) el("btnCopyPanel").addEventListener("click", copyQuote);
-      if (el("btnPricingInfoPanel")) el("btnPricingInfoPanel").addEventListener("click", () => openModal("modalPricing"));
       el("btnOpenBooking").addEventListener("click", openBooking);
       el("btnRequestBooking").addEventListener("click", openBooking);
-      if (el("btnMobileBooking")) el("btnMobileBooking").addEventListener("click", openBooking);
 
       el("btnCloseBooking").addEventListener("click", () => closeModal("modalBooking"));
       el("btnSubmitBooking").addEventListener("click", submitBooking);
@@ -3465,8 +3312,6 @@ Total estimate: ${total}`;
 
       setDefaultDates();
       renderWalkDays();
-      setupStepAccordion();
-      setupQuoteUI();
       wire();
 
       await pingApi();
