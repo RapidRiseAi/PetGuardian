@@ -399,6 +399,24 @@ function getNumber(id){
   return Number.isFinite(v) ? v : 0;
 }
 
+function openDatePicker(inputEl){
+  if (!inputEl) return;
+  inputEl.focus({preventScroll:true});
+  if (typeof inputEl.showPicker === "function") inputEl.showPicker();
+}
+
+function updateAddonsCountChip(){
+  const chip = el("addonsCountChip");
+  if (!chip) return;
+  const toggleIds = ["puppy","meds","highcare","reactive","play","train","brush","homecare","concierge","pool","camera","bath","clean","pantry","meet"];
+  const toggleCount = toggleIds.filter((id) => !!el(id)?.checked).length;
+  const numericCount = ["walkMinutes","checkins","keys","taxi","taxiKm"].reduce((sum, id) => {
+    const value = parseInt(el(id)?.value || "0", 10);
+    return sum + (value > 0 ? 1 : 0);
+  }, 0);
+  chip.textContent = `Add-ons: ${toggleCount + numericCount}`;
+}
+
 function recalc(){
   const walkMode = isWalkMode();
   const zone = el("zone").value;
@@ -561,6 +579,7 @@ function recalc(){
     walkWeeks, walksPerDay, walkMinutesPerWalk, totalWalks, dogs,
     billingOption, weeklyWalks, billedWalks, walkTravelEstimatePerWalk
   });
+  updateAddonsCountChip();
   setOpenStep(stepState.open);
 }
 
@@ -1290,6 +1309,17 @@ function wire(){
       recalc();
       fetchAvailability();
     });
+  });
+
+  document.querySelectorAll(".datePickerField").forEach((wrapper) => {
+    const input = wrapper.querySelector("input[type='date']");
+    if (!input) return;
+
+    wrapper.addEventListener("click", () => {
+      if (input.disabled) return;
+      openDatePicker(input);
+    });
+
   });
 
   // Inputs that affect price
