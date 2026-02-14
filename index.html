@@ -28,7 +28,7 @@
       <div class="topbarActions">
         <button class="pill pillBtn" id="apiPillBtn" type="button" title="Tap to test the API URL">
           <span class="statusDot" id="apiDot"></span>
-          <span id="apiStatus">API: checking</span>
+          <span id="apiStatus">System checking</span>
         </button>
 
         <button class="btn" id="btnPricingInfo">How pricing works</button>
@@ -271,12 +271,17 @@
                   <div class="pill stepMetaChip addonCountChip" id="addonsCountChip">Add-ons: 0</div>
                 </div>
 
-                <div class="sitterSelector" id="sitterSelectorRow">
+                <div class="sitterSelector sitterCard" id="sitterSelectorRow">
                   <div class="sitterRow">
                     <div class="sitterMain">
                       <div class="sitterLabelWrap">
                         <div class="label">Sitter</div>
                         <span class="requiredChip" id="sitterRequiredChip">Required</span>
+                      </div>
+                      <div class="avatarStack" id="sitterAvatarStack" aria-label="Sitter profile previews">
+                        <img class="avatar" src="./face1.png" alt="Sitter placeholder 1" loading="lazy">
+                        <img class="avatar" src="./face2.png" alt="Sitter placeholder 2" loading="lazy">
+                        <img class="avatar" src="./face3.png" alt="Sitter placeholder 3" loading="lazy">
                       </div>
                       <div class="sitterState" id="sitterStateSummary">Not selected</div>
                     </div>
