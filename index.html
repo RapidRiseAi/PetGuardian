@@ -74,6 +74,10 @@
                   <div class="label" id="discountHint">Long-stay discount applies automatically</div>
                   <div class="label" id="dayOnlyHint">Day Visits: travel is charged per day (separate from check-ins)</div>
                 </div>
+                <div class="stepFooter">
+                  <div class="stepHint" data-step-hint="1"></div>
+                  <button class="btn btnDone" type="button" data-step-done="1">Done</button>
+                </div>
               </div>
             </div>
 
@@ -162,6 +166,10 @@
                   </select>
                 </label>
                 <div class="hint" id="peakAppliedOut">No peak dates detected in your booking range.</div>
+                <div class="stepFooter">
+                  <div class="stepHint" data-step-hint="2"></div>
+                  <button class="btn btnDone" type="button" data-step-done="2">Done</button>
+                </div>
               </div>
             </div>
 
@@ -227,6 +235,10 @@
                   </label>
                 </div>
                 <div class="hint">More add-ons (walks, updates, plants, chores, transport) are in Customize add-ons.</div>
+                <div class="stepFooter">
+                  <div class="stepHint" data-step-hint="3"></div>
+                  <button class="btn btnDone" type="button" data-step-done="3">Done</button>
+                </div>
               </div>
             </div>
 
@@ -274,6 +286,10 @@
                   </div>
                   <div class="hint mt-2" id="availabilityHint">Availability loads automatically based on your dates, zone, and product option.</div>
                 </div>
+                <div class="stepFooter">
+                  <div class="stepHint" data-step-hint="4"></div>
+                  <button class="btn btnDone" type="button" data-step-done="4">Done</button>
+                </div>
               </div>
             </div>
           </div>
@@ -309,7 +325,7 @@
             <div class="bigTotal" id="totalOut">R0</div>
           </div>
           <div>
-            <div class="pill">Pricing loaded from sheet</div>
+            <div class="pill">Pricing loaded</div>
             <div class="hint mt-2" id="quoteWarnings"></div>
           </div>
         </div>
@@ -408,7 +424,7 @@
     <div class="modal modalWide">
       <div class="modalHeader">
         <h3>Choose product option</h3>
-        <button class="btn" id="btnCloseStay" style="height:36px;">Close</button>
+        <button class="iconClose" id="btnCloseStay" type="button" aria-label="Close product options">✕</button>
       </div>
 
       <div class="modalBody">
@@ -434,7 +450,6 @@
               <div class="staySliderHint">Tip: Keep it realistic. We plan staff capacity from this.</div>
             </div>
 
-            <button class="btn btnPrimary staySelect" data-select="day" type="button">Use Day Visits</button>
           </div>
 
           <div class="stayCard" data-pkg="night" id="stayCardNight">
@@ -450,7 +465,6 @@
               <div class="stayFact"><span class="k">Travel</span><span class="v">Per day by zone</span></div>
             </div>
 
-            <button class="btn btnPrimary staySelect" data-select="night" type="button">Use Overnight</button>
           </div>
 
           <div class="stayCard" data-pkg="full" id="stayCardFull">
@@ -466,7 +480,6 @@
               <div class="stayFact"><span class="k">Travel</span><span class="v">Per day by zone</span></div>
             </div>
 
-            <button class="btn btnPrimary staySelect" data-select="full" type="button">Use Full-time</button>
           </div>
 
           <div class="stayCard" data-pkg="walk" id="stayCardWalk">
@@ -480,12 +493,15 @@
               <div class="stayFact"><span class="k">Travel</span><span class="v">Per walk by zone</span></div>
               <div class="stayFact"><span class="k">Discount</span><span class="v">No long-stay discounts</span></div>
             </div>
-            <button class="btn btnPrimary staySelect" data-select="walk" type="button">Use Dog Walks</button>
           </div>
         </div>
 
         <div class="hint" style="margin-top:12px;">
           Add-ons (walks, updates, plants, transport) can be added next. Peak and long-stay pricing applies automatically.
+        </div>
+        <div class="modalFooter modalFooterStay">
+          <button class="btn" id="btnCancelStay" type="button">Cancel</button>
+          <button class="btn btnPrimary" id="btnConfirmStay" type="button" disabled>Confirm selection</button>
         </div>
       </div>
     </div>
