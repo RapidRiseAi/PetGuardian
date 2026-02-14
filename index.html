@@ -268,30 +268,25 @@
               <div class="stepBody" data-step-body="4">
                 <div class="actionRow">
                   <button class="btn" id="btnOpenAddons" type="button">Customize add-ons</button>
-                  <button class="chooseSitterBtn" id="btnOpenSitters" type="button" aria-haspopup="dialog">
-                    <div class="chooseSitterLeft">
-                      <div class="avatarStack" aria-hidden="true">
-                        <img id="facePrev0" src="face1.png" onerror="this.style.display='none'">
-                        <img id="facePrev1" src="face2.png" onerror="this.style.display='none'">
-                        <img id="facePrev2" src="face3.png" onerror="this.style.display='none'">
-                      </div>
-                      <div class="sitterBtnText">
-                        <div class="sitterBtnTitle" id="sitterBtnTitle">Choose sitter</div>
-                        <div class="sitterBtnSub" id="sitterBtnSub">Verified selection required</div>
-                      </div>
-                    </div>
-                    <div class="chooseSitterCta">Browse</div>
-                  </button>
                 </div>
 
-                <div class="selectedBox mt-3">
-                  <div class="selectedTop">
+                <div class="sitterSelector mt-3" id="sitterSelectorRow">
+                  <div class="sitterRow">
+                    <div class="sitterLabelWrap">
+                      <div class="label">Sitter</div>
+                      <span class="requiredChip" id="sitterRequiredChip">Required</span>
+                    </div>
+                    <div class="sitterState" id="sitterStateSummary">Not selected</div>
+                    <button class="btn btn-accent-soft" id="btnSitterSelector" type="button" aria-haspopup="dialog">Browse sitters</button>
+                  </div>
+                  <div class="sitterDetails" id="sitterDetails" hidden>
+                    <img id="sitterAvatar" src="face1.png" alt="Selected sitter avatar" onerror="this.style.display='none'">
                     <div>
                       <div class="selectedName" id="selectedSitterName">No sitter selected</div>
-                      <div class="selectedMeta" id="selectedSitterMeta">Choose a sitter to continue</div>
+                      <div class="selectedMeta" id="selectedSitterMeta">Verified sitter</div>
                     </div>
-                    <button class="btn btn-accent-soft" id="btnChangeSitter" type="button">Change</button>
                   </div>
+                  <div class="hint mt-2" id="sitterInlineNote">Verified selection required to submit booking.</div>
                   <div class="hint mt-2" id="availabilityHint">Availability loads automatically based on your dates, zone, and product option.</div>
                 </div>
                 <div class="stepFooter">

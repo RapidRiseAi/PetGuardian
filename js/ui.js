@@ -876,18 +876,29 @@ function confirmStaySelection(){
 
 function renderSelectedSitter(){
   const sitter = state.selectedSitter;
+  const selectorRow = el("sitterSelectorRow");
+  if (selectorRow) selectorRow.classList.remove("is-attention");
+
   if (!sitter){
+    el("sitterStateSummary").textContent = "Not selected";
+    el("btnSitterSelector").textContent = "Browse sitters";
     el("selectedSitterName").textContent = "No sitter selected";
-    el("selectedSitterMeta").textContent = "Choose a sitter to continue";
-    el("sitterBtnTitle").textContent = "Choose sitter";
-    el("sitterBtnSub").textContent = "Verified selection required";
+    el("selectedSitterMeta").textContent = "Verified sitter";
+    el("sitterRequiredChip").hidden = false;
+    el("sitterDetails").hidden = true;
+    el("sitterInlineNote").style.display = "";
     return;
   }
-  el("selectedSitterName").textContent = sitter.name || "Selected sitter";
+
   const rating = sitter.rating ? ("Rating " + sitter.rating) : "Verified sitter";
+  el("sitterStateSummary").textContent = "Selected";
+  el("btnSitterSelector").textContent = "Change sitter";
+  el("selectedSitterName").textContent = sitter.name || "Selected sitter";
   el("selectedSitterMeta").textContent = rating;
-  el("sitterBtnTitle").textContent = "Sitter selected";
-  el("sitterBtnSub").textContent = sitter.name || "Change sitter";
+  el("sitterRequiredChip").hidden = true;
+  el("sitterDetails").hidden = false;
+  el("sitterInlineNote").style.display = "none";
+  if (el("sitterAvatar") && sitter.photoUrl) el("sitterAvatar").src = sitter.photoUrl;
   recalc();
 }
 
@@ -1035,6 +1046,19 @@ Total estimate: ${total}`;
 
 function openBooking(){
   el("bookingResult").textContent = "";
+
+  if (!state.selectedSitter){
+    const selectorRow = el("sitterSelectorRow");
+    if (selectorRow){
+      selectorRow.scrollIntoView({ behavior: "smooth", block: "center" });
+      selectorRow.classList.add("is-attention");
+      setTimeout(() => selectorRow.classList.remove("is-attention"), 900);
+    }
+    if (el("sitterInlineNote")) el("sitterInlineNote").style.display = "";
+    setOpenStep(4);
+    return;
+  }
+
   openModal("modalBooking");
   recalc();
 }
@@ -1233,7 +1257,7 @@ function wire(){
   el("btnOpenAddons").addEventListener("click", () => openModal("modalAddons"));
   el("btnCloseAddons").addEventListener("click", () => closeModal("modalAddons"));
 
-  el("btnOpenSitters").addEventListener("click", () => openModal("modalSitters"));
+  el("btnSitterSelector").addEventListener("click", () => openModal("modalSitters"));
   el("btnCloseSitters").addEventListener("click", () => closeModal("modalSitters"));
 
   el("btnPrev").addEventListener("click", prevSitter);
@@ -1253,9 +1277,6 @@ function wire(){
 
   el("btnCloseBooking").addEventListener("click", () => closeModal("modalBooking"));
   el("btnSubmitBooking").addEventListener("click", submitBooking);
-
-  // Change sitter shortcut
-  el("btnChangeSitter").addEventListener("click", () => openModal("modalSitters"));
 
   // Package selection
   document.querySelectorAll(".pkgBtn").forEach(b => {
