@@ -4,6 +4,7 @@ import { money, clamp, daysBetween, addDaysIso, isPeakDate, bookingHasPeak, weig
 import { jsonp, getApiBaseWorking } from "./api.js";
 
 const el = (id) => document.getElementById(id);
+const stepState = { open: 1 };
 
 
 
@@ -30,6 +31,77 @@ function setApiStatus(ok, msg){
   dot.classList.remove("ok","bad");
   dot.classList.add(ok ? "ok" : "bad");
   label.textContent = msg;
+}
+
+function stepIsComplete(step){
+  if (step === 1){
+    const hours = clamp(parseInt(el("hours")?.value || "4", 10), 1, 12);
+    return !!state.pkg && (state.pkg !== "day" || hours >= 1);
+  }
+  if (step === 2){
+    const zone = !!el("zone")?.value;
+    if (isWalkMode()){
+      return !!(el("walkStartDate")?.value || el("startDate")?.value) && zone;
+    }
+    return !!el("startDate")?.value && !!el("endDate")?.value && zone;
+  }
+  if (step === 3){
+    const dogs = Math.max(0, parseInt(el("dogs")?.value || "0", 10));
+    const cats = isWalkMode() ? 0 : Math.max(0, parseInt(el("cats")?.value || "0", 10));
+    return (dogs + cats) >= 1;
+  }
+  if (step === 4){
+    return !!state.selectedSitter;
+  }
+  return false;
+}
+
+function stepSummaryText(step){
+  if (step === 1){
+    return `${el("stayTitle")?.textContent || "Product"} • ${el("stayRate")?.textContent || ""}`;
+  }
+  if (step === 2){
+    const zone = el("zone")?.selectedOptions?.[0]?.textContent || "No zone";
+    return `${el("startDate")?.value || "--"} to ${el("endDate")?.value || "--"} • ${zone}`;
+  }
+  if (step === 3){
+    const dogs = Math.max(0, parseInt(el("dogs")?.value || "0", 10));
+    const cats = isWalkMode() ? 0 : Math.max(0, parseInt(el("cats")?.value || "0", 10));
+    return `Dogs ${dogs}${isWalkMode() ? "" : ` • Cats ${cats}`}`;
+  }
+  return state.selectedSitter ? `Sitter: ${state.selectedSitter.name || "Selected"}` : "Select add-ons and sitter";
+}
+
+function setOpenStep(step){
+  stepState.open = step;
+  [1,2,3,4].forEach((n) => {
+    const card = document.querySelector(`[data-step-card='${n}']`);
+    if (!card) return;
+    const isOpen = n === stepState.open;
+    card.setAttribute("data-collapsed", isOpen ? "0" : "1");
+    const toggle = card.querySelector("[data-step-toggle]");
+    if (toggle) toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    const summary = card.querySelector(`[data-step-summary='${n}']`);
+    if (summary){
+      if (stepIsComplete(n) && !isOpen){
+        summary.innerHTML = `<span>${escapeHtml(stepSummaryText(n))}</span><button type="button" class="btn btnTertiary" data-step-edit="${n}">Edit</button>`;
+      } else {
+        summary.textContent = "";
+      }
+    }
+  });
+  document.querySelectorAll("[data-step-edit]").forEach((btn) => {
+    btn.addEventListener("click", () => setOpenStep(Number(btn.getAttribute("data-step-edit"))));
+  });
+}
+
+function syncStepProgress(){
+  const current = stepState.open;
+  if (stepIsComplete(current) && current < 4){
+    setOpenStep(current + 1);
+    return;
+  }
+  setOpenStep(current);
 }
 
 async function pingApi(){
@@ -439,6 +511,7 @@ function recalc(){
     walkWeeks, walksPerDay, walkMinutesPerWalk, totalWalks, dogs,
     billingOption, weeklyWalks, billedWalks, walkTravelEstimatePerWalk
   });
+  syncStepProgress();
 }
 
 
@@ -857,12 +930,16 @@ function setTab(tab){
 
 function stepperAdjust(id, dir){
   const input = el(id);
-  const v = clamp(parseInt(input.value || "0", 10) + dir, 0, 999);
+  const min = Number.isFinite(Number(input.min)) ? Number(input.min) : 0;
+  const max = Number.isFinite(Number(input.max)) && input.max !== "" ? Number(input.max) : 999;
+  const v = clamp(parseInt(input.value || "0", 10) + dir, min, max);
   input.value = String(v);
   // mirror output text
   if (id === "checkins") el("checkinsOut").textContent = String(v);
   if (id === "keys") el("keysOut").textContent = String(v);
   if (id === "taxi") el("taxiOut").textContent = String(v);
+  if (id === "hours") el("hoursOut").textContent = String(v);
+  syncStepProgress();
   recalc();
 }
 
@@ -1023,6 +1100,10 @@ async function submitBooking(){
 }
 
 function wire(){
+  document.querySelectorAll("[data-step-toggle]").forEach((btn) => {
+    btn.addEventListener("click", () => setOpenStep(Number(btn.getAttribute("data-step-toggle"))));
+  });
+
   // Top buttons
   el("btnPricingInfo").addEventListener("click", () => openModal("modalPricing"));
   el("btnClosePricing").addEventListener("click", () => closeModal("modalPricing"));
@@ -1139,12 +1220,15 @@ function wire(){
   });
 
   // Numeric stepper input manual typing
-  ["checkins","keys","taxi"].forEach(id => {
+  ["checkins","keys","taxi","dogs","cats"].forEach(id => {
     el(id).addEventListener("input", () => {
-      el(id).value = String(clamp(parseInt(el(id).value || "0", 10), 0, 999));
+      const min = Number.isFinite(Number(el(id).min)) ? Number(el(id).min) : 0;
+      const max = Number.isFinite(Number(el(id).max)) && el(id).max !== "" ? Number(el(id).max) : 999;
+      el(id).value = String(clamp(parseInt(el(id).value || "0", 10), min, max));
       if (id === "checkins") el("checkinsOut").textContent = el(id).value;
       if (id === "keys") el("keysOut").textContent = el(id).value;
       if (id === "taxi") el("taxiOut").textContent = el(id).value;
+      syncStepProgress();
       recalc();
     });
   });
@@ -1181,6 +1265,7 @@ export async function boot(){
   setDefaultDates();
   renderWalkDays();
   wire();
+  setOpenStep(1);
 
   await pingApi();
   await fetchPricing();
@@ -1190,4 +1275,3 @@ export async function boot(){
   renderSelectedSitter();
   recalc();
 }
-

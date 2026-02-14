@@ -10,7 +10,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css">
 </head>
 
@@ -40,43 +40,45 @@
     <div class="main">
       <section class="left">
         <div class="leftScroll">
-          <!-- Step 1 -->
-          <div class="card">
-            <div class="stepTitle">
-              <div class="leftSide">
-                <div class="stepBadge">1</div>
-                <div>
-                  <h3>Product options</h3>
-                  <div class="sub">Choose the product option. Add-ons apply on top.</div>
+          <div class="stepAccordion">
+            <div class="card stepCard" data-step-card="1">
+              <button class="stepHeader" type="button" data-step-toggle="1" aria-expanded="true">
+                <div class="leftSide">
+                  <div class="stepBadge">1</div>
+                  <div>
+                    <h3>Product options</h3>
+                    <div class="sub">Choose the product option. Add-ons apply on top.</div>
+                  </div>
+                </div>
+                <div class="stepHeaderRight">
+                  <div class="pill" id="peakNote"></div>
+                  <span class="stepChevron">▾</span>
+                </div>
+              </button>
+              <div class="stepSummary" data-step-summary="1"></div>
+              <div class="stepBody" data-step-body="1">
+                <button class="stayBtn" id="btnOpenStay" type="button" aria-haspopup="dialog">
+                  <div class="stayBtnLeft">
+                    <div class="stayIcon" id="stayIcon" aria-hidden="true">⏱</div>
+                    <div class="stayBtnText">
+                      <div class="stayBtnTitle" id="stayTitle">Day Visits</div>
+                      <div class="stayBtnSub" id="staySub"><span id="staySubText">Hourly care.</span> <span class="stayHoursPill" id="stayHoursPill"><span class="muted">Hours:</span> <span id="hoursOut">4</span></span></div>
+                    </div>
+                  </div>
+                  <div class="stayBtnRight">
+                    <div class="stayBtnRate" id="stayRate">R60/hour</div>
+                    <div class="stayBtnCta">Change</div>
+                  </div>
+                </button>
+                <div class="smallRow mt-2">
+                  <div class="label" id="discountHint">Long-stay discount applies automatically</div>
+                  <div class="label" id="dayOnlyHint">Day Visits: travel is charged per day (separate from check-ins)</div>
                 </div>
               </div>
-              <div class="pill" id="peakNote"></div>
             </div>
 
-            <button class="stayBtn" id="btnOpenStay" type="button" aria-haspopup="dialog">
-              <div class="stayBtnLeft">
-                <div class="stayIcon" id="stayIcon" aria-hidden="true">⏱</div>
-                <div class="stayBtnText">
-                  <div class="stayBtnTitle" id="stayTitle">Day Visits</div>
-                  <div class="stayBtnSub" id="staySub"><span id="staySubText">Hourly care.</span> <span class="stayHoursPill" id="stayHoursPill"><span class="muted">Hours:</span> <span id="hoursOut">4</span></span></div>
-                </div>
-              </div>
-              <div class="stayBtnRight">
-                <div class="stayBtnRate" id="stayRate">R60/hour</div>
-                <div class="stayBtnCta">Change</div>
-              </div>
-            </button>
-
-              <div class="smallRow mt-2">
-              <div class="label" id="discountHint">Long-stay discount applies automatically</div>
-              <div class="label" id="dayOnlyHint">Day Visits: travel is charged per day (separate from check-ins)</div>
-            </div>
-          </div>
-
-<div class="grid2 mt-3">
-            <!-- Step 2 -->
-            <div class="card">
-              <div class="stepTitle">
+            <div class="card stepCard" data-step-card="2">
+              <button class="stepHeader" type="button" data-step-toggle="2" aria-expanded="false">
                 <div class="leftSide">
                   <div class="stepBadge">2</div>
                   <div>
@@ -84,85 +86,87 @@
                     <div class="sub" id="scheduleSub">Peak dates and long-stay discounts are calculated automatically.</div>
                   </div>
                 </div>
-                <div class="label"><span id="daysLabel">Days</span>: <span id="daysOut">1</span></div>
-              </div>
-
-              <div class="grid2" id="dateRangeFields">
-                <label class="field">
-                  <span class="label">Start date</span>
-                  <input type="date" id="startDate">
-                </label>
-                <label class="field">
-                  <span class="label">End date</span>
-                  <input type="date" id="endDate">
-                </label>
-              </div>
-
-              <div id="walkScheduleFields" style="display:none;">
-                <div class="grid2">
+                <div class="stepHeaderRight">
+                  <div class="label"><span id="daysLabel">Days</span>: <span id="daysOut">1</span></div>
+                  <span class="stepChevron">▾</span>
+                </div>
+              </button>
+              <div class="stepSummary" data-step-summary="2"></div>
+              <div class="stepBody" data-step-body="2">
+                <div class="grid2" id="dateRangeFields">
                   <label class="field">
                     <span class="label">Start date</span>
-                    <input type="date" id="walkStartDate">
+                    <input type="date" id="startDate">
                   </label>
                   <label class="field">
-                    <span class="label">Billing option</span>
-                    <select id="walkBillingOption">
-                      <option value="once_off">Once-off</option>
-                      <option value="weekly_recurring">Weekly recurring</option>
-                      <option value="monthly_subscription">Monthly subscription</option>
-                    </select>
+                    <span class="label">End date</span>
+                    <input type="date" id="endDate">
                   </label>
                 </div>
-                <div class="grid2 mt-3">
-                  <label class="field" id="walkWeeksField" style="display:none;">
-                    <span class="label">Weeks</span>
-                    <input type="number" id="walkWeeks" min="1" max="12" step="1" value="1">
-                  </label>
-                </div>
-                <div class="mt-3">
-                  <div class="label">Days of week</div>
-                  <div class="walkDays" id="walkDays"></div>
-                </div>
-                <div class="grid2 mt-3">
-                  <label class="field">
-                    <span class="label">Walks per selected day</span>
-                    <input type="number" id="walksPerDay" min="1" max="8" step="1" value="1">
-                  </label>
-                  <label class="field">
-                    <span class="label">Time window</span>
-                    <select id="walkTimeWindow">
-                      <option value="morning">Morning</option>
-                      <option value="midday">Midday</option>
-                      <option value="afternoon">Afternoon</option>
-                      <option value="evening">Evening</option>
-                    </select>
-                  </label>
-                </div>
-                <div class="card mt-3" style="padding:12px;">
-                  <div class="stepTitle" style="margin-bottom:8px;">
-                    <div class="leftSide"><h3>Minutes per walk</h3></div>
-                    <div class="label"><span id="walkMinutesPerWalkOut">30</span> min/walk</div>
+                <div id="walkScheduleFields" style="display:none;">
+                  <div class="grid2">
+                    <label class="field">
+                      <span class="label">Start date</span>
+                      <input type="date" id="walkStartDate">
+                    </label>
+                    <label class="field">
+                      <span class="label">Billing option</span>
+                      <select id="walkBillingOption">
+                        <option value="once_off">Once-off</option>
+                        <option value="weekly_recurring">Weekly recurring</option>
+                        <option value="monthly_subscription">Monthly subscription</option>
+                      </select>
+                    </label>
                   </div>
-                  <input id="walkMinutesPerWalk" type="range" min="5" max="120" step="5" value="30">
+                  <div class="grid2 mt-3">
+                    <label class="field" id="walkWeeksField" style="display:none;">
+                      <span class="label">Weeks</span>
+                      <input type="number" id="walkWeeks" min="1" max="12" step="1" value="1">
+                    </label>
+                  </div>
+                  <div class="mt-3">
+                    <div class="label">Days of week</div>
+                    <div class="walkDays" id="walkDays"></div>
+                  </div>
+                  <div class="grid2 mt-3">
+                    <label class="field">
+                      <span class="label">Walks per selected day</span>
+                      <input type="number" id="walksPerDay" min="1" max="8" step="1" value="1">
+                    </label>
+                    <label class="field">
+                      <span class="label">Time window</span>
+                      <select id="walkTimeWindow">
+                        <option value="morning">Morning</option>
+                        <option value="midday">Midday</option>
+                        <option value="afternoon">Afternoon</option>
+                        <option value="evening">Evening</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="card mt-3" style="padding:12px;">
+                    <div class="stepTitle" style="margin-bottom:8px;">
+                      <div class="leftSide"><h3>Minutes per walk</h3></div>
+                      <div class="label"><span id="walkMinutesPerWalkOut">30</span> min/walk</div>
+                    </div>
+                    <input id="walkMinutesPerWalk" type="range" min="5" max="120" step="5" value="30">
+                  </div>
+                  <div class="hint mt-2">End date auto-calculated: <span id="walkEndDateOut">--</span>. <span id="walkTotalsSummary">Total walks: <span id="walkTotalOut">0</span>.</span></div>
                 </div>
-                <div class="hint mt-2">End date auto-calculated: <span id="walkEndDateOut">--</span>. <span id="walkTotalsSummary">Total walks: <span id="walkTotalOut">0</span>.</span></div>
+
+                <label class="field mt-3">
+                  <span class="label">Zone</span>
+                  <select id="zone">
+                    <option value="sabie">Sabie (Zone A)</option>
+                    <option value="wr">White River (Zone B)</option>
+                    <option value="nel">Nelspruit (Zone C)</option>
+                  </select>
+                </label>
+                <div class="hint" id="peakAppliedOut">No peak dates detected in your booking range.</div>
               </div>
-
-              <label class="field mt-3">
-                <span class="label">Zone</span>
-                <select id="zone">
-                  <option value="sabie">Sabie (Zone A)</option>
-                  <option value="wr">White River (Zone B)</option>
-                  <option value="nel">Nelspruit (Zone C)</option>
-                </select>
-              </label>
-
-              <div class="hint" id="peakAppliedOut">No peak dates detected in your booking range.</div>
             </div>
 
-            <!-- Step 3 -->
-            <div class="card">
-              <div class="stepTitle">
+            <div class="card stepCard" data-step-card="3">
+              <button class="stepHeader" type="button" data-step-toggle="3" aria-expanded="false">
                 <div class="leftSide">
                   <div class="stepBadge">3</div>
                   <div>
@@ -170,117 +174,132 @@
                     <div class="sub">First pet included. Extra pets add a daily care fee.</div>
                   </div>
                 </div>
-                <div class="label"><span id="travelLabel">Travel per day</span>: R<span id="travelOut">0</span></div>
-              </div>
-
-              <div class="grid2 petsGrid">
-                <div class="field">
-                  <span class="label">Dogs</span>
-                  <input id="dogs" type="number" min="0" step="1" value="1">
+                <div class="stepHeaderRight">
+                  <div class="label"><span id="travelLabel">Travel per day</span>: R<span id="travelOut">0</span></div>
+                  <span class="stepChevron">▾</span>
                 </div>
-                <div class="field" id="catsField">
-                  <span class="label">Cats</span>
-                  <input id="cats" type="number" min="0" step="1" value="0">
-                </div>
-              </div>
-
-              <div class="field mt-3" id="walkTravelEstimateField" style="display:none;">
-                <div class="stepTitle" style="margin-bottom:8px;">
-                  <div class="leftSide"><h3>Travel estimate per walk</h3></div>
-                  <div class="label">R<span id="walkTravelEstimateOut">25</span></div>
-                </div>
-                <input id="walkTravelEstimatePerWalk" type="range" min="0" max="50" step="1" value="25">
-                <div class="hint mt-2">Travel estimate ranges from R0 to R50 per walk depending on location and will be confirmed afterwards.</div>
-              </div>
-
-              <div class="grid2 mt-3">
-                <label class="toggle">
-                  <div class="tText">
-                    <div class="tTitle">Puppy care</div>
-                    <div class="tSub">Extra supervision and routine.</div>
+              </button>
+              <div class="stepSummary" data-step-summary="3"></div>
+              <div class="stepBody" data-step-body="3">
+                <div class="grid2 petsGrid">
+                  <div class="field">
+                    <span class="label">Dogs</span>
+                    <div class="stepper stepperWide">
+                      <button type="button" data-stepper="dogs" data-dir="-1">-</button>
+                      <input id="dogs" type="number" min="0" step="1" value="1">
+                      <button type="button" data-stepper="dogs" data-dir="1">+</button>
+                    </div>
                   </div>
-                  <input id="puppy" type="checkbox">
-                </label>
-
-                <label class="toggle">
-                  <div class="tText">
-                    <div class="tTitle">Oral meds needed?</div>
-                    <div class="tSub">We administer meds per instructions.</div>
+                  <div class="field" id="catsField">
+                    <span class="label">Cats</span>
+                    <div class="stepper stepperWide">
+                      <button type="button" data-stepper="cats" data-dir="-1">-</button>
+                      <input id="cats" type="number" min="0" step="1" value="0">
+                      <button type="button" data-stepper="cats" data-dir="1">+</button>
+                    </div>
                   </div>
-                  <input id="meds" type="checkbox">
-                </label>
-              </div>
+                </div>
 
-              <div class="hint">More add-ons (walks, updates, plants, chores, transport) are in Customize add-ons.</div>
+                <div class="field mt-3" id="walkTravelEstimateField" style="display:none;">
+                  <div class="stepTitle" style="margin-bottom:8px;">
+                    <div class="leftSide"><h3>Travel estimate per walk</h3></div>
+                    <div class="label">R<span id="walkTravelEstimateOut">25</span></div>
+                  </div>
+                  <input id="walkTravelEstimatePerWalk" type="range" min="0" max="50" step="1" value="25">
+                  <div class="hint mt-2">Travel estimate ranges from R0 to R50 per walk depending on location and will be confirmed afterwards.</div>
+                </div>
+
+                <div class="grid2 mt-3">
+                  <label class="toggle">
+                    <div class="tText">
+                      <div class="tTitle">Puppy care</div>
+                      <div class="tSub">Extra supervision and routine.</div>
+                    </div>
+                    <input id="puppy" type="checkbox">
+                  </label>
+
+                  <label class="toggle">
+                    <div class="tText">
+                      <div class="tTitle">Oral meds needed?</div>
+                      <div class="tSub">We administer meds per instructions.</div>
+                    </div>
+                    <input id="meds" type="checkbox">
+                  </label>
+                </div>
+                <div class="hint">More add-ons (walks, updates, plants, chores, transport) are in Customize add-ons.</div>
+              </div>
+            </div>
+
+            <div class="card stepCard" data-step-card="4">
+              <button class="stepHeader" type="button" data-step-toggle="4" aria-expanded="false">
+                <div class="leftSide">
+                  <div class="stepBadge">4</div>
+                  <div>
+                    <h3>Add-ons and sitter</h3>
+                    <div class="sub">Customize add-ons, then choose a verified sitter to submit your request.</div>
+                  </div>
+                </div>
+                <div class="stepHeaderRight">
+                  <div class="pill" id="sittersCountPill">Sitters: --</div>
+                  <span class="stepChevron">▾</span>
+                </div>
+              </button>
+              <div class="stepSummary" data-step-summary="4"></div>
+              <div class="stepBody" data-step-body="4">
+                <div class="actionRow">
+                  <button class="btn" id="btnOpenAddons" type="button">Customize add-ons</button>
+                  <button class="chooseSitterBtn" id="btnOpenSitters" type="button" aria-haspopup="dialog">
+                    <div class="chooseSitterLeft">
+                      <div class="avatarStack" aria-hidden="true">
+                        <img id="facePrev0" src="face1.png" onerror="this.style.display='none'">
+                        <img id="facePrev1" src="face2.png" onerror="this.style.display='none'">
+                        <img id="facePrev2" src="face3.png" onerror="this.style.display='none'">
+                      </div>
+                      <div class="sitterBtnText">
+                        <div class="sitterBtnTitle" id="sitterBtnTitle">Choose sitter</div>
+                        <div class="sitterBtnSub" id="sitterBtnSub">Verified selection required</div>
+                      </div>
+                    </div>
+                    <div class="chooseSitterCta">Browse</div>
+                  </button>
+                </div>
+
+                <div class="selectedBox mt-3">
+                  <div class="selectedTop">
+                    <div>
+                      <div class="selectedName" id="selectedSitterName">No sitter selected</div>
+                      <div class="selectedMeta" id="selectedSitterMeta">Choose a sitter to continue</div>
+                    </div>
+                    <button class="btn btnTertiary" id="btnChangeSitter" type="button" style="height:36px; padding:0 12px;">Change</button>
+                  </div>
+                  <div class="hint mt-2" id="availabilityHint">Availability loads automatically based on your dates, zone, and product option.</div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Step 4 -->
           <div class="card">
             <div class="stepTitle">
               <div class="leftSide">
-                <div class="stepBadge">4</div>
+                <div class="stepBadge">5</div>
                 <div>
-                  <h3>Add-ons and sitter</h3>
-                  <div class="sub">Customize add-ons, then choose a verified sitter to submit your request.</div>
+                  <h3>Safety and transparency</h3>
+                  <div class="sub">Built for trust: clear pricing, verified staff, secure booking flow.</div>
                 </div>
               </div>
-              <div class="pill" id="sittersCountPill">Sitters: --</div>
+              <div class="pill">Premium standard</div>
             </div>
 
-            <div class="actionRow">
-              <button class="btn btnPrimary" id="btnOpenAddons" type="button">Customize add-ons</button>
+            <ul class="text-[12px] opacity-80 leading-relaxed list-disc pl-5">
+              <li>Verified sitter selection required</li>
+              <li>Peak dates and long-stay discounts auto apply</li>
+              <li>Deposit secures booking, remaining balance after service</li>
+              <li>Final price confirmed after screening and availability</li>
+            </ul>
 
-              <button class="chooseSitterBtn" id="btnOpenSitters" type="button" aria-haspopup="dialog">
-                <div class="chooseSitterLeft">
-                  <div class="avatarStack" aria-hidden="true">
-                    <img id="facePrev0" src="face1.png" onerror="this.style.display='none'">
-                    <img id="facePrev1" src="face2.png" onerror="this.style.display='none'">
-                    <img id="facePrev2" src="face3.png" onerror="this.style.display='none'">
-                  </div>
-                  <div class="sitterBtnText">
-                    <div class="sitterBtnTitle" id="sitterBtnTitle">Choose sitter</div>
-                    <div class="sitterBtnSub" id="sitterBtnSub">Verified selection required</div>
-                  </div>
-                </div>
-                <div class="chooseSitterCta">Browse</div>
-              </button>
-            </div>
-
-            <div class="selectedBox mt-3">
-              <div class="selectedTop">
-                <div>
-                  <div class="selectedName" id="selectedSitterName">No sitter selected</div>
-                  <div class="selectedMeta" id="selectedSitterMeta">Choose a sitter to continue</div>
-                </div>
-                <button class="btn" id="btnChangeSitter" type="button" style="height:36px; padding:0 12px;">Change</button>
-              </div>
-              <div class="hint mt-2" id="availabilityHint">Availability loads automatically based on your dates, zone, and product option.</div>
-            </div>
+            <div class="hint mt-3">Pricing loads from your Google Sheet via API. If anything fails, the API status pill at the top will show it.</div>
           </div>
-
-<div class="card">
-              <div class="stepTitle">
-                <div class="leftSide">
-                  <div class="stepBadge">5</div>
-                  <div>
-                    <h3>Safety and transparency</h3>
-                    <div class="sub">Built for trust: clear pricing, verified staff, secure booking flow.</div>
-                  </div>
-                </div>
-                <div class="pill">Premium standard</div>
-              </div>
-
-              <ul class="text-[12px] opacity-80 leading-relaxed list-disc pl-5">
-                <li>Verified sitter selection required</li>
-                <li>Peak dates and long-stay discounts auto apply</li>
-                <li>Deposit secures booking, remaining balance after service</li>
-                <li>Final price confirmed after screening and availability</li>
-              </ul>
-
-              <div class="hint mt-3">Pricing loads from your Google Sheet via API. If anything fails, the API status pill at the top will show it.</div>
-            </div>
-          </div>
+        </div>
       </section>
 
       <aside class="right">
@@ -289,7 +308,7 @@
             <h2>Your Care Quote</h2>
             <div class="bigTotal" id="totalOut">R0</div>
           </div>
-          <div class="text-right">
+          <div>
             <div class="pill">Pricing loaded from sheet</div>
             <div class="hint mt-2" id="quoteWarnings"></div>
           </div>
@@ -297,24 +316,26 @@
 
         <div class="rows">
           <div class="row"><span id="baseRowLabel">Base stay</span><strong id="baseOut">R0</strong></div>
-          <div class="row"><span>Add-ons + travel</span><strong id="addonsOut">R0</strong></div>
-          <div class="row"><span id="discountRowLabel">Long-stay discount</span><strong id="discountOut">R0</strong></div>
-          <div class="row"><span>One-time fees</span><strong id="oneTimeOut">R0</strong></div>
+          <div class="row"><span>Add-ons</span><strong id="addonsOut">R0</strong></div>
+          <div class="row"><span id="discountRowLabel">Discounts</span><strong id="discountOut">R0</strong></div>
         </div>
         <div class="hint mt-2" id="monthlyEstimateNote" style="display:none;">Monthly subscription is estimated using 4.3 weeks per month. Actual calendar months vary.</div>
 
-        <div class="lineItems">
-          <div class="lineItemsHeader">
-            <div class="flex items-center gap-2">
+        <details class="lineItems" id="fullBreakdown">
+          <summary class="lineItemsHeader">
+            <div>
               <span class="statusDot ok" id="lineDot"></span>
-              <span class="font-extrabold">Add-on breakdown</span>
+              <span>Full breakdown</span>
             </div>
-            <span class="text-[11px] opacity-70">Unit x multiplier</span>
+            <span>Unit x multiplier</span>
+          </summary>
+          <div class="lineItemsBody">
+            <div class="row"><span>One-time fees</span><strong id="oneTimeOut">R0</strong></div>
+            <div id="lineItemsBody">
+              <div class="text-[12px] opacity-70">No add-ons selected yet.</div>
+            </div>
           </div>
-          <div class="lineItemsBody" id="lineItemsBody">
-            <div class="text-[12px] opacity-70">No add-ons selected yet.</div>
-          </div>
-        </div>
+        </details>
 
         <div class="depositBox">
           <div class="row"><span class="k">Deposit required</span><span class="v" id="depositOut">R0</span></div>
